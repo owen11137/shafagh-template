@@ -1,8 +1,8 @@
 package com.misc.shafagh.cif.impl.dto.mapper;
 
 import com.misc.client.infra.starter.v3.dto.mapper.BaseMapper;
-import com.misc.shafagh.core.dto.response.SignatureDto;
-import com.misc.shafagh.core.entity.SignatureEntity;
+import com.misc.shafagh.cif.impl.dto.response.SignatureDto;
+import com.misc.shafagh.cif.impl.entity.SignatureEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
