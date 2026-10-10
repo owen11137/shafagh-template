@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Entity(name = "BRANCH")
-@Table(schema = CifSchema.NAME, uniqueConstraints = {@UniqueConstraint(name = "BRANCH_IDENTIFIER_UK", columnNames = "IDENTIFIER")})
+@Table(schema = CifSchema.NAME, uniqueConstraints = {@UniqueConstraint(name = "BRANCH_FUND_CODE_UK", columnNames = {"FUND_ID", "CODE"})})
 @Getter
 @Setter
 @Data
