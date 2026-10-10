@@ -1,8 +1,8 @@
 package com.misc.shafagh.cif.impl.repository;
 
-import com.misc.shafagh.core.dto.request.CustomerFilterDTO;
-import com.misc.shafagh.core.entity.CustomerEntity;
-import com.misc.shafagh.core.entity.enums.CustomerType;
+import com.misc.shafagh.cif.impl.dto.request.CustomerFilterDTO;
+import com.misc.shafagh.cif.impl.entity.CustomerEntity;
+import com.misc.shafagh.cif.impl.entity.enums.CustomerType;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
