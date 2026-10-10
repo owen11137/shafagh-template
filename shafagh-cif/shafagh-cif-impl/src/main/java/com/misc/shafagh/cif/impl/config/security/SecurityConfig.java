@@ -1,6 +1,6 @@
 package com.misc.shafagh.cif.impl.config.security;
 
-import com.misc.shafagh.core.config.security.keycloak.KeycloakRealmRoleConverter;
+import com.misc.shafagh.cif.impl.config.security.keycloak.KeycloakRealmRoleConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
