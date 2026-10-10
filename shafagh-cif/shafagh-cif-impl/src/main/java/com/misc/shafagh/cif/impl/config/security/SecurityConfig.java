@@ -42,7 +42,7 @@ public class SecurityConfig {
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
                         "/configuration/**",
-                        "user/**"
+                        "/user/**"
                 ).permitAll()
                 .anyRequest().permitAll()
         ).oauth2ResourceServer(rsc -> rsc.jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter)));
