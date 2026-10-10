@@ -1,14 +1,16 @@
 package com.misc.shafagh.cif.impl.entity.fund;
 
-import com.misc.shafagh.core.entity.CityEntity;
+import com.misc.shafagh.cif.impl.CifSchema;
+
+import com.misc.shafagh.cif.impl.entity.CityEntity;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "FUND_ADDRESS")
-@SequenceGenerator(name = "FUND_ADDRESS_ID_SEQ", sequenceName = "FUND_ADDRESS_ID_SEQ", allocationSize = 1)
+@Table(schema = CifSchema.NAME, name = "FUND_ADDRESS")
+@SequenceGenerator(name = "FUND_ADDRESS_ID_SEQ", schema = CifSchema.NAME, sequenceName = "FUND_ADDRESS_ID_SEQ", allocationSize = 1)
 @Getter
 @Setter
 public class FundAddressEntity {
