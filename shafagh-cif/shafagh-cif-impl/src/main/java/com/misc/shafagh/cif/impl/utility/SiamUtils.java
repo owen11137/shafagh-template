@@ -1,8 +1,8 @@
 package com.misc.shafagh.cif.impl.utility;/*
-package com.misc.shafagh.core.utility;
+package com.misc.shafagh.cif.impl.utility;
 
-import com.misc.shafagh.core.entity.enums.SiamInquiryPersonType;
-import com.misc.shafagh.core.utility.time.PersianDate;
+import com.misc.shafagh.cif.impl.entity.enums.SiamInquiryPersonType;
+import com.misc.shafagh.cif.impl.utility.time.PersianDate;
 
 import java.util.HashMap;
 import java.util.UUID;
