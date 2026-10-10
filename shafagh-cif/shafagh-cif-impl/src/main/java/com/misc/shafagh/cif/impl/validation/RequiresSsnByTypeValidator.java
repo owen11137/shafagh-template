@@ -1,11 +1,9 @@
 package com.misc.shafagh.cif.impl.validation;
 
-import com.google.common.base.Strings;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.constraintvalidation.SupportedValidationTarget;
 import jakarta.validation.constraintvalidation.ValidationTarget;
-import org.sonatype.aether.transfer.TransferEvent;
 
 /*
 @SupportedValidationTarget(ValidationTarget.PARAMETERS)
