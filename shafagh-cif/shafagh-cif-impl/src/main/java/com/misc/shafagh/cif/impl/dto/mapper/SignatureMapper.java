@@ -1,6 +1,5 @@
 package com.misc.shafagh.cif.impl.dto.mapper;
 
-import com.misc.client.infra.starter.v3.dto.mapper.BaseMapper;
 import com.misc.shafagh.cif.impl.dto.response.SignatureDto;
 import com.misc.shafagh.cif.impl.entity.SignatureEntity;
 import org.mapstruct.Mapper;
@@ -11,7 +10,7 @@ import java.util.List;
 /**
  * فقط جهت خواندن (Entity -> DTO). ساخت و ویرایش امضا در CustomerSignatureHelper انجام می‌شود.
  */
-@Mapper(uses = BaseMapper.class, componentModel = "spring")
+@Mapper(componentModel = "spring")
 public interface SignatureMapper {
 
     @Mapping(target = "customerId", source = "customer.id")
