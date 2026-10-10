@@ -1,6 +1,6 @@
 package com.misc.shafagh.cif.impl.dto.request;
 
-import com.misc.shafagh.core.entity.enums.AddressType;
+import com.misc.shafagh.cif.impl.entity.enums.AddressType;
 import lombok.Getter;
 import lombok.Setter;
 
