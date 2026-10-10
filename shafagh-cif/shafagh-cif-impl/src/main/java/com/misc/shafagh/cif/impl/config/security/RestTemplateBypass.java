@@ -1,6 +1,5 @@
 package com.misc.shafagh.cif.impl.config.security;
 
-import org.springframework.boot.autoconfigure.web.client.RestClientSsl;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
