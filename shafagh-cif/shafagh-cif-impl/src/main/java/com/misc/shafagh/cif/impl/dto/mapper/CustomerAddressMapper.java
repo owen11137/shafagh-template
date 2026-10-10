@@ -1,6 +1,5 @@
 package com.misc.shafagh.cif.impl.dto.mapper;
 
-import com.misc.client.infra.starter.v3.dto.mapper.BaseMapper;
 import com.misc.shafagh.cif.impl.dto.request.CustomerAddressReqDTO;
 import com.misc.shafagh.cif.impl.dto.response.CustomerAddressDto;
 import com.misc.shafagh.cif.impl.entity.CityEntity;
@@ -9,7 +8,7 @@ import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(uses = BaseMapper.class, componentModel = "spring")
+@Mapper(componentModel = "spring")
 public interface CustomerAddressMapper {
 
     @Mapping(target = "customer", ignore = true)
