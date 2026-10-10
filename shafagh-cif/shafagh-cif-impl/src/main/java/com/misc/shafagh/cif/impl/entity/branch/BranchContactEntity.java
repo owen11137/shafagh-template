@@ -1,6 +1,6 @@
 package com.misc.shafagh.cif.impl.entity.branch;
 
-import com.misc.shafagh.core.entity.enums.ContactType;
+import com.misc.shafagh.cif.impl.entity.enums.ContactType;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
