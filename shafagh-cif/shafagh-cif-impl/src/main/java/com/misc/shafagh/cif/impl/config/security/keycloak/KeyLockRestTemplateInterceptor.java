@@ -1,6 +1,7 @@
 package com.misc.shafagh.cif.impl.config.security.keycloak;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -16,6 +17,7 @@ import java.nio.charset.StandardCharsets;
  * date 2/8/2025
  */
 @Component
+@ConditionalOnProperty(prefix = "keycloak-management", name = {"client-id", "client-secret"})
 public class KeyLockRestTemplateInterceptor implements ClientHttpRequestInterceptor {
     @Value("${keycloak-management.client-id}")
     private String clientId;
