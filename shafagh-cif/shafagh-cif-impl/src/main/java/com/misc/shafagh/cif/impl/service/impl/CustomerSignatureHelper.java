@@ -1,9 +1,9 @@
 package com.misc.shafagh.cif.impl.service.impl;
 
-import com.misc.shafagh.core.dto.request.SignatureReqDTO;
-import com.misc.shafagh.core.entity.CustomerEntity;
-import com.misc.shafagh.core.entity.SignatureEntity;
-import com.misc.shafagh.core.exception.ValidationException;
+import com.misc.shafagh.cif.impl.dto.request.SignatureReqDTO;
+import com.misc.shafagh.cif.impl.entity.CustomerEntity;
+import com.misc.shafagh.cif.impl.entity.SignatureEntity;
+import com.misc.shafagh.cif.impl.exception.ValidationException;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
