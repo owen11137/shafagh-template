@@ -1,12 +1,12 @@
 package com.misc.shafagh.cif.impl.service.impl;
 
-import com.misc.shafagh.core.dto.mapper.CustomerMapper;
-import com.misc.shafagh.core.dto.request.CustomerReqDTO;
-import com.misc.shafagh.core.entity.enums.CustomerType;
-import com.misc.shafagh.core.entity.validator.CustomerValidator;
-import com.misc.shafagh.core.repository.CityRepository;
-import com.misc.shafagh.core.repository.CustomerRepository;
-import com.misc.shafagh.core.service.api.CustomerRealService;
+import com.misc.shafagh.cif.impl.dto.mapper.CustomerMapper;
+import com.misc.shafagh.cif.impl.dto.request.CustomerReqDTO;
+import com.misc.shafagh.cif.impl.entity.enums.CustomerType;
+import com.misc.shafagh.cif.impl.entity.validator.CustomerValidator;
+import com.misc.shafagh.cif.impl.repository.CityRepository;
+import com.misc.shafagh.cif.impl.repository.CustomerRepository;
+import com.misc.shafagh.cif.impl.service.api.CustomerRealService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
