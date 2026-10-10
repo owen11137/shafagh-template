@@ -5,7 +5,7 @@ import com.misc.shafagh.cif.impl.dto.mapper.CityMapper;
 import com.misc.shafagh.cif.impl.dto.response.CityDto;
 import com.misc.shafagh.cif.impl.entity.CityEntity;
 import com.misc.shafagh.cif.impl.repository.CityRepository;
-import com.misc.shafagh.cif.impl.service.api.CityService;
+import com.misc.shafagh.cif.impl.service.port.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
