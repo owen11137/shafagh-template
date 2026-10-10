@@ -1,7 +1,7 @@
 package com.misc.shafagh.cif.impl.entity.validator;
 
-import com.misc.shafagh.core.dto.request.CustomerReqDTO;
-import com.misc.shafagh.core.exception.ValidationException;
+import com.misc.shafagh.cif.impl.dto.request.CustomerReqDTO;
+import com.misc.shafagh.cif.impl.exception.ValidationException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
