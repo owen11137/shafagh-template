@@ -1,16 +1,18 @@
 package com.misc.shafagh.cif.impl.entity;
 
-import com.misc.shafagh.core.entity.enums.AddressType;
+import com.misc.shafagh.cif.impl.CifSchema;
+
+import com.misc.shafagh.cif.impl.entity.enums.AddressType;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "CUSTOMER_ADDRESS")
+@Table(schema = CifSchema.NAME, name = "CUSTOMER_ADDRESS")
 @Getter
 @Setter
-@SequenceGenerator(name = "CUSTOMER_ADDRESS_ID_SEQ", sequenceName = "CUSTOMER_ADDRESS_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "CUSTOMER_ADDRESS_ID_SEQ", schema = CifSchema.NAME, sequenceName = "CUSTOMER_ADDRESS_ID_SEQ", allocationSize = 1)
 public class CustomerAddressEntity extends TenantAwareEntity {
 
     @Id
