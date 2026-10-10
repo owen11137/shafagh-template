@@ -1,10 +1,12 @@
 package com.misc.shafagh.cif.impl.entity;
 
+import com.misc.shafagh.cif.impl.CifSchema;
 
-import com.misc.shafagh.core.entity.enums.Gender;
-import com.misc.shafagh.core.entity.enums.MaritalStatus;
-import com.misc.shafagh.core.entity.enums.CustomerStatus;
-import com.misc.shafagh.core.entity.enums.CustomerType;
+
+import com.misc.shafagh.cif.impl.entity.enums.Gender;
+import com.misc.shafagh.cif.impl.entity.enums.MaritalStatus;
+import com.misc.shafagh.cif.impl.entity.enums.CustomerStatus;
+import com.misc.shafagh.cif.impl.entity.enums.CustomerType;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,8 +18,8 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "CUSTOMER")
-@SequenceGenerator(name = "CUSTOMER_ID_SEQ", sequenceName = "CUSTOMER_ID_SEQ", allocationSize = 1)
+@Table(schema = CifSchema.NAME, name = "CUSTOMER")
+@SequenceGenerator(name = "CUSTOMER_ID_SEQ", schema = CifSchema.NAME, sequenceName = "CUSTOMER_ID_SEQ", allocationSize = 1)
 @Getter
 @Setter
 public class CustomerEntity extends TenantAwareEntity {
