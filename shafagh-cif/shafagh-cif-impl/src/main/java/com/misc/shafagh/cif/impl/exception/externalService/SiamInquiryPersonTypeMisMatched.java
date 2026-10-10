@@ -1,6 +1,6 @@
 package com.misc.shafagh.cif.impl.exception.externalService;
 
-import com.misc.client.infra.starter.v3.exception.handler.BaseBusinessException;
+import com.misc.shafagh.cif.impl.exception.BaseBusinessException;
 
 /**
  * @author m_kor
