@@ -2,9 +2,9 @@ spring:
   application:
     name: shafagh
   datasource:
-    url: ${DB_URL:jdbc:oracle:thin:@//localhost:1521/XEPDB1}
-    username: ${DB_USERNAME:shafagh}
-    password: ${DB_PASSWORD:change-me}
+    url: ${DB_URL:jdbc:oracle:thin:@//172.31.65.19:1521/centraldb}
+    username: ${DB_USERNAME:shfq_cif}
+    password: ${DB_PASSWORD:shfq_cif}
   jpa:
     open-in-view: false
     hibernate:
