@@ -1,9 +1,9 @@
 package com.misc.shafagh.cif.impl.service.api;
 
 
-import com.misc.shafagh.core.dto.request.CustomerFilterDTO;
-import com.misc.shafagh.core.dto.request.CustomerReqDTO;
-import com.misc.shafagh.core.dto.response.CustomerDto;
+import com.misc.shafagh.cif.impl.dto.request.CustomerFilterDTO;
+import com.misc.shafagh.cif.impl.dto.request.CustomerReqDTO;
+import com.misc.shafagh.cif.impl.dto.response.CustomerDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
