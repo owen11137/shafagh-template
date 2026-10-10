@@ -1,11 +1,11 @@
 package com.misc.shafagh.cif.impl.validation;
 
-import com.misc.client.infra.starter.v3.validation.base.BaseValidator;
+import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import org.apache.commons.lang3.StringUtils;
 
 
-public class AccountNumberValidator implements BaseValidator<AccountNumber, String> {
+
+public class AccountNumberValidator implements ConstraintValidator<AccountNumber, String> {
 
     @Override
     public void initialize(AccountNumber accountNumber) {
@@ -19,7 +19,7 @@ public class AccountNumberValidator implements BaseValidator<AccountNumber, Stri
                 return false;
             }
 
-            if (StringUtils.isEmpty(accountNo)) {
+            if (accountNo.isEmpty()) {
                 return false;
             }
 
@@ -31,7 +31,7 @@ public class AccountNumberValidator implements BaseValidator<AccountNumber, Stri
                 return false;
             }
 
-            return StringUtils.isNumeric(accountNo);
+            return accountNo.chars().allMatch(c -> c >= '0' && c <= '9');
         } catch (Exception e) {
             return false;
         }
