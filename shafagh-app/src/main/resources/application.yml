@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: shafagh
+  datasource:
+    url: ${DB_URL:jdbc:oracle:thin:@//localhost:1521/XEPDB1}
+    username: ${DB_USERNAME:shafagh}
+    password: ${DB_PASSWORD:change-me}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none   # جدول‌ها با اسکریپت scripts/02-create-tables.sql ساخته می‌شوند

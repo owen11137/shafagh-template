@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.misc.shafagh</groupId>
+        <artifactId>shafagh-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>shafagh-app</artifactId>
+    <name>Shafagh Application</name>
+
+    <properties>
+        <!-- خالی = تست‌ها روی H2؛ -Dtest.profile=oracle = تست‌ها روی Oracle واقعی -->
+        <test.profile></test.profile>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.misc.shafagh</groupId>
+            <artifactId>shafagh-base-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.misc.shafagh</groupId>
+            <artifactId>shafagh-cif-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.misc.shafagh</groupId>
+            <artifactId>shafagh-dpst-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.misc.shafagh</groupId>
+            <artifactId>shafagh-loan-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.misc.shafagh</groupId>
+            <artifactId>shafagh-orchestration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc11</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <spring.profiles.active>${test.profile}</spring.profiles.active>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

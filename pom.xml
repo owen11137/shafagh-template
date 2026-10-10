@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <!-- نسخه را با آخرین نسخه‌ی پایدار Spring Boot هماهنگ کنید -->
+        <version>4.0.6</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.misc.shafagh</groupId>
+    <artifactId>shafagh-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>shafagh-parent</name>
+
+    <properties>
+        <java.version>21</java.version>
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <archunit.version>1.4.1</archunit.version>
+    </properties>
+
+    <modules>
+        <module>shafagh-base</module>
+        <module>shafagh-cif</module>
+        <module>shafagh-dpst</module>
+        <module>shafagh-loan</module>
+        <module>shafagh-orchestration</module>
+        <module>shafagh-architecture-tests</module>
+        <module>shafagh-app</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+        <dependency>
+            <groupId>com.misc.shafagh</groupId>
+            <artifactId>shafagh-base-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.misc.shafagh</groupId>
+            <artifactId>shafagh-base-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.misc.shafagh</groupId>
+            <artifactId>shafagh-cif-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.misc.shafagh</groupId>
+            <artifactId>shafagh-cif-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.misc.shafagh</groupId>
+            <artifactId>shafagh-dpst-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.misc.shafagh</groupId>
+            <artifactId>shafagh-dpst-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.misc.shafagh</groupId>
+            <artifactId>shafagh-loan-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.misc.shafagh</groupId>
+            <artifactId>shafagh-loan-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.misc.shafagh</groupId>
+            <artifactId>shafagh-orchestration</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.misc.shafagh</groupId>
+            <artifactId>shafagh-architecture-tests</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit</artifactId>
+            <version>${archunit.version}</version>
+        </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
