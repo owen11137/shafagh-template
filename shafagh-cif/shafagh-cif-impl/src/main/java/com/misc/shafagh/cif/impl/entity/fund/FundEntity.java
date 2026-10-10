@@ -1,8 +1,10 @@
 package com.misc.shafagh.cif.impl.entity.fund;
 
+import com.misc.shafagh.cif.impl.CifSchema;
 
-import com.misc.shafagh.core.entity.CustomerEntity;
-import com.misc.shafagh.core.entity.branch.BranchEntity;
+
+import com.misc.shafagh.cif.impl.entity.CustomerEntity;
+import com.misc.shafagh.cif.impl.entity.branch.BranchEntity;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,10 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "FUND")
-@Table(name = "FUND")
+@Table(schema = CifSchema.NAME, name = "FUND")
 @Getter
 @Setter
-@SequenceGenerator(name = "FUND_ID_SEQ", sequenceName = "FUND_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "FUND_ID_SEQ", schema = CifSchema.NAME, sequenceName = "FUND_ID_SEQ", allocationSize = 1)
 public class FundEntity {
 
     @Id
