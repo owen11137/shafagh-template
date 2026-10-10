@@ -1,4 +1,5 @@
 package com.misc.shafagh.cif.impl.entity;
+import com.misc.shafagh.cif.impl.CifSchema;
 
 
 import com.misc.shafagh.cif.impl.entity.enums.CustomerInquiryStatus;
@@ -8,9 +9,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-@Table(name = "CUSTOMER_INQUIRY")
+@Table(schema = CifSchema.NAME, name = "CUSTOMER_INQUIRY")
 @Entity(name = "CUSTOMERInquiry")
-@SequenceGenerator(name = "CUSTOMER_INQUIRY_ID_SEQ", sequenceName = "CUSTOMER_INQUIRY_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "CUSTOMER_INQUIRY_ID_SEQ", schema = CifSchema.NAME, sequenceName = "CUSTOMER_INQUIRY_ID_SEQ", allocationSize = 1)
 @Getter
 @Setter
 public class CustomerInquiryEntity extends TenantAwareEntity {
