@@ -3,11 +3,11 @@ package com.misc.shafagh.cif.impl.dto.mapper;
 
 import com.misc.client.infra.starter.v3.dto.mapper.BaseMapper;
 
-import com.misc.shafagh.core.dto.request.CustomerReqDTO;
-import com.misc.shafagh.core.dto.response.CityDto;
-import com.misc.shafagh.core.dto.response.CustomerDto;
-import com.misc.shafagh.core.entity.CityEntity;
-import com.misc.shafagh.core.entity.CustomerEntity;
+import com.misc.shafagh.cif.impl.dto.request.CustomerReqDTO;
+import com.misc.shafagh.cif.impl.dto.response.CityDto;
+import com.misc.shafagh.cif.impl.dto.response.CustomerDto;
+import com.misc.shafagh.cif.impl.entity.CityEntity;
+import com.misc.shafagh.cif.impl.entity.CustomerEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
