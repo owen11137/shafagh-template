@@ -14,7 +14,7 @@ import java.util.Collections;
  */
 @Component("uiCorsConfig")
 public class CorsConfigImpl implements CorsConfigurationSource {
-    @Value("${shafagh.client-url}")
+    @Value("${shafagh.client-url:http://localhost:3000}")
     private String clientUrl;
     @Override
     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
