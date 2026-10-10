@@ -1,8 +1,8 @@
 package com.misc.shafagh.cif.impl.repository;
 
 
-import com.misc.shafagh.core.entity.CustomerEntity;
-import com.misc.shafagh.core.entity.enums.CustomerType;
+import com.misc.shafagh.cif.impl.entity.CustomerEntity;
+import com.misc.shafagh.cif.impl.entity.enums.CustomerType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
