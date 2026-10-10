@@ -28,15 +28,15 @@ import java.security.cert.X509Certificate;
  */
 @Configuration
 public class RestClientConfiguration {
-    @Value("${siam.ssl.keystore-address}")
+    @Value("${siam.ssl.keystore-address:}")
     private String siamKeystoreAddress;
-    @Value("${siam.ssl.keystore-password}")
+    @Value("${siam.ssl.keystore-password:}")
     private String siamKeystorePassword;
-    @Value("${siam.ssl.truststore-address}")
+    @Value("${siam.ssl.truststore-address:}")
     private String siamTruststoreAddress;
-    @Value("${siam.ssl.truststore-password}")
+    @Value("${siam.ssl.truststore-password:}")
     private String siamTruststorePassword;
-    @Value("${siam.ssl.tls-version}")
+    @Value("${siam.ssl.tls-version:}")
     private String siamTlsVersion;
 
     @Bean(value = "sslBypass")
