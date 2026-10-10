@@ -19,20 +19,29 @@ import java.util.stream.Collectors;
  */
 @Component
 public class KeycloakRealmRoleConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
-    @Value("${keycloak-management.client-id}")
+    @Value("${keycloak-management.client-id:}")
     private String client_id;
     private static final String RESOURCE_ACCESS = "resource_access";
     private static final String REALM_ACCESS_CLAIM = "realm_access";
     private static final String ROLES_CLAIM = "roles";
     @Override
     public Collection<GrantedAuthority> convert(Jwt source) {
-        Map<String, Object> realmAccess = ((Map<String, Object>)((Map<String, Object>) source.getClaims().get(RESOURCE_ACCESS)).get(client_id));
+        Object resourceAccessClaim = source.getClaims().get(RESOURCE_ACCESS);
+        if (!(resourceAccessClaim instanceof Map<?, ?> resourceAccess) || client_id.isBlank()) {
+            return List.of();
+        }
+        Object clientAccessClaim = resourceAccess.get(client_id);
+        if (!(clientAccessClaim instanceof Map<?, ?> realmAccess)) {
+            return List.of();
+        }
 
-        if(realmAccess == null || realmAccess.isEmpty()) {
+        if (realmAccess.isEmpty() || !(realmAccess.get(ROLES_CLAIM) instanceof List<?> roles)) {
             return new ArrayList<>();
         }
 
-        return ((List<String>) realmAccess.get(ROLES_CLAIM)).stream()
+        return roles.stream()
+                .filter(String.class::isInstance)
+                .map(String.class::cast)
                 .map(roleName -> "ROLE_" + roleName)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
