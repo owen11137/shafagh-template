@@ -1,16 +1,17 @@
 package com.misc.shafagh.cif.impl.entity;
 
 import jakarta.persistence.*;
+import com.misc.shafagh.cif.impl.CifSchema;
 import lombok.*;
 
 
 @Entity
-@Table(name = "CITY")
+@Table(schema = CifSchema.NAME, name = "CITY")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@SequenceGenerator(name = "CITY_ID_SEQ", sequenceName = "CITY_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "CITY_ID_SEQ", schema = CifSchema.NAME, sequenceName = "CITY_ID_SEQ", allocationSize = 1)
 public class CityEntity {
 
     @Id
