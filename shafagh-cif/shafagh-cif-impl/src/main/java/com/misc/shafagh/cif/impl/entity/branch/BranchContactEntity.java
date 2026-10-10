@@ -1,4 +1,5 @@
 package com.misc.shafagh.cif.impl.entity.branch;
+import com.misc.shafagh.cif.impl.CifSchema;
 
 import com.misc.shafagh.cif.impl.entity.enums.ContactType;
 import jakarta.persistence.*;
@@ -6,10 +7,10 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 @Entity
-@Table(name = "BRANCH_CONTACT")
+@Table(schema = CifSchema.NAME, name = "BRANCH_CONTACT")
 @Getter
 @Setter
-@SequenceGenerator(name = "BRANCH_CONTACT_ID_SEQ", sequenceName = "BRANCH_CONTACT_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "BRANCH_CONTACT_ID_SEQ", schema = CifSchema.NAME, sequenceName = "BRANCH_CONTACT_ID_SEQ", allocationSize = 1)
 public class BranchContactEntity {
 
     @Id
