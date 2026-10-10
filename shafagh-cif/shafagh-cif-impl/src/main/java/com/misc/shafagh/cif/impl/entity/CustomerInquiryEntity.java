@@ -1,8 +1,8 @@
 package com.misc.shafagh.cif.impl.entity;
 
 
-import com.misc.shafagh.core.entity.enums.CustomerInquiryStatus;
-import com.misc.shafagh.core.entity.enums.CustomerType;
+import com.misc.shafagh.cif.impl.entity.enums.CustomerInquiryStatus;
+import com.misc.shafagh.cif.impl.entity.enums.CustomerType;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
