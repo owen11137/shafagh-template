@@ -8,8 +8,8 @@ import org.springframework.stereotype.*;
 public class ValidationAspect {
 
 
-//    @Pointcut("within(com.misc.shafagh.core.service.impl.ProductFeatureServiceImpl)")
-//    @Pointcut("execution(public void com.misc.shafagh.core.service.api.ProductFeatureService.validateNumber(int))")
+//    @Pointcut("within(com.misc.shafagh.cif.impl.service.impl.ProductFeatureServiceImpl)")
+//    @Pointcut("execution(public void com.misc.shafagh.cif.impl.service.api.ProductFeatureService.validateNumber(int))")
 //    public void validationPointcut(){}
 
 //    @Around("validationPointcut()")
