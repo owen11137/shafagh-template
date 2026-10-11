@@ -1,9 +1,2 @@
--- فقط برای پاک‌کردن کامل دیتابیس توسعه/تست. هرگز روی محیط واقعی اجرا نشود!
-
-DROP TABLE    SHFQ_LOAN.SHFQ_LOAN_LOAN       PURGE;
-DROP SEQUENCE SHFQ_LOAN.SHFQ_LOAN_LOAN_SEQ;
-DROP TABLE    SHFQ_DPST.SHFQ_DPST_DEPOSIT    PURGE;
-DROP SEQUENCE SHFQ_DPST.SHFQ_DPST_DEPOSIT_SEQ;
-DROP TABLE    SHFQ_CIF.SHFQ_CIF_PERSON       PURGE;
-DROP SEQUENCE SHFQ_CIF.SHFQ_CIF_PERSON_SEQ;
-DROP TABLE    SHFQ_BASE.SHFQ_BASE_CURRENCY   PURGE;
+-- Intentionally empty. Do not automate destructive DROP statements for banking schemas.
+-- Any rollback must be explicitly approved and prepared by the DBA after reviewing live dependencies.
