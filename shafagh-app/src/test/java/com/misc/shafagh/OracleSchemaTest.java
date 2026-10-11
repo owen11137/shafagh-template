@@ -6,7 +6,9 @@ import com.misc.shafagh.base.impl.BaseSchema;
 import com.misc.shafagh.cif.impl.CifSchema;
 import com.misc.shafagh.dpst.impl.DpstSchema;
 import com.misc.shafagh.loan.impl.LoanSchema;
-import java.util.Map;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
@@ -17,40 +19,47 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 @EnabledIfSystemProperty(named = "spring.profiles.active", matches = ".*oracle.*")
 class OracleSchemaTest extends AbstractScenarioSupport {
 
-    private static final Map<String, String> TABLES = Map.of(
-            BaseSchema.NAME, "SHFQ_BASE_CURRENCY",
-            CifSchema.NAME, "SHFQ_CIF_PERSON",
-            DpstSchema.NAME, "SHFQ_DPST_DEPOSIT",
-            LoanSchema.NAME, "SHFQ_LOAN_LOAN");
+    private static final List<SchemaObject> TABLES = List.of(
+            new SchemaObject(BaseSchema.NAME, "SHFQ_BASE_CURRENCY"),
+            new SchemaObject(CifSchema.NAME, "SHFQ_CIF_PERSON"),
+            new SchemaObject(DpstSchema.NAME, "SHFQ_DPST_DEPOSIT"),
+            new SchemaObject(DpstSchema.NAME, "PRODUCT_DEPOSIT"),
+            new SchemaObject(LoanSchema.NAME, "SHFQ_LOAN_LOAN"));
 
-    private static final Map<String, String> SEQUENCES = Map.of(
-            CifSchema.NAME, "SHFQ_CIF_PERSON_SEQ",
-            DpstSchema.NAME, "SHFQ_DPST_DEPOSIT_SEQ",
-            LoanSchema.NAME, "SHFQ_LOAN_LOAN_SEQ");
+    private static final List<SchemaObject> SEQUENCES = List.of(
+            new SchemaObject(CifSchema.NAME, "SHFQ_CIF_PERSON_SEQ"),
+            new SchemaObject(DpstSchema.NAME, "SHFQ_DPST_DEPOSIT_SEQ"),
+            new SchemaObject(DpstSchema.NAME, "PRODUCT_DEPOSIT_ID_SEQ"),
+            new SchemaObject(LoanSchema.NAME, "SHFQ_LOAN_LOAN_SEQ"));
+
+    private static final Set<String> SCHEMAS = TABLES.stream()
+            .map(SchemaObject::schema)
+            .collect(Collectors.toUnmodifiableSet());
 
     @Test
     void everyModuleTableLivesInTheSchemaOfItsOwnModule() {
-        TABLES.forEach((schema, table) -> {
+        TABLES.forEach(table -> {
             int count = jdbc.queryForObject(
-                    "SELECT COUNT(*) FROM ALL_TABLES WHERE OWNER = ? AND TABLE_NAME = ?", Integer.class, schema, table);
-            assertEquals(1, count, "table " + table + " must exist in schema " + schema
+                    "SELECT COUNT(*) FROM ALL_TABLES WHERE OWNER = ? AND TABLE_NAME = ?",
+                    Integer.class, table.schema(), table.name());
+            assertEquals(1, count, "table " + table.name() + " must exist in schema " + table.schema()
                     + " (and be visible to the connection user: check scripts/03-grants.sql)");
         });
     }
 
     @Test
     void everyModuleSequenceLivesInTheSchemaOfItsOwnModule() {
-        SEQUENCES.forEach((schema, sequence) -> {
+        SEQUENCES.forEach(sequence -> {
             int count = jdbc.queryForObject(
                     "SELECT COUNT(*) FROM ALL_SEQUENCES WHERE SEQUENCE_OWNER = ? AND SEQUENCE_NAME = ?",
-                    Integer.class, schema, sequence);
-            assertEquals(1, count, "sequence " + sequence + " must exist in schema " + schema);
+                    Integer.class, sequence.schema(), sequence.name());
+            assertEquals(1, count, "sequence " + sequence.name() + " must exist in schema " + sequence.schema());
         });
     }
 
     @Test
     void noForeignKeyCrossesSchemas_modulesAreLinkedOnlyThroughServices() {
-        String owners = "'" + String.join("','", TABLES.keySet()) + "'";
+        String owners = "'" + String.join("','", SCHEMAS) + "'";
         int crossing = jdbc.queryForObject(
                 "SELECT COUNT(*) FROM ALL_CONSTRAINTS WHERE CONSTRAINT_TYPE = 'R' AND OWNER IN (" + owners + ") "
                         + "AND R_OWNER <> OWNER", Integer.class);
@@ -65,4 +74,6 @@ class OracleSchemaTest extends AbstractScenarioSupport {
         assertEquals(1, rowCount(T_PERSON, person.id()));
         assertEquals(1, rowCount(T_DEPOSIT, deposit.id()));
     }
+
+    private record SchemaObject(String schema, String name) {}
 }

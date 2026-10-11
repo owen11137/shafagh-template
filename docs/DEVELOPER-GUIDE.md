@@ -23,6 +23,7 @@ shafagh-parent/
 ├── shafagh-<ماژول>/                 (pom تجمیعی، فقط ظرف)
 │   ├── shafagh-<ماژول>-api/         (اینترفیس سرویس + DTO)
 │   └── shafagh-<ماژول>-impl/        (<Module>Schema, entity, repository, service)
+├── shafagh-base/shafagh-base-persistence/ (زیرساخت مشترک persistence)
 ├── shafagh-orchestration/           (سناریوهای چندماژولی)
 ├── shafagh-architecture-tests/      (قوانین ArchUnit)
 ├── shafagh-app/                     (کلاس اصلی، تنظیمات، تست یکپارچه)
@@ -35,6 +36,23 @@ shafagh-parent/
 - `...<m>.api`: `XxxService` (اینترفیس) و `api.dto` (record و enum عمومی)
 - `...<m>.impl`: کلاس `<Module>Schema` (نام اسکیما)
 - `...<m>.impl.entity` / `impl.repository` / `impl.service`
+
+کلاس‌های زیرساختی مشترک JPA در `shafagh-base-persistence` با پکیج
+`com.misc.shafagh.base.persistence` قرار می‌گیرند. ماژول‌های `impl` می‌توانند به این
+زیرساخت وابسته شوند؛ Entity و Repository دامنه همچنان در `impl` ماژول صاحبشان
+می‌مانند. enum مشترک `ProductStatus` در `shafagh-base-api` است و وابستگی JPA ندارد.
+
+`BaseEntity` در همین زیرساخت، زمان/کاربر ایجاد و ویرایش و نسخهٔ خوش‌بینانهٔ
+`OPT_LOCK` را تعریف می‌کند. `TenantAwareEntity` از آن ارث می‌برد و شناسهٔ صندوق
+`FUND_ID` را با `@TenantId` به مدل اضافه می‌کند. auditing در `shafagh-app` فعال
+است و زمان‌ها خودکار پر می‌شوند. چون تمپلیت هنوز احراز هویت ندارد، فیلدهای
+`CREATED_BY` و `MODIFIED_BY` خالی می‌مانند؛ هنگام افزودن احراز هویت یک
+`AuditorAware<String>` از هویت واقعی کاربر معرفی کنید.
+
+تنظیم `shafagh.fund-id` از متغیر `FUND_ID` خوانده می‌شود و برای هر پروسه یک صندوق
+ثابت به Hibernate معرفی می‌کند. مقدار پیش‌فرض قالب ۱ است؛ در استقرار واقعی شناسهٔ
+صندوق را صریحاً تعیین کنید. این محدودسازی فقط برای کلاس‌های دارای `@TenantId`
+اعمال می‌شود؛ Entityهای بدون این annotation همچنان دادهٔ مشترک هستند.
 
 ## ۳. قوانین طلایی
 
@@ -157,6 +175,18 @@ mvn -pl shafagh-app spring-boot:run
 4. `scripts/04-grants-test-only.sql`: `DELETE` برای پاک‌کردن داده‌ی تست، **فقط روی دیتابیس توسعه/تست**
 
 `scripts/99-drop-all.sql` فقط برای پاک‌کردن دیتابیس توسعه/تست است.
+
+اگر دیتابیس از قبل ساخته شده، برای افزودن محصول سپرده فقط
+`scripts/05-add-product-deposit.sql` را یک‌بار اجرا کنید؛ این فایل جدول
+`SHFQ_DPST.PRODUCT_DEPOSIT`، sequence و دسترسی‌های لازم را می‌سازد.
+پس از نصب تازه با فایل‌های ۰۱ تا ۰۳، فایل ۰۵ را اجرا نکنید.
+برای پاک‌کردن دادهٔ تست محصول روی دیتابیس تست، فایل ۰۴ نیز لازم است.
+
+`ProductDepositEntity` و `ProductDepositRepository` در `shafagh-dpst-impl` هستند؛
+نوع سپرده (`DepositType`) در `shafagh-dpst-api` قرار دارد. وضعیت محصول و نوع سپرده
+مطابق مدل ورودی با `ORDINAL` ذخیره می‌شوند؛ ترتیب مقادیر enum را بدون migration
+عوض نکنید. محصول فعلاً تعریف مستقلی است و افتتاح سپرده هنوز به انتخاب محصول
+وصل نشده است.
 
 ### ۵-۱. تست‌ها (H2 و Oracle واقعی)
 

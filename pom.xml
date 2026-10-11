@@ -49,6 +49,11 @@
         </dependency>
         <dependency>
             <groupId>com.misc.shafagh</groupId>
+            <artifactId>shafagh-base-persistence</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.misc.shafagh</groupId>
             <artifactId>shafagh-cif-api</artifactId>
             <version>${project.version}</version>
         </dependency>

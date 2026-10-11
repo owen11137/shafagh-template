@@ -57,7 +57,8 @@ class ModuleArchitectureTest {
     @Test
     void apiPackagesAreFrameworkFree() {
         noClasses().that().resideInAPackage("..api..")
-                .should().dependOnClassesThat().resideInAnyPackage("jakarta.persistence..", "org.springframework..")
+                .should().dependOnClassesThat().resideInAnyPackage(
+                        "jakarta.persistence..", "org.springframework..", ROOT + ".base.persistence..")
                 .check(imported);
     }
 

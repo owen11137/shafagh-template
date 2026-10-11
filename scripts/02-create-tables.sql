@@ -38,6 +38,26 @@ CREATE TABLE SHFQ_DPST.SHFQ_DPST_DEPOSIT (
     ROW_VERSION    NUMBER(19)    DEFAULT 0 NOT NULL
 );
 
+CREATE SEQUENCE SHFQ_DPST.PRODUCT_DEPOSIT_ID_SEQ START WITH 1 INCREMENT BY 1;
+CREATE TABLE SHFQ_DPST.PRODUCT_DEPOSIT (
+    ID           NUMBER(19)      NOT NULL PRIMARY KEY,
+    FUND_ID      NUMBER(19)      NOT NULL,
+    TITLE        VARCHAR2(255),
+    CODE         NVARCHAR2(255)  NOT NULL UNIQUE,
+    DESCRIPTION  NVARCHAR2(255),
+    -- ORDINAL: ACTIVE = 0, INACTIVE = 1
+    STATUS       NUMBER(3),
+    -- ORDINAL: DEPOSIT1 = 0, DEPOSIT2 = 1
+    DEPOSIT_TYPE NUMBER(3)       NOT NULL,
+    FROM_DATE    TIMESTAMP(6),
+    TO_DATE      TIMESTAMP(6),
+    CREATED_BY   VARCHAR2(30),
+    CREATED_ON   TIMESTAMP(6),
+    MODIFIED_BY  VARCHAR2(30),
+    MODIFIED_ON  TIMESTAMP(6),
+    OPT_LOCK     NUMBER(19)      DEFAULT 0
+);
+
 -------------------------------------------------------------------------------
 -- SHFQ_LOAN
 -------------------------------------------------------------------------------
