@@ -20,6 +20,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>3.1.1</version>
+        </dependency>
+        <dependency>
             <groupId>com.misc.shafagh</groupId>
             <artifactId>shafagh-base-impl</artifactId>
         </dependency>
