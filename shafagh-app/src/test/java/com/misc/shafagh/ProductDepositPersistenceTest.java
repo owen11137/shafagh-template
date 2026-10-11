@@ -11,8 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.misc.shafagh.base.api.dto.ProductStatus;
 import com.misc.shafagh.dpst.api.dto.DepositType;
 import com.misc.shafagh.dpst.impl.DpstSchema;
-import com.misc.shafagh.dpst.impl.entity.ProductDepositEntity;
-import com.misc.shafagh.dpst.impl.repository.ProductDepositRepository;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.persistence.RollbackException;
