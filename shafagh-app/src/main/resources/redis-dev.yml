@@ -1,0 +1,5 @@
+singleServerConfig:
+  password: "eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81"
+  address: "redis://172.31.65.135:6379"
+threads: 16
+codec: !<org.redisson.codec.Kryo5Codec> { }

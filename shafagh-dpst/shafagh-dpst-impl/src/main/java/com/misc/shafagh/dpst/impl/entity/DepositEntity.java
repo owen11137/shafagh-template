@@ -1,7 +1,6 @@
 package com.misc.shafagh.dpst.impl.entity;
 
-import com.misc.shafagh.core.entity.TenantAwareEntity;
-import com.misc.shafagh.core.entity.party.CustomerEntity;
+import com.misc.shafagh.base.persistence.entity.TenantAwareEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -48,9 +47,8 @@ public class DepositEntity extends TenantAwareEntity {
     @Comment("توضیحات")
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "CUSTOMER_ID", referencedColumnName = "ID", nullable = false)
+    @Column(name = "CUSTOMER_ID")
     @Comment("شناسه مشتری صاحب سپرده")
-    private CustomerEntity customer;
+    private long customerId;
 
 }

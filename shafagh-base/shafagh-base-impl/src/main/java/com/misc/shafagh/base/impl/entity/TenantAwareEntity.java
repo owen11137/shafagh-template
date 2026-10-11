@@ -1,5 +1,6 @@
-package com.misc.shafagh.base.persistence.entity;
+package com.misc.shafagh.base.impl.entity;
 
+import com.misc.infra.framework4.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
@@ -13,13 +14,14 @@ import org.hibernate.annotations.TenantId;
  * that operates several licensed entities or a shared platform serving several
  * banks).
  * <p>
- * {@code fundId} is stamped by Hibernate's discriminator-based multi-tenancy
- * from the current {@code CurrentTenantIdentifierResolver} on insert. Hibernate
- * entity queries are scoped to that tenant while sharing the same physical schema.
- * Native SQL and JDBC access must supply their own tenant restrictions.
+ * {@code institutionId} is stamped by Hibernate's discriminator-based multi-tenancy
+ * from the current {@code CurrentTenantIdentifierResolver} on insert, and every
+ * query against a subclass is transparently filtered to that tenant - this is what
+ * gives each institution complete data isolation from the others while sharing the
+ * same physical schema.
  * <p>
  * Pure reference/master data that is intentionally shared across every institution
- * (e.g. country and city reference data) should extend {@link BaseEntity}
+ * (e.g. {@code CountryEntity}, {@code CityEntity}) should extend {@link com.misc.infra.framework4.entity.BaseEntity}
  * directly instead, bypassing tenant filtering.
  *
  * @author core-banking-party-model
