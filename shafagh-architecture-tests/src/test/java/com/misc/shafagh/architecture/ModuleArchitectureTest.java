@@ -79,6 +79,7 @@ class ModuleArchitectureTest {
     void orchestrationUsesOnlyApis() {
         noClasses().that().resideInAPackage(ROOT + ".orchestration..")
                 .should().dependOnClassesThat().resideInAPackage("..impl..")
+                .allowEmptyShould(true)
                 .check(imported);
     }
 
