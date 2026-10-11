@@ -40,12 +40,14 @@ public class SecurityConfig {
 
         if (jwtDecoder == null) {
             // Do not expose endpoints without an active, configured JWT verifier.
-            http.authorizeHttpRequests(registry -> registry.anyRequest().denyAll());
+            http.authorizeHttpRequests(registry -> registry
+                    .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs", "/v3/api-docs/**", "/v3/api-docs.yaml").permitAll()
+                    .anyRequest().denyAll());
         } else {
             JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
             converter.setJwtGrantedAuthoritiesConverter(keycloakRealmRoleConverter);
             http.authorizeHttpRequests(registry -> registry
-                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/configuration/**").permitAll()
+                    .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs", "/v3/api-docs/**", "/v3/api-docs.yaml", "/configuration/**").permitAll()
                     .anyRequest().authenticated());
             http.oauth2ResourceServer(resource -> resource.jwt(jwt -> jwt
                     .decoder(jwtDecoder)
