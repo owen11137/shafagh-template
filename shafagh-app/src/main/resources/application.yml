@@ -8,4 +8,4 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: none   # جدول‌ها با اسکریپت scripts/02-create-tables.sql ساخته می‌شوند
+      ddl-auto: ${DB_DDL_AUTO:none} # Production: none or validate; never update/create
