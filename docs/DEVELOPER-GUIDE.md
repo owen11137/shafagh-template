@@ -430,8 +430,8 @@ CITY از قبل در BASE بوده است. جدول‌ها و داده‌های
 همان ماژول متصل‌اند. Entityهای فعلی schema جدول و Sequence را صریحاً از
 `SchemaName` می‌گیرند. Entity جدید را در پیاده‌سازی ماژول مربوط قرار دهید و برای
 جدول و Sequence از ثابت همان ماژول استفاده کنید. کلاس‌های `@MappedSuperclass`
-در common جدول مستقلی ندارند. ماژول loan فعلاً Entity ندارد؛ اتصال آن آماده است
-ولی تا اضافه شدن Entity، جدولی برای آن ساخته نمی‌شود.
+در common جدول مستقلی ندارند. ماژول loan شامل Entityهای محصول، وام و شخص مرتبط با وام است؛ جدول‌های آن‌ها
+با اتصال مستقل LOAN ساخته می‌شوند.
 
 با `spring.jpa.hibernate.ddl-auto=update`، Hibernate در شروع برنامه جدول‌ها و
 Sequenceهای مفقود را با کاربر مالک هر اسکیما ایجاد می‌کند. خطای DDL باعث شکست
@@ -518,3 +518,29 @@ Java همچنان 21 است. `clean install` و هر ۱۵ تست شامل مست
 هنگام اضافه کردن مسیر یا DTO جدید، توضیح مربوط را در customizer توسعه دهید.
 تست HTTP مستندات، شرح تمام ۲۱ عملیات فعلی، توضیح DTOها، جدا بودن مسیرهای گروه‌ها
 و یکسان بودن توضیحات سند اصلی و سند گروه BASE را بررسی می‌کند.
+
+
+## مدل‌های تسهیلات LOAN
+
+`LoanEntity`، `LoanPersonEntity` و `ProductLoanEntity` در
+`shafagh-loan-impl` و پکیج `com.misc.shafagh.loan.impl.entity` قرار دارند.
+هر سه از `TenantAwareEntity` در common و به‌طور غیرمستقیم از `BaseEntity`
+ارث می‌برند؛ fundId، تاریخ‌های auditing و version از کلاس‌های مشترک گرفته می‌شوند.
+جدول‌ها و Sequenceها صریحاً `SchemaName.LOAN` دارند و اتصال مستقل LOAN آن‌ها را
+هنگام اجرا ایجاد می‌کند. شخص وام به LoanEntity در همان ماژول مرتبط است؛ مشتری
+با `customerId` به CIF اشاره می‌کند و وابستگی به Entity یا Repository ماژول CIF
+ندارد. هنگام افزودن سرویس ثبت، وجود مشتری را از طریق API ماژول CIF بررسی کنید.
+
+`ProductStatus` از common استفاده می‌شود. enumهای LoanType، LoanStatus،
+LoanPersonType و CollateralType مخصوص مدل داخلی تسهیلات‌اند. وضعیت داخلی وام
+ارائه‌شده در فایل ارسالی، قرارداد موجود `loan.api.dto.LoanStatus` را تغییر
+نمی‌دهد؛ تبدیل بین قرارداد API و وضعیت داخلی باید در سرویس/mapper مشخص شود.
+مقادیر enumهای ارسالی و ترتیب ذخیره ORDINAL حفظ شده‌اند؛ ترتیب enum را برای
+دیتابیس دارای داده بدون مهاجرت تغییر ندهید. LoanPersonType فعلاً فقط OWNER دارد.
+
+`ModulePersistenceConfigurationTest` ساخت هر سه جدول و Sequenceهای آن‌ها در
+اسکیما LOAN، ارتباط شخص و وام، نوع و شماره وثیقه، متن فارسی محصول، مبلغ دقیق،
+ثبت و ویرایش وضعیت، version/auditing و جداسازی tenant را روی اتصال مستقل H2
+بررسی می‌کند. این کلاس‌ها به‌تنهایی endpoint REST ایجاد نمی‌کنند؛ گروه Swagger
+LOAN تا اضافه‌شدن Controller همچنان خالی است. اجرای واقعی Oracle در این بررسی
+انجام نشده است.

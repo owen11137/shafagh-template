@@ -38,6 +38,8 @@ class ModulePersistenceConfigurationTest {
     @Autowired private CustomerRealService customers;
     @Autowired @Qualifier("dpstTransactionManager") private PlatformTransactionManager dpstTransactions;
     @PersistenceContext(unitName="dpst") private EntityManager dpst;
+    @Autowired @Qualifier("loanTransactionManager") private PlatformTransactionManager loanTransactions;
+    @PersistenceContext(unitName="loan") private EntityManager loan;
 
     @DynamicPropertySource
     static void databases(DynamicPropertyRegistry registry) {
@@ -78,6 +80,7 @@ class ModulePersistenceConfigurationTest {
         assertFalse(factories.get("baseEntityManagerFactory").getMetamodel().getEntities().isEmpty());
         assertFalse(factories.get("cifEntityManagerFactory").getMetamodel().getEntities().isEmpty());
         assertFalse(factories.get("dpstEntityManagerFactory").getMetamodel().getEntities().isEmpty());
+        assertEquals(3, factories.get("loanEntityManagerFactory").getMetamodel().getEntities().size());
     }
 
     @Test
@@ -105,5 +108,60 @@ class ModulePersistenceConfigurationTest {
             ProductDepositEntity stored=dpst.find(ProductDepositEntity.class,productId);
             assertEquals(43L,stored.getFundId());assertNotNull(stored.getCreatedOn());
         });
+    }
+    @Test
+    void loanModelsPersistInLoanUnitWithAuditingVersionAndTenantIsolation() {
+        var transactions = new TransactionTemplate(loanTransactions);
+        Long[] ids = transactions.execute(status -> {
+            var product = new com.misc.shafagh.loan.impl.entity.ProductLoanEntity();
+            product.setCode("L-" + UUID.randomUUID().toString().substring(0, 12));
+            product.setTitle("محصول تسهیلات قرض الحسنه");
+            product.setStatus(ProductStatus.ACTIVE);
+            product.setProductType(com.misc.shafagh.loan.impl.entity.LoanType.ADI);
+            product.setEarlySettlementAllowed(true);
+            product.setMinAmount(new java.math.BigDecimal("1000.00"));
+            product.setMaxAmount(new java.math.BigDecimal("100000.00"));
+            product.setMinInstallmentCount(1); product.setMaxInstallmentCount(24);
+            loan.persist(product);
+            var entity = new com.misc.shafagh.loan.impl.entity.LoanEntity();
+            entity.setLoanNumber(UUID.randomUUID().toString()); entity.setProductCode(product.getCode());
+            entity.setAmount(new java.math.BigDecimal("5000.25")); entity.setInstallmentCount(12);
+            entity.setFeeRate(new java.math.BigDecimal("4.00"));
+            entity.setLoanStatus(com.misc.shafagh.loan.impl.entity.LoanStatus.OPN);
+            loan.persist(entity);
+            var person = new com.misc.shafagh.loan.impl.entity.LoanPersonEntity();
+            person.setLoan(entity); person.setCustomerId(100L);
+            person.setCollateralType(com.misc.shafagh.loan.impl.entity.CollateralType.CHEQUE);
+            person.setCollateralNumber("CHEQUE-123");
+            loan.persist(person); loan.flush();
+            return new Long[]{product.getId(), entity.getId(), person.getId()};
+        });
+        transactions.executeWithoutResult(status -> {
+            var product = loan.find(com.misc.shafagh.loan.impl.entity.ProductLoanEntity.class, ids[0]);
+            var entity = loan.find(com.misc.shafagh.loan.impl.entity.LoanEntity.class, ids[1]);
+            assertEquals("محصول تسهیلات قرض الحسنه", product.getTitle());
+            assertEquals(43L, product.getFundId()); assertNotNull(product.getCreatedOn());
+            assertEquals(43L, entity.getFundId()); assertNotNull(entity.getCreatedOn());
+            var person = loan.find(com.misc.shafagh.loan.impl.entity.LoanPersonEntity.class, ids[2]);
+            assertEquals(43L, person.getFundId()); assertNotNull(person.getCreatedOn());
+            assertEquals(100L, person.getCustomerId()); assertEquals(entity.getId(), person.getLoan().getId());
+            assertEquals(com.misc.shafagh.loan.impl.entity.LoanPersonType.OWNER, person.getLoanPersonType());
+            assertEquals(com.misc.shafagh.loan.impl.entity.CollateralType.CHEQUE, person.getCollateralType());
+            assertEquals("CHEQUE-123", person.getCollateralNumber());
+            assertEquals(0L, entity.getVersion());
+            assertEquals(0, new java.math.BigDecimal("5000.25").compareTo(entity.getAmount()));
+            entity.setLoanStatus(com.misc.shafagh.loan.impl.entity.LoanStatus.ACT);
+            loan.flush();
+        });
+        transactions.executeWithoutResult(status -> {
+            var entity = loan.find(com.misc.shafagh.loan.impl.entity.LoanEntity.class, ids[1]);
+            assertEquals(1L, entity.getVersion()); assertNotNull(entity.getModifiedOn());
+            assertEquals(com.misc.shafagh.loan.impl.entity.LoanStatus.ACT, entity.getLoanStatus());
+        });
+        var factory = factories.get("loanEntityManagerFactory").unwrap(org.hibernate.SessionFactory.class);
+        try (var anotherTenant = factory.withOptions().tenantIdentifier(99L).openSession()) {
+            assertTrue(anotherTenant.createQuery("from Loan", com.misc.shafagh.loan.impl.entity.LoanEntity.class)
+                    .getResultList().isEmpty());
+        }
     }
 }
