@@ -1,5 +1,6 @@
 package com.misc.shafagh.dpst.impl.entity;
 
+import com.misc.shafagh.common.SchemaName;
 import com.misc.shafagh.common.product.ProductStatus;
 import com.misc.shafagh.common.persistence.TenantAwareEntity;
 import jakarta.persistence.*;
@@ -11,7 +12,7 @@ import org.hibernate.annotations.Nationalized;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "PRODUCT_DEPOSIT")
+@Table(name = "PRODUCT_DEPOSIT", schema = SchemaName.DPST)
 @Comment("جدول محصولات سپرده")
 @SequenceGenerator(name = "PRODUCT_DEPOSIT_ID_SEQ", sequenceName = "PRODUCT_DEPOSIT_ID_SEQ", allocationSize = 1)
 @Data

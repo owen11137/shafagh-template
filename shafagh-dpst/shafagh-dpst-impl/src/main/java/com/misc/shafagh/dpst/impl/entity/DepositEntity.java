@@ -1,5 +1,6 @@
 package com.misc.shafagh.dpst.impl.entity;
 
+import com.misc.shafagh.common.SchemaName;
 import com.misc.shafagh.common.persistence.TenantAwareEntity;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -10,7 +11,7 @@ import java.math.BigDecimal;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity(name = "Deposit")
-@Table(name = "DEPOSIT")
+@Table(name = "DEPOSIT", schema = SchemaName.DPST)
 @Comment("جدول سپرده‌ها")
 @SequenceGenerator(name = "DEPOSIT_ID_SEQ", sequenceName = "DEPOSIT_ID_SEQ", allocationSize = 1)
 @Data

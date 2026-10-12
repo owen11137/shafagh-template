@@ -1,0 +1,20 @@
+package com.misc.shafagh.cif.impl.dto.mapper;
+
+import com.misc.shafagh.cif.impl.dto.response.SignatureDto;
+import com.misc.shafagh.cif.impl.entity.SignatureEntity;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+import java.util.List;
+
+/**
+ * فقط جهت خواندن (Entity -> DTO). ساخت و ویرایش امضا در CustomerSignatureHelper انجام می‌شود.
+ */
+@Mapper(componentModel = "spring")
+public interface SignatureMapper {
+
+    @Mapping(target = "customerId", source = "customer.id")
+    SignatureDto toDto(SignatureEntity entity);
+
+    List<SignatureDto> toDtos(List<SignatureEntity> entities);
+}
