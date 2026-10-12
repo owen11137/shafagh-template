@@ -53,8 +53,8 @@ public class ModulePersistenceConfiguration {
         properties.put("hibernate.default_schema", switch (module) {
             case "base" -> SchemaName.BASE;
             case "cif" -> SchemaName.CIF;
-            case "dpst" -> SchemaName.DPST;
-            case "loan" -> SchemaName.LOAN;
+            case "dpst" -> SchemaName.DP;
+            case "loan" -> SchemaName.LN;
             default -> throw new IllegalArgumentException("Unknown persistence module: " + module);
         });
         properties.put("hibernate.hbm2ddl.auto", environment.getProperty("spring.jpa.hibernate.ddl-auto", "update"));

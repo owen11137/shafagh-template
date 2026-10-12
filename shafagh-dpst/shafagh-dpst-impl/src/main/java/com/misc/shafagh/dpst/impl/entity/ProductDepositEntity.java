@@ -12,9 +12,9 @@ import org.hibernate.annotations.Nationalized;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "PRODUCT_DEPOSIT", schema = SchemaName.DPST)
+@Table(name = "PRODUCT_DEPOSIT", schema = SchemaName.DP)
 @Comment("جدول محصولات سپرده")
-@SequenceGenerator(name = "PRODUCT_DEPOSIT_ID_SEQ", schema = SchemaName.DPST, sequenceName = "PRODUCT_DEPOSIT_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "PRODUCT_DEPOSIT_ID_SEQ", schema = SchemaName.DP, sequenceName = "PRODUCT_DEPOSIT_ID_SEQ", allocationSize = 1)
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 public class ProductDepositEntity extends TenantAwareEntity {

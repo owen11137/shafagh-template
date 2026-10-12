@@ -14,9 +14,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity(name = "ProductLoan")
-@Table(name = "PRODUCT_LOAN", schema = SchemaName.LOAN)
+@Table(name = "PRODUCT_LOAN", schema = SchemaName.LN)
 @Comment("جدول محصولات وام")
-@SequenceGenerator(schema = SchemaName.LOAN, name = "PRODUCT_LOAN_SEQUENCE", sequenceName = "PRODUCT_LOAN_SEQUENCE", allocationSize = 1)
+@SequenceGenerator(schema = SchemaName.LN, name = "PRODUCT_LOAN_SEQUENCE", sequenceName = "PRODUCT_LOAN_SEQUENCE", allocationSize = 1)
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)

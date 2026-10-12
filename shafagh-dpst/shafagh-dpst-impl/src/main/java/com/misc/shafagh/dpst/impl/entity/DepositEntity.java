@@ -11,9 +11,9 @@ import java.math.BigDecimal;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity(name = "Deposit")
-@Table(name = "DEPOSIT", schema = SchemaName.DPST)
+@Table(name = "DEPOSIT", schema = SchemaName.DP)
 @Comment("جدول سپرده‌ها")
-@SequenceGenerator(name = "DEPOSIT_ID_SEQ", schema = SchemaName.DPST, sequenceName = "DEPOSIT_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "DEPOSIT_ID_SEQ", schema = SchemaName.DP, sequenceName = "DEPOSIT_ID_SEQ", allocationSize = 1)
 @Data
 public class DepositEntity extends TenantAwareEntity {
     @Id

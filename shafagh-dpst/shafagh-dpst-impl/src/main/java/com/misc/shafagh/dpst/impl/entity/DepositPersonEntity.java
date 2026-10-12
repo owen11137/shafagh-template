@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "DEPOSIT_PERSON", schema = SchemaName.DPST)
+@Table(name = "DEPOSIT_PERSON", schema = SchemaName.DP)
 @Comment("جدول اشخاص مرتبط با سپرده")
-@SequenceGenerator(name = "DEPOSIT_PERSON_ID_SEQ", schema = SchemaName.DPST, sequenceName = "DEPOSIT_PERSON_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "DEPOSIT_PERSON_ID_SEQ", schema = SchemaName.DP, sequenceName = "DEPOSIT_PERSON_ID_SEQ", allocationSize = 1)
 @Data
 public class DepositPersonEntity extends TenantAwareEntity {
 

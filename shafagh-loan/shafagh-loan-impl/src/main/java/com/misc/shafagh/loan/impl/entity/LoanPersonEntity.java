@@ -10,9 +10,9 @@ import org.hibernate.annotations.Comment;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @Entity(name = "LoanPerson")
-@Table(name = "LOAN_PERSON", schema = SchemaName.LOAN)
+@Table(name = "LOAN_PERSON", schema = SchemaName.LN)
 @Comment("جدول اشخاص مرتبط با وام")
-@SequenceGenerator(schema = SchemaName.LOAN, name = "LOAN_PERSON_ID_SEQ", sequenceName = "LOAN_PERSON_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(schema = SchemaName.LN, name = "LOAN_PERSON_ID_SEQ", sequenceName = "LOAN_PERSON_ID_SEQ", allocationSize = 1)
 @Getter
 @Setter
 public class LoanPersonEntity extends TenantAwareEntity {

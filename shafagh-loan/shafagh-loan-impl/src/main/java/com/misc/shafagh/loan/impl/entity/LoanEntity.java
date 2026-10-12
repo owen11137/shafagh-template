@@ -12,9 +12,9 @@ import java.math.BigDecimal;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @Entity(name = "Loan")
-@Table(name = "LOAN", schema = SchemaName.LOAN)
+@Table(name = "LOAN", schema = SchemaName.LN)
 @Comment("جدول وام‌ها (تسهیلات)")
-@SequenceGenerator(schema = SchemaName.LOAN, name = "LOAN_ID_SEQ", sequenceName = "LOAN_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(schema = SchemaName.LN, name = "LOAN_ID_SEQ", sequenceName = "LOAN_ID_SEQ", allocationSize = 1)
 @Getter
 @Setter
 public class LoanEntity extends TenantAwareEntity {
