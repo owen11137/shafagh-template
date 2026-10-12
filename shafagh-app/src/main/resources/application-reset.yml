@@ -1,0 +1,10 @@
+# TEST/DEVELOPMENT ONLY: every startup with this profile permanently removes data.
+# Owners and their grants are preserved. Hibernate rebuilds current mapped objects.
+shafagh:
+  persistence:
+    module-datasources: true
+    reset-schema-on-startup: true
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update

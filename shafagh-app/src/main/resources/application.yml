@@ -16,6 +16,7 @@ shafagh:
   fund-id: ${FUND_ID:1}
   persistence:
     module-datasources: true
+    reset-schema-on-startup: false
     base:
       url: ${BASE_DB_URL:${spring.datasource.url}}
       username: ${BASE_DB_USERNAME:shfq_base}

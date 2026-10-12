@@ -47,3 +47,13 @@ already authorized and does not require another confirmation.
   only Java annotations. Oracle DDL generation is not a live Oracle integration
   test; report the distinction.
 - Do not add package-info.java files; the user requested their removal.
+
+## Test reset authorization
+
+The user explicitly confirmed these four schemas are disposable test schemas.
+The application offers an opt-in `reset` Spring profile that drops their tables
+and sequences and then recreates mapped objects. Normal startup must keep reset
+turned off. Do not enable reset globally or use it in production. For a requested
+test reset, reuse this authorization and the existing profile; do not ask the same
+confirmation again. Report whether the real database was reached/reset or only
+local H2/offline tests ran. Never claim the user's Oracle was cleared from tests.

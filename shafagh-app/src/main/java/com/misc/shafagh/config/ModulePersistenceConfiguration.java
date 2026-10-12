@@ -2,6 +2,7 @@ package com.misc.shafagh.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import com.misc.shafagh.common.SchemaName;
+import com.misc.shafagh.config.persistence.TestSchemaReset;
 import java.util.HashMap;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -12,6 +13,7 @@ import org.springframework.boot.hibernate.autoconfigure.HibernatePropertiesCusto
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -40,6 +42,14 @@ public class ModulePersistenceConfiguration {
         source.setPassword(environment.getRequiredProperty(prefix + "password"));
         source.setDriverClassName(environment.getProperty(prefix + "driver-class-name", "oracle.jdbc.OracleDriver"));
         source.setMaximumPoolSize(environment.getProperty(prefix + "maximum-pool-size", Integer.class, 5));
+        if (environment.getProperty("shafagh.persistence.reset-schema-on-startup", Boolean.class, false)) {
+            try {
+                TestSchemaReset.reset(source, schema(module));
+            } catch (RuntimeException exception) {
+                source.close();
+                throw exception;
+            }
+        }
         return source;
     }
 
@@ -50,13 +60,7 @@ public class ModulePersistenceConfiguration {
         factory.setPackagesToScan("com.misc.shafagh." + module + ".impl");
         factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         Map<String, Object> properties = new HashMap<>();
-        properties.put("hibernate.default_schema", switch (module) {
-            case "base" -> SchemaName.BASE;
-            case "cif" -> SchemaName.CIF;
-            case "dpst" -> SchemaName.DP;
-            case "loan" -> SchemaName.LN;
-            default -> throw new IllegalArgumentException("Unknown persistence module: " + module);
-        });
+        properties.put("hibernate.default_schema", schema(module));
         properties.put("hibernate.hbm2ddl.auto", environment.getProperty("spring.jpa.hibernate.ddl-auto", "update"));
         // Fail startup when schema permissions or DDL are wrong, rather than silently losing tables.
         properties.put("hibernate.hbm2ddl.halt_on_error", true);
@@ -66,10 +70,21 @@ public class ModulePersistenceConfiguration {
         return factory;
     }
 
+    private static String schema(String module) {
+        return switch (module) {
+            case "base" -> SchemaName.BASE;
+            case "cif" -> SchemaName.CIF;
+            case "dpst" -> SchemaName.DP;
+            case "loan" -> SchemaName.LN;
+            default -> throw new IllegalArgumentException("Unknown persistence module: " + module);
+        };
+    }
+
     @Bean(name = "baseDataSource", destroyMethod = "close")
     HikariDataSource baseDataSource() { return dataSource("base"); }
 
     @Bean(name = "baseEntityManagerFactory")
+    @DependsOn({"baseDataSource", "cifDataSource", "dpstDataSource", "loanDataSource"})
     LocalContainerEntityManagerFactoryBean baseEntityManagerFactory(
             @Qualifier("baseDataSource") DataSource source) {
         return entityManagerFactory("base", source);
@@ -93,6 +108,7 @@ public class ModulePersistenceConfiguration {
 
     @Bean(name = {"cifEntityManagerFactory", "entityManagerFactory"})
     @Primary
+    @DependsOn({"baseDataSource", "cifDataSource", "dpstDataSource", "loanDataSource"})
     LocalContainerEntityManagerFactoryBean cifEntityManagerFactory(
             @Qualifier("cifDataSource") DataSource source) {
         return entityManagerFactory("cif", source);
@@ -115,6 +131,7 @@ public class ModulePersistenceConfiguration {
     HikariDataSource dpstDataSource() { return dataSource("dpst"); }
 
     @Bean(name = "dpstEntityManagerFactory")
+    @DependsOn({"baseDataSource", "cifDataSource", "dpstDataSource", "loanDataSource"})
     LocalContainerEntityManagerFactoryBean dpstEntityManagerFactory(
             @Qualifier("dpstDataSource") DataSource source) {
         return entityManagerFactory("dpst", source);
@@ -136,6 +153,7 @@ public class ModulePersistenceConfiguration {
     HikariDataSource loanDataSource() { return dataSource("loan"); }
 
     @Bean(name = "loanEntityManagerFactory")
+    @DependsOn({"baseDataSource", "cifDataSource", "dpstDataSource", "loanDataSource"})
     LocalContainerEntityManagerFactoryBean loanEntityManagerFactory(
             @Qualifier("loanDataSource") DataSource source) {
         return entityManagerFactory("loan", source);
