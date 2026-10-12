@@ -210,4 +210,31 @@ class ModulePersistenceConfigurationTest {
             assertEquals(com.misc.shafagh.loan.impl.entity.installment.InstallmentStatus.PSP, installment.getInstallmentStatus());
         });
     }
+    @Test
+    void databaseConstraintsUseReadableNamesInEveryModule() {
+        for (String module : List.of("base", "cif", "dpst", "loan")) {
+            String schema = "SHFQ_" + module.toUpperCase();
+            var jdbc = new JdbcTemplate(sources.get(module + "DataSource"));
+            var constraints = jdbc.queryForList("select TABLE_NAME, CONSTRAINT_NAME, CONSTRAINT_TYPE from INFORMATION_SCHEMA.TABLE_CONSTRAINTS where CONSTRAINT_SCHEMA=?", schema);
+            assertFalse(constraints.isEmpty(), module);
+            for (var row : constraints) {
+                String type = row.get("CONSTRAINT_TYPE").toString();
+                String name = row.get("CONSTRAINT_NAME").toString();
+                String table = row.get("TABLE_NAME").toString();
+                switch (type) {
+                    case "PRIMARY KEY" -> assertEquals("PK_" + table, name);
+                    case "FOREIGN KEY" -> assertTrue(name.startsWith("FK_" + table + "_"), name);
+                    case "UNIQUE" -> assertTrue(name.startsWith("UK_" + table + "_"), name);
+                    case "CHECK" -> assertTrue(name.startsWith("CHK_" + table + "_"), name);
+                    default -> fail("Unknown constraint type " + type);
+                }
+            }
+            for (var entity : factories.get(module + "EntityManagerFactory").getMetamodel().getEntities()) {
+                var sequence = entity.getJavaType().getAnnotation(jakarta.persistence.SequenceGenerator.class);
+                String table = entity.getJavaType().getAnnotation(Table.class).name();
+                assertEquals("SEQ_" + table + "_ID", sequence.sequenceName());
+                assertTrue(sequence.sequenceName().length() <= 50);
+            }
+        }
+    }
 }

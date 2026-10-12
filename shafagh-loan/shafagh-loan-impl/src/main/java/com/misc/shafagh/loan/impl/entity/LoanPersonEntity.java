@@ -12,14 +12,14 @@ import org.hibernate.annotations.Comment;
 @Entity(name = "LoanPerson")
 @Table(name = "LOAN_PERSON", schema = SchemaName.LN)
 @Comment("جدول اشخاص مرتبط با وام")
-@SequenceGenerator(schema = SchemaName.LN, name = "LOAN_PERSON_ID_SEQ", sequenceName = "LOAN_PERSON_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(schema = SchemaName.LN, name = "SEQ_LOAN_PERSON_ID", sequenceName = "SEQ_LOAN_PERSON_ID", allocationSize = 1)
 @Getter
 @Setter
 public class LoanPersonEntity extends TenantAwareEntity {
 
     @Id
     @Column(name = "ID", columnDefinition = "number(19,0)")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "LOAN_PERSON_ID_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_LOAN_PERSON_ID")
     @EqualsAndHashCode.Include
     @Comment("شناسه یکتای شخص وام")
     private Long id;
@@ -30,7 +30,7 @@ public class LoanPersonEntity extends TenantAwareEntity {
     private Long customerId;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "LOAN_ID", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "LOAN_ID", referencedColumnName = "ID", nullable = false, foreignKey = @ForeignKey(name = "FK_LOAN_PERSON_LOAN"))
     @Comment("شناسه وام")
     private LoanEntity loan;
 

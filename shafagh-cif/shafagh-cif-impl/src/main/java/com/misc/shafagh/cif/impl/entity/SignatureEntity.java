@@ -14,14 +14,14 @@ import java.util.Date;
 
 @Entity
 @Table(schema = SchemaName.CIF, name = "SIGNATURE")
-@SequenceGenerator(name = "SIGNATURE_ID_SEQ", schema = SchemaName.CIF, sequenceName = "SIGNATURE_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "SEQ_SIGNATURE_ID", schema = SchemaName.CIF, sequenceName = "SEQ_SIGNATURE_ID", allocationSize = 1)
 @Getter
 @Setter
 public class SignatureEntity extends TenantAwareEntity {
 
     @Id
     @Column(name = "ID", columnDefinition = "number(19,0)")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SIGNATURE_ID_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_SIGNATURE_ID")
     private Long id;
 
     @Temporal(TemporalType.DATE)

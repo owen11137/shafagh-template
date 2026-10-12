@@ -15,20 +15,20 @@ import java.time.LocalDateTime;
 @Entity(name = "InstallmentDetail")
 @Table(name = "INSTALLMENT_DETAIL", schema = SchemaName.LN)
 @Comment("جدول جزئیات پرداخت اقساط")
-@SequenceGenerator(schema = SchemaName.LN, name = "INSTALLMENT_DETAIL_SEQUENCE", sequenceName = "INSTALLMENT_DETAIL_SEQUENCE", allocationSize = 1)
+@SequenceGenerator(schema = SchemaName.LN, name = "SEQ_INSTALLMENT_DETAIL_ID", sequenceName = "SEQ_INSTALLMENT_DETAIL_ID", allocationSize = 1)
 @Getter
 @Setter
 public class InstallmentDetailEntity extends TenantAwareEntity {
 
     @Id
     @Column(name = "ID", columnDefinition = "number(19,0)")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "INSTALLMENT_DETAIL_SEQUENCE")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_INSTALLMENT_DETAIL_ID")
     @EqualsAndHashCode.Include
     @Comment("شناسه یکتای جزئیات قسط")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "LOAN_ID", referencedColumnName = "ID")
+    @JoinColumn(name = "LOAN_ID", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_INSTALLMENT_DETAIL_LOAN"))
     @Comment("شناسه وام")
     private LoanEntity loan;
 

@@ -10,8 +10,8 @@
 |---|---|---|---|
 | اطلاعات پایه و مشترک | `com.misc.shafagh.base` | `SHFQ_BASE` | `SchemaName.BASE` |
 | اشخاص | `com.misc.shafagh.cif` | `SHFQ_CIF` | `SchemaName.CIF` |
-| سپرده | `com.misc.shafagh.dpst` | `SHFQ_DPST` | `SchemaName.DPST` |
-| تسهیلات | `com.misc.shafagh.loan` | `SHFQ_LOAN` | `SchemaName.LOAN` |
+| سپرده | `com.misc.shafagh.dpst` | `SHFQ_DPST` | `SchemaName.DP` |
+| تسهیلات | `com.misc.shafagh.loan` | `SHFQ_LOAN` | `SchemaName.LN` |
 
 جهت وابستگی ثابت است: `base ← cif ← dpst ← loan`. یعنی base به هیچ ماژولی وابسته نیست، cif فقط به base، و به همین ترتیب. وابستگی برعکس یا حلقه ممنوع است.
 
@@ -140,10 +140,10 @@ class LoanServiceImpl implements LoanService {
 import com.misc.shafagh.common.SchemaName;
 
 @Entity
-@Table(schema = SchemaName.DPST, name = "SHFQ_DPST_DEPOSIT")
+@Table(schema = SchemaName.DP, name = "SHFQ_DPST_DEPOSIT")
 public class DepositEntity { ... }
 
-@SequenceGenerator(name = "...", schema = SchemaName.DPST, sequenceName = "SHFQ_DPST_DEPOSIT_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "...", schema = SchemaName.DP, sequenceName = "SHFQ_DPST_DEPOSIT_SEQ", allocationSize = 1)
 ```
 
 - نام اسکیماها در همه‌ی محیط‌ها یکی است.
@@ -526,7 +526,7 @@ Java همچنان 21 است. `clean install` و هر ۱۵ تست شامل مست
 `shafagh-loan-impl` و پکیج `com.misc.shafagh.loan.impl.entity` قرار دارند.
 هر سه از `TenantAwareEntity` در common و به‌طور غیرمستقیم از `BaseEntity`
 ارث می‌برند؛ fundId، تاریخ‌های auditing و version از کلاس‌های مشترک گرفته می‌شوند.
-جدول‌ها و Sequenceها صریحاً `SchemaName.LOAN` دارند و اتصال مستقل LOAN آن‌ها را
+جدول‌ها و Sequenceها صریحاً `SchemaName.LN` دارند و اتصال مستقل LOAN آن‌ها را
 هنگام اجرا ایجاد می‌کند. شخص وام به LoanEntity در همان ماژول مرتبط است؛ مشتری
 با `customerId` به CIF اشاره می‌کند و وابستگی به Entity یا Repository ماژول CIF
 ندارد. هنگام افزودن سرویس ثبت، وجود مشتری را از طریق API ماژول CIF بررسی کنید.
@@ -550,7 +550,7 @@ LOAN تا اضافه‌شدن Controller همچنان خالی است. اجرا�
 مدل‌های `InstallmentEntity`، `InstallmentDetailEntity`، `InstallmentType` و
 `InstallmentStatus` در پکیج `loan.impl.entity.installment` قرار دارند.
 جدول‌های `INSTALLMENT` و `INSTALLMENT_DETAIL` و Sequenceهای
-`INSTALLMENT_SEQUENCE` و `INSTALLMENT_DETAIL_SEQUENCE` از `SchemaName.LOAN`
+`SEQ_INSTALLMENT_ID` و `SEQ_INSTALLMENT_DETAIL_ID` از `SchemaName.LN`
 استفاده می‌کنند. scan موجود LOAN زیرپکیج installment را نیز پوشش می‌دهد.
 هر دو Entity از `TenantAwareEntity` مشترک ارث می‌برند و به LoanEntity در همان
 ماژول ارتباط ManyToOne با بارگذاری LAZY دارند. جزئیات پرداخت مطابق فایل ارسالی
@@ -630,3 +630,40 @@ Lombok و binding در DPST/LOAN نیز تنظیم شده‌اند.
 `EntityDtoMapperTest` برای هر ۱۶ mapper، تزریق Spring، تبدیل تمام فیلدهای ورودی،
 شناسهٔ ارتباط، خروجی فهرست، ورودی null و حفظ id/fundId/auditing/version هنگام
 ویرایش را بررسی می‌کند. `clean install` و هر ۳۴ تست روی H2 موفق بودند.
+
+## نام‌گذاری اشیای دیتابیس
+
+همهٔ Entityهای فعلی از الگوهای PK_TABLE، FK_CHILD_PARENT، UK_TABLE_COLUMNS و
+SEQ_TABLE_ID استفاده می‌کنند. FKهای چندگانه به یک والد، پسوند نقش برگرفته از
+ستون‌های فرزند دارند. Checkهای enum و boolean از CHK_TABLE_COLUMN و محدودیت‌های
+NOT NULL در Oracle از CHK_TABLE_COLUMN_NOT_NULL استفاده می‌کنند. منطق مجاز بودن
+داده با این تغییر عوض نشده است؛ محدودیت جدید تجاری یا ایندکس عملکردی اضافه نشده است.
+
+نام PK و Checkهای خودکار با `ConstraintNamingIntegrator` و نام‌های ضمنی UK/FK
+با `DatabaseNamingStrategy` کنترل می‌شوند. `ShafaghOracleDialectResolver` در
+تشخیص Oracle، dialect اختصاصی را انتخاب می‌کند. این dialect، NOT NULLها را
+صریح نام‌گذاری می‌کند، ایندکس‌های لازم PK/UK را به UDX_TABLE_COLUMNS تغییر نام
+می‌دهد و برای ساخت Sequence جدید CACHE 50 NOCYCLE NOORDER را صریح تولید می‌کند.
+نام Sequence و Index حداکثر ۵۰ کاراکتر است. allocationSize=1 به معنی CACHE 1
+نیست؛ آن تنظیم به الگوریتم تخصیص ID در Hibernate مربوط است. CACHE 50 حداقل
+تعیین‌شده برای RAC را نیز تأمین می‌کند؛ انتخاب ORDER در RAC باید با DBA انجام شود.
+
+ایندکس اختیاری فقط با مشورت DBA/معماری داده اضافه می‌شود: IDX_TABLE_COL برای
+معمولی، UDX_TABLE_COL برای یکتا، IDX_TABLE_COL1_COL2 برای مرکب، FDI_TABLE_DESC
+برای تابعی. Bitmap در OLTP ممنوع است. ساخت ایندکس جدید روی جدول Production باید
+ONLINE باشد؛ تغییر نام ایندکس موجود ساخت یا rebuild نیست. Materialized View فقط
+در RPT یا با تأیید معماری مجاز است و refresh policy باید مستند شود.
+
+**برای دیتابیس موجود، پیش از شروع نسخهٔ جدید، مهاجرت نام‌ها لازم است.**
+`ddl-auto=update` اشیای قدیمی را rename نمی‌کند و Sequence جدید ممکن است از ۱
+شروع شود. اسکریپت‌های هر مالک در `scripts/oracle-naming/`، نام Sequence را بدون
+reset کردن مقدار، نام Constraintها و نام ایندکس‌های موجود PK/UK را اصلاح می‌کنند.
+دستور اجرای امن و کوئری‌های بررسی در README همان پوشه است؛ اسکریپت‌ها روی Oracle
+واقعی اجرا نشده‌اند. در دیتابیس خالی، Hibernate نام‌های جدید را مستقیم ایجاد می‌کند.
+
+تست `OracleNamingDdlTest` بدون اتصال Oracle، DDL واقعی Hibernate برای تمام
+Entityها را تولید می‌کند و نام PK، FK، UK، NOT NULL، Check enum، ایندکس‌های PK و
+گزینه‌های Sequence را بررسی می‌کند. تست چنداتصالی نیز نام واقعی Constraintهای
+ایجادشده در هر اسکیما H2 را بررسی می‌کند. این دو نوع بررسی جای آزمون Oracle واقعی
+را نمی‌گیرند. فایل `AGENTS.md` قواعد و درخواست کاربر برای سؤال قبل از اصلاح
+نام‌گذاری Entityهای ناسازگار آینده را ثبت کرده است.

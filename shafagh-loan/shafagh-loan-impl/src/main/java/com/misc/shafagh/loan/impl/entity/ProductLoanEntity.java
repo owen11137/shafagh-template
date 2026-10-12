@@ -14,9 +14,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity(name = "ProductLoan")
-@Table(name = "PRODUCT_LOAN", schema = SchemaName.LN)
+@Table(name = "PRODUCT_LOAN", schema = SchemaName.LN, uniqueConstraints = {@UniqueConstraint(name = "UK_PRODUCT_LOAN_CODE", columnNames = "CODE")})
 @Comment("جدول محصولات وام")
-@SequenceGenerator(schema = SchemaName.LN, name = "PRODUCT_LOAN_SEQUENCE", sequenceName = "PRODUCT_LOAN_SEQUENCE", allocationSize = 1)
+@SequenceGenerator(schema = SchemaName.LN, name = "SEQ_PRODUCT_LOAN_ID", sequenceName = "SEQ_PRODUCT_LOAN_ID", allocationSize = 1)
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
@@ -24,7 +24,7 @@ public class ProductLoanEntity extends TenantAwareEntity {
 
     @Id
     @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PRODUCT_LOAN_SEQUENCE")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PRODUCT_LOAN_ID")
     @EqualsAndHashCode.Include
     @Comment("شناسه یکتای محصول وام")
     private Long id;
@@ -35,7 +35,7 @@ public class ProductLoanEntity extends TenantAwareEntity {
     private String title;
 
     @Nationalized
-    @Column(name = "CODE", length = 20, unique = true, nullable = false)
+    @Column(name = "CODE", length = 20, nullable = false)
     @Comment("کد محصول")
     private String code;
 

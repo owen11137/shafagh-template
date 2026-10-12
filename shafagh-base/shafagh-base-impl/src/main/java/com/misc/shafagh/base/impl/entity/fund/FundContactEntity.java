@@ -13,12 +13,12 @@ import lombok.Setter;
 @Table(schema = SchemaName.BASE, name = "FUND_CONTACT")
 @Getter
 @Setter
-@SequenceGenerator(name = "FUND_CONTACT_ID_SEQ", schema = SchemaName.BASE, sequenceName = "FUND_CONTACT_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "SEQ_FUND_CONTACT_ID", schema = SchemaName.BASE, sequenceName = "SEQ_FUND_CONTACT_ID", allocationSize = 1)
 public class FundContactEntity {
 
     @Id
     @Column(name = "ID", columnDefinition = "number(19,0)")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FUND_CONTACT_ID_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_FUND_CONTACT_ID")
     @EqualsAndHashCode.Include
     private Long id;
 
@@ -30,7 +30,7 @@ public class FundContactEntity {
     private String contactNumber;
 
     @ManyToOne
-    @JoinColumn(name = "FUND_ID", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "FUND_ID", referencedColumnName = "ID", nullable = false, foreignKey = @ForeignKey(name = "FK_FUND_CONTACT_FUND"))
     private FundEntity fundEntity;
 
     @Column(name = "REGION_CODE")
@@ -40,6 +40,6 @@ public class FundContactEntity {
     private String internal;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "BRANCH_ID", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FUND_CONTACT_FK_BRANCH"), nullable = false)
+    @JoinColumn(name = "BRANCH_ID", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_FUND_CONTACT_BRANCH"), nullable = false)
     private BranchEntity branch;
 }

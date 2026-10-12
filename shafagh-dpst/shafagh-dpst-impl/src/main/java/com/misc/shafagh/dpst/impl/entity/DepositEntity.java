@@ -13,12 +13,12 @@ import java.math.BigDecimal;
 @Entity(name = "Deposit")
 @Table(name = "DEPOSIT", schema = SchemaName.DP)
 @Comment("جدول سپرده‌ها")
-@SequenceGenerator(name = "DEPOSIT_ID_SEQ", schema = SchemaName.DP, sequenceName = "DEPOSIT_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "SEQ_DEPOSIT_ID", schema = SchemaName.DP, sequenceName = "SEQ_DEPOSIT_ID", allocationSize = 1)
 @Data
 public class DepositEntity extends TenantAwareEntity {
     @Id
     @Column(name = "ID", columnDefinition = "number(19,0)")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DEPOSIT_ID_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_DEPOSIT_ID")
     @EqualsAndHashCode.Include
     @Comment("شناسه یکتای سپرده")
     private Long id;

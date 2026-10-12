@@ -13,13 +13,13 @@ import lombok.Setter;
 
 @Table(schema = SchemaName.CIF, name = "CUSTOMER_INQUIRY")
 @Entity(name = "CUSTOMERInquiry")
-@SequenceGenerator(name = "CUSTOMER_INQUIRY_ID_SEQ", schema = SchemaName.CIF, sequenceName = "CUSTOMER_INQUIRY_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "SEQ_CUSTOMER_INQUIRY_ID", schema = SchemaName.CIF, sequenceName = "SEQ_CUSTOMER_INQUIRY_ID", allocationSize = 1)
 @Getter
 @Setter
 public class CustomerInquiryEntity extends TenantAwareEntity {
     @Id
     @Column(name = "ID", columnDefinition = "number(19,0)")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CUSTOMER_INQUIRY_ID_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_CUSTOMER_INQUIRY_ID")
     @EqualsAndHashCode.Include
     private Long id;
 
@@ -27,7 +27,7 @@ public class CustomerInquiryEntity extends TenantAwareEntity {
     private CustomerType customerType;
 
     @ManyToOne
-    @JoinColumn(name = "CUSTOMER_ID", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "CUSTOMER_INQUIRY_FK_CUSTOMER"), nullable = false)
+    @JoinColumn(name = "CUSTOMER_ID", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_CUSTOMER_INQUIRY_CUSTOMER"), nullable = false)
     private CustomerEntity customer;
 
     @Column(name = "RESPONSE")
@@ -44,7 +44,7 @@ public class CustomerInquiryEntity extends TenantAwareEntity {
     private CustomerInquiryStatus customerInquiryStatus;
 
     @ManyToOne
-    @JoinColumn(name = "CUSTOMER_CONTACT_ID", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "CUSTOMER_INQUIRY_FK_CUSTOMER_CONTACT"))
+    @JoinColumn(name = "CUSTOMER_CONTACT_ID", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_CUSTOMER_INQUIRY_CUSTOMER_CONTACT"))
     private CustomerContactEntity customerContact;
 }
 

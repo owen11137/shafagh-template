@@ -12,16 +12,16 @@ import org.hibernate.annotations.Nationalized;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "PRODUCT_DEPOSIT", schema = SchemaName.DP)
+@Table(name = "PRODUCT_DEPOSIT", schema = SchemaName.DP, uniqueConstraints = {@UniqueConstraint(name = "UK_PRODUCT_DEPOSIT_CODE", columnNames = "CODE")})
 @Comment("جدول محصولات سپرده")
-@SequenceGenerator(name = "PRODUCT_DEPOSIT_ID_SEQ", schema = SchemaName.DP, sequenceName = "PRODUCT_DEPOSIT_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "SEQ_PRODUCT_DEPOSIT_ID", schema = SchemaName.DP, sequenceName = "SEQ_PRODUCT_DEPOSIT_ID", allocationSize = 1)
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 public class ProductDepositEntity extends TenantAwareEntity {
 
     @Id
     @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PRODUCT_DEPOSIT_ID_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PRODUCT_DEPOSIT_ID")
     @EqualsAndHashCode.Include
     @Comment("شناسه یکتای محصول سپرده")
     private Long id;
@@ -31,7 +31,7 @@ public class ProductDepositEntity extends TenantAwareEntity {
     private String title;
 
     @Nationalized
-    @Column(name = "CODE", unique = true, nullable = false)
+    @Column(name = "CODE", nullable = false)
     @Comment("کد محصول")
     private String code;
 

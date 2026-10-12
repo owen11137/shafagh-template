@@ -13,12 +13,12 @@ import lombok.Setter;
 @Table(schema = SchemaName.CIF, name = "CUSTOMER_ADDRESS")
 @Getter
 @Setter
-@SequenceGenerator(name = "CUSTOMER_ADDRESS_ID_SEQ", schema = SchemaName.CIF, sequenceName = "CUSTOMER_ADDRESS_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "SEQ_CUSTOMER_ADDRESS_ID", schema = SchemaName.CIF, sequenceName = "SEQ_CUSTOMER_ADDRESS_ID", allocationSize = 1)
 public class CustomerAddressEntity extends TenantAwareEntity {
 
     @Id
     @Column(name = "ID", columnDefinition = "number(19,0)")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CUSTOMER_ADDRESS_ID_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_CUSTOMER_ADDRESS_ID")
     @EqualsAndHashCode.Include
     private Long id;
 
@@ -36,6 +36,6 @@ public class CustomerAddressEntity extends TenantAwareEntity {
     private String postalCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CUSTOMER_ID", referencedColumnName = "ID", nullable = false, foreignKey = @ForeignKey(name = "CUSTOMER_ADDRESS_FK_CUSTOMER"))
+    @JoinColumn(name = "CUSTOMER_ID", referencedColumnName = "ID", nullable = false, foreignKey = @ForeignKey(name = "FK_CUSTOMER_ADDRESS_CUSTOMER"))
     private CustomerEntity customer;
 }

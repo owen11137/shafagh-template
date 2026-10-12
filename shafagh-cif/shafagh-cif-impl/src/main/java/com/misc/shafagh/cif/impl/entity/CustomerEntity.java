@@ -20,14 +20,14 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(schema = SchemaName.CIF, name = "CUSTOMER")
-@SequenceGenerator(name = "CUSTOMER_ID_SEQ", schema = SchemaName.CIF, sequenceName = "CUSTOMER_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "SEQ_CUSTOMER_ID", schema = SchemaName.CIF, sequenceName = "SEQ_CUSTOMER_ID", allocationSize = 1)
 @Getter
 @Setter
 public class CustomerEntity extends TenantAwareEntity {
 
     @Id
     @Column(name = "ID", columnDefinition = "number(19,0)")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CUSTOMER_ID_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_CUSTOMER_ID")
     @EqualsAndHashCode.Include
     private Long id;
 

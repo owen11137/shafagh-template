@@ -10,23 +10,23 @@ import lombok.Setter;
 
 @Entity
 @Table(schema = SchemaName.BASE, name = "BRANCH_ADDRESS")
-@SequenceGenerator(name = "BRANCH_ADDRESS_ID_SEQ", schema = SchemaName.BASE, sequenceName = "BRANCH_ADDRESS_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "SEQ_BRANCH_ADDRESS_ID", schema = SchemaName.BASE, sequenceName = "SEQ_BRANCH_ADDRESS_ID", allocationSize = 1)
 @Getter
 @Setter
 public class BranchAddressEntity {
 
     @Id
     @Column(name = "ID", columnDefinition = "number(19,0)")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BRANCH_ADDRESS_ID_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_BRANCH_ADDRESS_ID")
     @EqualsAndHashCode.Include
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "BRANCH_ID", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "BRANCH_ID", referencedColumnName = "ID", nullable = false, foreignKey = @ForeignKey(name = "FK_BRANCH_ADDRESS_BRANCH"))
     private BranchEntity branchEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="CITY_ID", referencedColumnName = "ID", nullable = false, foreignKey = @ForeignKey(name = "BRANCH_ADDRESS_FK_CITY"))
+    @JoinColumn(name ="CITY_ID", referencedColumnName = "ID", nullable = false, foreignKey = @ForeignKey(name = "FK_BRANCH_ADDRESS_CITY"))
     private CityEntity city;
 
     @Column(name = "MAIN_STREET")

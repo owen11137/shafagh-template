@@ -13,15 +13,15 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Entity(name = "BRANCH")
-@Table(schema = SchemaName.BASE, uniqueConstraints = {@UniqueConstraint(name = "BRANCH_FUND_CODE_UK", columnNames = {"FUND_ID", "CODE"})})
+@Table(name = "BRANCH", schema = SchemaName.BASE, uniqueConstraints = {@UniqueConstraint(name = "UK_BRANCH_FUND_ID_CODE", columnNames = {"FUND_ID", "CODE"})})
 @Getter
 @Setter
-@SequenceGenerator(name = "BRANCH_ID_SEQ", schema = SchemaName.BASE, sequenceName = "BRANCH_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "SEQ_BRANCH_ID", schema = SchemaName.BASE, sequenceName = "SEQ_BRANCH_ID", allocationSize = 1)
 public class BranchEntity {
 
     @Id
     @Column(name = "ID", columnDefinition = "number(19,0)")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BRANCH_ID_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_BRANCH_ID")
     @EqualsAndHashCode.Include
     private Long id;
 

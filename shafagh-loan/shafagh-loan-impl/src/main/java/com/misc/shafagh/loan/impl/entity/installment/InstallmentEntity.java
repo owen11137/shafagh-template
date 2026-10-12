@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
 @Entity(name = "Installment")
 @Table(name = "INSTALLMENT", schema = SchemaName.LN)
 @Comment("جدول اقساط")
-@SequenceGenerator(schema = SchemaName.LN, name = "INSTALLMENT_SEQUENCE", sequenceName = "INSTALLMENT_SEQUENCE", allocationSize = 1)
+@SequenceGenerator(schema = SchemaName.LN, name = "SEQ_INSTALLMENT_ID", sequenceName = "SEQ_INSTALLMENT_ID", allocationSize = 1)
 @Getter
 @Setter
 public class InstallmentEntity extends TenantAwareEntity {
 
     @Id
     @Column(name = "ID", columnDefinition = "number(19,0)")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "INSTALLMENT_SEQUENCE")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_INSTALLMENT_ID")
     @EqualsAndHashCode.Include
     @Comment("شناسه یکتای قسط")
     private Long id;
@@ -31,7 +31,7 @@ public class InstallmentEntity extends TenantAwareEntity {
     private InstallmentType installmentType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "LOAN_ID", referencedColumnName = "ID")
+    @JoinColumn(name = "LOAN_ID", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_INSTALLMENT_LOAN"))
     @Comment("شناسه وام")
     private LoanEntity loan;
 

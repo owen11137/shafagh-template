@@ -11,12 +11,12 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@SequenceGenerator(name = "CITY_ID_SEQ", schema = SchemaName.BASE, sequenceName = "CITY_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "SEQ_CITY_ID", schema = SchemaName.BASE, sequenceName = "SEQ_CITY_ID", allocationSize = 1)
 public class CityEntity {
 
     @Id
     @Column(name = "ID", columnDefinition = "number(19,0)")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CITY_ID_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_CITY_ID")
     @EqualsAndHashCode.Include
     private Long id;
 

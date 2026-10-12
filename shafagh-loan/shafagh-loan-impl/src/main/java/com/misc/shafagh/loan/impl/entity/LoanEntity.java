@@ -14,14 +14,14 @@ import java.math.BigDecimal;
 @Entity(name = "Loan")
 @Table(name = "LOAN", schema = SchemaName.LN)
 @Comment("جدول وام‌ها (تسهیلات)")
-@SequenceGenerator(schema = SchemaName.LN, name = "LOAN_ID_SEQ", sequenceName = "LOAN_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(schema = SchemaName.LN, name = "SEQ_LOAN_ID", sequenceName = "SEQ_LOAN_ID", allocationSize = 1)
 @Getter
 @Setter
 public class LoanEntity extends TenantAwareEntity {
 
     @Id
     @Column(name = "ID", columnDefinition = "number(19,0)")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "LOAN_ID_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_LOAN_ID")
     @EqualsAndHashCode.Include
     @Comment("شناسه یکتای وام")
     private Long id;

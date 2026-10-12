@@ -11,12 +11,12 @@ import lombok.Setter;
 @Table(schema = SchemaName.BASE, name = "BRANCH_CONTACT")
 @Getter
 @Setter
-@SequenceGenerator(name = "BRANCH_CONTACT_ID_SEQ", schema = SchemaName.BASE, sequenceName = "BRANCH_CONTACT_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "SEQ_BRANCH_CONTACT_ID", schema = SchemaName.BASE, sequenceName = "SEQ_BRANCH_CONTACT_ID", allocationSize = 1)
 public class BranchContactEntity {
 
     @Id
     @Column(name = "ID", columnDefinition = "number(19,0)")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BRANCH_CONTACT_ID_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_BRANCH_CONTACT_ID")
     @EqualsAndHashCode.Include
     private Long id;
 
@@ -34,6 +34,6 @@ public class BranchContactEntity {
     private String internal;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "BRANCH_ID", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "BRANCH_CONTACT_FK_BRANCH"), nullable = false)
+    @JoinColumn(name = "BRANCH_ID", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_BRANCH_CONTACT_BRANCH"), nullable = false)
     private BranchEntity branch;
 }
