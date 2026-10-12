@@ -44,7 +44,6 @@ import java.util.stream.Collectors;
 @Transactional
 public abstract class AbstractCustomerService {
 
-    // TODO: read from keycloak
     @org.springframework.beans.factory.annotation.Value("${shafagh.fund-id:1}")
     private long fundId;
 

@@ -351,7 +351,7 @@ public class XxxApplicationService {
 
 ## تنظیمات و بررسی CIF
 
-کدهای CIF به Lombok، MapStruct، اعتبارسنجی Jakarta، Spring MVC، OAuth2 Resource Server
+کدهای CIF به Lombok، MapStruct، اعتبارسنجی Jakarta، Spring MVC
 و Apache HttpClient وابسته‌اند. annotation processorهای MapStruct و Lombok در POM
 همین ماژول همراه `lombok-mapstruct-binding` تنظیم شده‌اند.
 
@@ -359,9 +359,8 @@ public class XxxApplicationService {
 نامعتبر را روی H2 بررسی می‌کند. شناسهٔ صندوق از `shafagh.fund-id` گرفته می‌شود؛
 Entityهای مشتری از `TenantAwareEntity` مشترک ارث می‌برند.
 
-برای درخواست‌های HTTP محافظت‌شده، verifier واقعی JWT باید با
-`spring.security.oauth2.resourceserver.jwt.issuer-uri` یا `jwk-set-uri` تنظیم شود.
-بدون آن، درخواست‌ها طبق سیاست امنیتی فعلی رد می‌شوند. کلاینت‌های HTTPS از اعتبارسنجی
-عادی گواهی و hostname استفاده می‌کنند؛ برای CA داخلی truststore معتبر پیکربندی کنید.
-ارتباط واقعی با Oracle، Keycloak و سرویس‌های بیرونی نیازمند بررسی جداگانه در محیط
-دارای اتصال و تنظیمات آن سرویس‌هاست.
+در ساختار فعلی، درخواست‌های HTTP به توکن احراز هویت نیاز ندارند. CORS همچنان
+با `shafagh.client-url` تنظیم می‌شود. کلاینت‌های HTTPS از اعتبارسنجی عادی گواهی و
+hostname استفاده می‌کنند؛ برای CA داخلی truststore معتبر پیکربندی کنید.
+ارتباط واقعی با Oracle و سرویس‌های بیرونی نیازمند بررسی جداگانه در محیط دارای
+اتصال و تنظیمات آن سرویس‌هاست.
