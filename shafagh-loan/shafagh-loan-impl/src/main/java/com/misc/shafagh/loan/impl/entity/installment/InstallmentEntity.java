@@ -1,0 +1,54 @@
+package com.misc.shafagh.loan.impl.entity.installment;
+
+import com.misc.shafagh.loan.impl.entity.LoanEntity;
+import com.misc.shafagh.common.persistence.TenantAwareEntity;
+import com.misc.shafagh.common.SchemaName;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.Comment;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Entity(name = "Installment")
+@Table(name = "INSTALLMENT", schema = SchemaName.LOAN)
+@Comment("جدول اقساط")
+@SequenceGenerator(schema = SchemaName.LOAN, name = "INSTALLMENT_SEQUENCE", sequenceName = "INSTALLMENT_SEQUENCE", allocationSize = 1)
+@Getter
+@Setter
+public class InstallmentEntity extends TenantAwareEntity {
+
+    @Id
+    @Column(name = "ID", columnDefinition = "number(19,0)")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "INSTALLMENT_SEQUENCE")
+    @EqualsAndHashCode.Include
+    @Comment("شناسه یکتای قسط")
+    private Long id;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "INSTALLMENT_TYPE", nullable = false)
+    @Comment("نوع قسط")
+    private InstallmentType installmentType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "LOAN_ID", referencedColumnName = "ID")
+    @Comment("شناسه وام")
+    private LoanEntity loan;
+
+    @Column(name = "INSTALLMENT_NUMBER", nullable = false)
+    @Comment("شماره قسط")
+    private int installmentNumber;
+
+    @Column(name = "INSTALLMENT_AMOUNT", nullable = false)
+    @Comment("مبلغ قسط")
+    private BigDecimal installmentAmount;
+
+    @Column(name = "INSTALLMENT_DATE", nullable = false)
+    @Comment("تاریخ سررسید قسط")
+    private LocalDateTime installmentDate;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "INSTALLMENT_STATUS", nullable = false)
+    @Comment("وضعیت قسط")
+    private InstallmentStatus installmentStatus;
+}

@@ -544,3 +544,19 @@ LoanPersonType و CollateralType مخصوص مدل داخلی تسهیلات‌�
 بررسی می‌کند. این کلاس‌ها به‌تنهایی endpoint REST ایجاد نمی‌کنند؛ گروه Swagger
 LOAN تا اضافه‌شدن Controller همچنان خالی است. اجرای واقعی Oracle در این بررسی
 انجام نشده است.
+
+### اقساط تسهیلات
+
+مدل‌های `InstallmentEntity`، `InstallmentDetailEntity`، `InstallmentType` و
+`InstallmentStatus` در پکیج `loan.impl.entity.installment` قرار دارند.
+جدول‌های `INSTALLMENT` و `INSTALLMENT_DETAIL` و Sequenceهای
+`INSTALLMENT_SEQUENCE` و `INSTALLMENT_DETAIL_SEQUENCE` از `SchemaName.LOAN`
+استفاده می‌کنند. scan موجود LOAN زیرپکیج installment را نیز پوشش می‌دهد.
+هر دو Entity از `TenantAwareEntity` مشترک ارث می‌برند و به LoanEntity در همان
+ماژول ارتباط ManyToOne با بارگذاری LAZY دارند. جزئیات پرداخت مطابق فایل ارسالی
+با وام و شماره قسط مشخص می‌شود؛ ارتباط جدیدی به InstallmentEntity اضافه نشده است.
+
+نگاشت `installmentType` از JoinColumn نامناسب برای enum به Column اصلاح شد.
+مقادیر و ترتیب enumها و نام فیلد `transactionNO` حفظ شدند. تست اتصال مستقل LOAN
+ساخت هر پنج جدول Entity این ماژول، ذخیره مبلغ و پرداخت، نوع و وضعیت قسط، ارتباط
+با وام، auditing، tenant و تغییر version در ویرایش قسط را روی H2 بررسی می‌کند.

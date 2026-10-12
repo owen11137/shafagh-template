@@ -80,7 +80,7 @@ class ModulePersistenceConfigurationTest {
         assertFalse(factories.get("baseEntityManagerFactory").getMetamodel().getEntities().isEmpty());
         assertFalse(factories.get("cifEntityManagerFactory").getMetamodel().getEntities().isEmpty());
         assertFalse(factories.get("dpstEntityManagerFactory").getMetamodel().getEntities().isEmpty());
-        assertEquals(3, factories.get("loanEntityManagerFactory").getMetamodel().getEntities().size());
+        assertEquals(5, factories.get("loanEntityManagerFactory").getMetamodel().getEntities().size());
     }
 
     @Test
@@ -163,5 +163,51 @@ class ModulePersistenceConfigurationTest {
             assertTrue(anotherTenant.createQuery("from Loan", com.misc.shafagh.loan.impl.entity.LoanEntity.class)
                     .getResultList().isEmpty());
         }
+    }
+    @Test
+    void installmentsAndPaymentsPersistInLoanSchemaWithTenantAndAuditFields() {
+        var transactions = new TransactionTemplate(loanTransactions);
+        Long[] ids = transactions.execute(status -> {
+            var entity = new com.misc.shafagh.loan.impl.entity.LoanEntity();
+            entity.setLoanNumber(UUID.randomUUID().toString()); entity.setProductCode("INSTALLMENT-TEST");
+            entity.setAmount(new java.math.BigDecimal("1200.00")); entity.setInstallmentCount(12);
+            loan.persist(entity);
+            var installment = new com.misc.shafagh.loan.impl.entity.installment.InstallmentEntity();
+            installment.setLoan(entity); installment.setInstallmentNumber(1);
+            installment.setInstallmentType(com.misc.shafagh.loan.impl.entity.installment.InstallmentType.MAIN);
+            installment.setInstallmentStatus(com.misc.shafagh.loan.impl.entity.installment.InstallmentStatus.PND);
+            installment.setInstallmentAmount(new java.math.BigDecimal("100.25"));
+            installment.setInstallmentDate(java.time.LocalDateTime.of(2026, 11, 12, 10, 30));
+            loan.persist(installment);
+            var payment = new com.misc.shafagh.loan.impl.entity.installment.InstallmentDetailEntity();
+            payment.setLoan(entity); payment.setInstallmentNumber(1);
+            payment.setPaidAmount(new java.math.BigDecimal("50.25"));
+            payment.setFineAmount(new java.math.BigDecimal("1.25"));
+            payment.setPaidDate(java.time.LocalDateTime.of(2026, 11, 13, 11, 30));
+            payment.setTransactionNO(123456L);
+            loan.persist(payment); loan.flush();
+            return new Long[]{entity.getId(), installment.getId(), payment.getId()};
+        });
+        transactions.executeWithoutResult(status -> {
+            var installment = loan.find(com.misc.shafagh.loan.impl.entity.installment.InstallmentEntity.class, ids[1]);
+            var payment = loan.find(com.misc.shafagh.loan.impl.entity.installment.InstallmentDetailEntity.class, ids[2]);
+            assertEquals(ids[0], installment.getLoan().getId()); assertEquals(ids[0], payment.getLoan().getId());
+            assertEquals(43L, installment.getFundId()); assertEquals(43L, payment.getFundId());
+            assertNotNull(installment.getCreatedOn()); assertNotNull(payment.getCreatedOn());
+            assertEquals(0L, installment.getVersion());
+            assertEquals(com.misc.shafagh.loan.impl.entity.installment.InstallmentType.MAIN, installment.getInstallmentType());
+            assertEquals(com.misc.shafagh.loan.impl.entity.installment.InstallmentStatus.PND, installment.getInstallmentStatus());
+            assertEquals(0, new java.math.BigDecimal("100.25").compareTo(installment.getInstallmentAmount()));
+            assertEquals(0, new java.math.BigDecimal("50.25").compareTo(payment.getPaidAmount()));
+            assertEquals(0, new java.math.BigDecimal("1.25").compareTo(payment.getFineAmount()));
+            assertEquals(123456L, payment.getTransactionNO());
+            installment.setInstallmentStatus(com.misc.shafagh.loan.impl.entity.installment.InstallmentStatus.PSP);
+            loan.flush();
+        });
+        transactions.executeWithoutResult(status -> {
+            var installment = loan.find(com.misc.shafagh.loan.impl.entity.installment.InstallmentEntity.class, ids[1]);
+            assertEquals(1L, installment.getVersion()); assertNotNull(installment.getModifiedOn());
+            assertEquals(com.misc.shafagh.loan.impl.entity.installment.InstallmentStatus.PSP, installment.getInstallmentStatus());
+        });
     }
 }
