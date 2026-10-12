@@ -560,3 +560,73 @@ LOAN تا اضافه‌شدن Controller همچنان خالی است. اجرا�
 مقادیر و ترتیب enumها و نام فیلد `transactionNO` حفظ شدند. تست اتصال مستقل LOAN
 ساخت هر پنج جدول Entity این ماژول، ذخیره مبلغ و پرداخت، نوع و وضعیت قسط، ارتباط
 با وام، auditing، tenant و تغییر version در ویرایش قسط را روی H2 بررسی می‌کند.
+
+## ساختار مشترک ماژول‌های دامنه و DTOها
+
+در پیاده‌سازی هر چهار ماژول BASE، CIF، DPST و LOAN این پکیج‌ها وجود دارند:
+
+```text
+impl/
+  entity/
+  repository/
+  service/
+    port/
+    impl/
+  config/
+  controller/
+  exception/
+  dto/
+    request/
+    response/
+    mapper/
+```
+
+پوشه‌های بدون کلاس اجرایی با `package-info.java` و توضیح مسئولیت پکیج در Git
+نگهداری می‌شوند. این ساختار برای ماژول‌های دامنه است؛ common زیرساخت مشترک،
+orchestration هماهنگ‌کنندهٔ سرویس‌ها، API قرارداد عمومی و POMهای والد تجمیع‌کننده
+هستند و نباید Entity و Repository دامنه در آن‌ها قرار گیرد.
+
+برای ۱۶ Entity که این لایه‌ها را نداشتند، request، response و mapper اضافه یا
+تکمیل شده است؛ چهار مدل مشتری، آدرس، تماس و امضای CIF از mapperها و DTOهای موجود
+استفاده می‌کنند:
+
+| ماژول | مدل‌های تکمیل‌شده |
+| --- | --- |
+| BASE | City، Fund، FundAddress، FundContact، Branch، BranchAddress، BranchContact |
+| CIF | CustomerInquiry |
+| DPST | Deposit، DepositPerson، ProductDeposit |
+| LOAN | Loan، LoanPerson، ProductLoan، Installment، InstallmentDetail |
+
+نام مدل‌های جدید ورودی `{Entity}ReqDTO` و خروجی `{Entity}ResponseDto` است.
+زیرپکیج‌های branch/fund و installment در DTO و mapper نیز حفظ شده‌اند.
+mapperهای BASE موجود با متدهای جدید توسعه یافته‌اند و قراردادهای DTO عمومی
+`base-api` برای فراخوانی بین ماژول‌ها برقرارند. DTOهای جدید در impl برای ورودی
+و خروجی داخلی و REST آینده‌اند؛ اگر قراردادی بین ماژول‌ها لازم شد، مدل عمومی
+مستقل را در API منتشر کنید.
+
+متدهای جدید mapper:
+
+- `toEntity(request)`: ساخت Entity جدید، بدون پذیرش ID و اطلاعات سیستمی.
+- `updateFromRequest(request, entity)`: ویرایش کامل فیلدهای ورودی روی Entity موجود.
+- `toResponse(entity)` و `toResponses(entities)`: تبدیل رکورد یا فهرست به DTO پاسخ.
+
+requestهای جدید id و فیلدهای auditing/version ندارند؛ برای مدل‌های TenantAware
+نیز fundId در request وجود ندارد و صندوق فعال را Hibernate تعیین می‌کند.
+fundId در BranchReqDTO شناسهٔ ارتباط شعبه با صندوق است و نقش tenant ندارد.
+پاسخ مدل‌های TenantAware، fundId و اطلاعات auditing/version را دارد.
+ارتباط‌های ManyToOne/OneToOne با شناسه در DTO مشخص می‌شوند تا گراف Entity و
+چرخهٔ ارتباطی به خروجی JSON منتقل نشود. مجموعهٔ فرزندان Fund/Branch در این
+DTOهای جدید حمل نمی‌شود و mapper ویرایش، مجموعهٔ مدیریت‌شده را جایگزین نمی‌کند.
+برای ویرایش اعضای مجموعه از سرویس مخصوص فرزندان استفاده کنید.
+
+`EntityReferenceResolver` هر ماژول با EntityManagerFactory همان ماژول، شناسه را
+به `getReference` تبدیل می‌کند؛ از ساخت Entity جعلی با setId خودداری شده است.
+این تبدیل فقط مرجع مدیریت‌شده می‌سازد؛ سرویس باید وجود رکورد و مجاز بودن ارتباط
+را بررسی کند و mapping را در تراکنش مناسب انجام دهد. نگاشت‌های جدید با
+`unmappedTargetPolicy=ERROR` کامپایل می‌شوند تا فیلد مقصد فراموش‌شده باعث شکست
+بیلد شود. MapStruct 1.6.3 از POM ریشه مدیریت می‌شود و پردازشگرهای MapStruct،
+Lombok و binding در DPST/LOAN نیز تنظیم شده‌اند.
+
+`EntityDtoMapperTest` برای هر ۱۶ mapper، تزریق Spring، تبدیل تمام فیلدهای ورودی،
+شناسهٔ ارتباط، خروجی فهرست، ورودی null و حفظ id/fundId/auditing/version هنگام
+ویرایش را بررسی می‌کند. `clean install` و هر ۳۴ تست روی H2 موفق بودند.

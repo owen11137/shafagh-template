@@ -14,6 +14,7 @@ public class SinglePersistenceConfiguration {
         return factory -> {
             for (String module : new String[]{"base", "cif", "dpst", "loan"}) {
                 factory.registerAlias("transactionManager", module + "TransactionManager");
+                factory.registerAlias("entityManagerFactory", module + "EntityManagerFactory");
             }
         };
     }

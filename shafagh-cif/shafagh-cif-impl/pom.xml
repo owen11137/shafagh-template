@@ -14,9 +14,6 @@
     <artifactId>shafagh-cif-impl</artifactId>
     <name>SHFQ_CIF Impl</name>
 
-    <properties>
-        <mapstruct.version>1.6.3</mapstruct.version>
-    </properties>
 
     <dependencies>
         <dependency>
