@@ -33,7 +33,7 @@ public final class CustomerSpecification {
                     predicates.add(cb.equal(root.get("registrationDate"), filter.getRegistrationDate()));
                 }
                 if (filter.getCityId() != null) {
-                    predicates.add(cb.equal(root.get("city").get("id"), filter.getCityId()));
+                    predicates.add(cb.equal(root.get("cityId"), filter.getCityId()));
                 }
                 if (hasText(filter.getCustomerCode())) {
                     predicates.add(cb.like(cb.lower(root.get("customerCode")), like(filter.getCustomerCode())));

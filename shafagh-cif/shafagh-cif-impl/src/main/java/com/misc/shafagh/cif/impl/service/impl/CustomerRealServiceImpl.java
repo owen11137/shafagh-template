@@ -4,7 +4,7 @@ import com.misc.shafagh.cif.impl.dto.mapper.CustomerMapper;
 import com.misc.shafagh.cif.impl.dto.request.CustomerReqDTO;
 import com.misc.shafagh.cif.impl.entity.enums.CustomerType;
 import com.misc.shafagh.cif.impl.entity.validator.CustomerValidator;
-import com.misc.shafagh.cif.impl.repository.CityRepository;
+import com.misc.shafagh.base.api.CityService;
 import com.misc.shafagh.cif.impl.repository.CustomerRepository;
 import com.misc.shafagh.cif.impl.service.port.CustomerRealService;
 import org.springframework.stereotype.Service;
@@ -21,11 +21,11 @@ public class CustomerRealServiceImpl extends AbstractCustomerService implements 
             EnumSet.of(CustomerType.REAL, CustomerType.FOREIGN_REAL);
 
     public CustomerRealServiceImpl(CustomerRepository personRepo,
-                                   CityRepository cityRepo,
+                                   CityService cityService,
                                    CustomerMapper customerMapper,
                                    CustomerValidator customerValidator,
                                    CustomerSignatureHelper signatureHelper) {
-        super(personRepo, cityRepo, customerMapper, customerValidator, signatureHelper);
+        super(personRepo, cityService, customerMapper, customerValidator, signatureHelper);
     }
 
     @Override

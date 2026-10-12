@@ -1,7 +1,7 @@
-package com.misc.shafagh.cif.impl.repository;
+package com.misc.shafagh.base.impl.repository;
 
 
-import com.misc.shafagh.cif.impl.entity.CityEntity;
+import com.misc.shafagh.base.impl.entity.CityEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

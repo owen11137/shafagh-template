@@ -26,9 +26,8 @@ public class CustomerAddressEntity extends TenantAwareEntity {
     @Column(name = "ADDRESS_TYPE")
     private AddressType addressType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="CITY_ID", referencedColumnName = "ID", nullable = false,foreignKey = @ForeignKey(name = "CUSTOMER_ADDRESS_FK_CITY"))
-    private CityEntity city;
+    @Column(name = "CITY_ID", nullable = false)
+    private Long cityId;
 
     @Column(name = "ADDRESS")
     private String address;

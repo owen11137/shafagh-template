@@ -1,8 +1,8 @@
-package com.misc.shafagh.cif.impl.entity.branch;
+package com.misc.shafagh.base.impl.entity.branch;
 
 import com.misc.shafagh.common.SchemaName;
 
-import com.misc.shafagh.cif.impl.entity.fund.FundEntity;
+import com.misc.shafagh.base.impl.entity.fund.FundEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,11 +13,10 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Entity(name = "BRANCH")
-@Table(schema = SchemaName.CIF, uniqueConstraints = {@UniqueConstraint(name = "BRANCH_FUND_CODE_UK", columnNames = {"FUND_ID", "CODE"})})
+@Table(schema = SchemaName.BASE, uniqueConstraints = {@UniqueConstraint(name = "BRANCH_FUND_CODE_UK", columnNames = {"FUND_ID", "CODE"})})
 @Getter
 @Setter
-@Data
-@SequenceGenerator(name = "BRANCH_ID_SEQ", schema = SchemaName.CIF, sequenceName = "BRANCH_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "BRANCH_ID_SEQ", schema = SchemaName.BASE, sequenceName = "BRANCH_ID_SEQ", allocationSize = 1)
 public class BranchEntity {
 
     @Id
@@ -32,7 +31,7 @@ public class BranchEntity {
     @Column(name = "NAME", nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FUND_ID", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "BRANCH_FK_FUND"))
     private FundEntity fund;
 

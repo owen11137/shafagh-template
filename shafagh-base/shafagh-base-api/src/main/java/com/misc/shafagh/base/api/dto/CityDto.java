@@ -1,4 +1,4 @@
-package com.misc.shafagh.cif.impl.dto.response;
+package com.misc.shafagh.base.api.dto;
 
 import lombok.Getter;
 import lombok.Setter;

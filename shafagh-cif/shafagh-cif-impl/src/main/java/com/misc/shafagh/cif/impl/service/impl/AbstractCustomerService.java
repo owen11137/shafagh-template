@@ -4,7 +4,7 @@ import com.misc.shafagh.cif.impl.dto.mapper.CustomerMapper;
 import com.misc.shafagh.cif.impl.dto.request.CustomerFilterDTO;
 import com.misc.shafagh.cif.impl.dto.request.CustomerReqDTO;
 import com.misc.shafagh.cif.impl.dto.response.CustomerDto;
-import com.misc.shafagh.cif.impl.entity.CityEntity;
+import com.misc.shafagh.base.api.dto.CityDto;
 import com.misc.shafagh.cif.impl.entity.CustomerAddressEntity;
 import com.misc.shafagh.cif.impl.entity.CustomerContactEntity;
 import com.misc.shafagh.cif.impl.entity.CustomerEntity;
@@ -13,7 +13,7 @@ import com.misc.shafagh.cif.impl.entity.enums.CustomerType;
 import com.misc.shafagh.cif.impl.entity.validator.CustomerValidator;
 import com.misc.shafagh.cif.impl.exception.InvalidPersonTypeException;
 import com.misc.shafagh.cif.impl.exception.ValidationException;
-import com.misc.shafagh.cif.impl.repository.CityRepository;
+import com.misc.shafagh.base.api.CityService;
 import com.misc.shafagh.cif.impl.repository.CustomerRepository;
 import com.misc.shafagh.cif.impl.repository.CustomerSpecification;
 import org.springframework.beans.BeanUtils;
@@ -48,18 +48,18 @@ public abstract class AbstractCustomerService {
     private long fundId;
 
     protected final CustomerRepository personRepo;
-    protected final CityRepository cityRepo;
+    protected final CityService cityService;
     protected final CustomerMapper customerMapper;
     protected final CustomerValidator customerValidator;
     protected final CustomerSignatureHelper signatureHelper;
 
     protected AbstractCustomerService(CustomerRepository personRepo,
-                                      CityRepository cityRepo,
+                                      CityService cityService,
                                       CustomerMapper customerMapper,
                                       CustomerValidator customerValidator,
                                       CustomerSignatureHelper signatureHelper) {
         this.personRepo = personRepo;
-        this.cityRepo = cityRepo;
+        this.cityService = cityService;
         this.customerMapper = customerMapper;
         this.customerValidator = customerValidator;
         this.signatureHelper = signatureHelper;
@@ -248,11 +248,7 @@ public abstract class AbstractCustomerService {
             target.setAddress(requested.getAddress());
             target.setPostalCode(requested.getPostalCode());
 
-            if (requested.getCity() != null && requested.getCity().getId() != null) {
-                target.setCity(cityRepo.getReferenceById(requested.getCity().getId()));
-            } else {
-                target.setCity(null);
-            }
+            target.setCityId(requested.getCityId());
 
             target.setCustomer(customer);
             synchronizedAddresses.add(target);
@@ -300,14 +296,8 @@ public abstract class AbstractCustomerService {
     }
 
     private void resolveCities(CustomerEntity entity) {
-        if (entity.getCity() != null && entity.getCity().getId() != null) {
-            entity.setCity(cityRepo.getReferenceById(entity.getCity().getId()));
-        }
-        entity.getAddresses().forEach(addr -> {
-            if (addr.getCity() != null && addr.getCity().getId() != null) {
-                addr.setCity(cityRepo.getReferenceById(addr.getCity().getId()));
-            }
-        });
+        cityService.getById(entity.getCityId());
+        entity.getAddresses().forEach(addr -> cityService.getById(addr.getCityId()));
     }
 
     // ------------------------------------------------------------------
@@ -325,9 +315,9 @@ public abstract class AbstractCustomerService {
     }
 
     private Map<Long, String> getProvinceMap() {
-        return cityRepo.findAll().stream()
+        return cityService.findAllIncludingProvinces().stream()
                 .filter(city -> Objects.equals(city.getParentId(), 0L))
-                .collect(Collectors.toMap(CityEntity::getId, CityEntity::getName));
+                .collect(Collectors.toMap(CityDto::getId, CityDto::getName));
     }
 
     private void fillProvince(CustomerDto dto, Map<Long, String> provinceMap) {

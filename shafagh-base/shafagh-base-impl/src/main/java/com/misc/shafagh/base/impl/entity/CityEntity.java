@@ -1,4 +1,4 @@
-package com.misc.shafagh.cif.impl.entity;
+package com.misc.shafagh.base.impl.entity;
 
 import com.misc.shafagh.common.SchemaName;
 import jakarta.persistence.*;

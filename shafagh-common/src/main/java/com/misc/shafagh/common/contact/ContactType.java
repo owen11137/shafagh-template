@@ -1,4 +1,4 @@
-package com.misc.shafagh.cif.impl.entity.enums;
+package com.misc.shafagh.common.contact;
 
 public enum ContactType {
     MOBILE,

@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.misc.shafagh.cif.impl.dto.request.*;
 import com.misc.shafagh.cif.impl.dto.response.CustomerDto;
-import com.misc.shafagh.cif.impl.entity.CityEntity;
+import com.misc.shafagh.base.impl.entity.CityEntity;
 import com.misc.shafagh.cif.impl.entity.CustomerEntity;
 import com.misc.shafagh.cif.impl.entity.enums.*;
 import com.misc.shafagh.cif.impl.exception.ValidationException;

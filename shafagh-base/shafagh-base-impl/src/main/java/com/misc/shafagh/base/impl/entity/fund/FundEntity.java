@@ -1,9 +1,8 @@
-package com.misc.shafagh.cif.impl.entity.fund;
+package com.misc.shafagh.base.impl.entity.fund;
 
 import com.misc.shafagh.common.SchemaName;
 
-import com.misc.shafagh.cif.impl.entity.CustomerEntity;
-import com.misc.shafagh.cif.impl.entity.branch.BranchEntity;
+import com.misc.shafagh.base.impl.entity.branch.BranchEntity;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -14,10 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "FUND")
-@Table(schema = SchemaName.CIF, name = "FUND")
+@Table(schema = SchemaName.BASE, name = "FUND")
 @Getter
 @Setter
-@SequenceGenerator(name = "FUND_ID_SEQ", schema = SchemaName.CIF, sequenceName = "FUND_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "FUND_ID_SEQ", schema = SchemaName.BASE, sequenceName = "FUND_ID_SEQ", allocationSize = 1)
 public class FundEntity {
 
     @Id
@@ -32,9 +31,8 @@ public class FundEntity {
     @Column(name = "NAME", nullable = false)
     private String name;
 
-    @OneToOne
-    @JoinColumn(name = "OWNER_ID", nullable = false, referencedColumnName = "ID")
-    private CustomerEntity customer;
+    @Column(name = "OWNER_ID", nullable = false, unique = true)
+    private Long ownerId;
 
     @Basic
     @Column(name = "TO_DATE")

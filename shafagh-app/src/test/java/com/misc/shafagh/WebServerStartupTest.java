@@ -50,4 +50,59 @@ class WebServerStartupTest {
             assertEquals(clientUrl, response.headers().firstValue("Access-Control-Allow-Origin").orElseThrow());
         }
     }
+    @Test
+    void baseControllersAreRegisteredAndReturnNotFoundForMissingIds() throws Exception {
+        int port = applicationContext.getWebServer().getPort();
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            for (String resource : new String[]{"city", "fund", "branch"}) {
+                HttpRequest list = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + "/base/" + resource))
+                        .timeout(Duration.ofSeconds(10)).GET().build();
+                assertEquals(200, client.send(list, HttpResponse.BodyHandlers.discarding()).statusCode());
+                HttpRequest missing = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + "/base/" + resource + "/-1"))
+                        .timeout(Duration.ofSeconds(10)).GET().build();
+                assertEquals(404, client.send(missing, HttpResponse.BodyHandlers.discarding()).statusCode());
+            }
+        }
+    }
+    @Test
+    void baseRestEndpointsCreateAndUpdateRecordsWithCifOwner() {
+        var client = org.springframework.web.client.RestClient.create(
+                "http://127.0.0.1:" + applicationContext.getWebServer().getPort());
+        var city = new com.misc.shafagh.base.api.dto.CityDto();
+        city.setName("تهران"); city.setParentId(0L);
+        city = client.post().uri("/base/city").body(city).retrieve()
+                .body(com.misc.shafagh.base.api.dto.CityDto.class);
+        var customer = new com.misc.shafagh.cif.impl.dto.request.CustomerReqDTO();
+        customer.setIdentifier(java.util.UUID.randomUUID().toString());
+        customer.setCustomerType(com.misc.shafagh.cif.impl.entity.enums.CustomerType.REAL);
+        customer.setRegistrationDate(new java.util.Date()); customer.setCityId(city.getId());
+        customer.setFirstName("علی"); customer.setLastName("رضایی"); customer.setFatherName("محمد");
+        customer.setGender(com.misc.shafagh.cif.impl.entity.enums.Gender.MALE);
+        customer.setMaritalStatus(com.misc.shafagh.cif.impl.entity.enums.MaritalStatus.SINGLE);
+        var address = new com.misc.shafagh.cif.impl.dto.request.CustomerAddressReqDTO();
+        address.setCityId(city.getId()); address.setAddress("نشانی");
+        address.setAddressType(com.misc.shafagh.cif.impl.entity.enums.AddressType.HOME);
+        var contact = new com.misc.shafagh.cif.impl.dto.request.CustomerContactReqDTO();
+        contact.setMobileNumber("09120000000");
+        customer.setAddresses(java.util.List.of(address)); customer.setContacts(java.util.List.of(contact));
+        var owner = client.post().uri("/customer/real/save").body(customer).retrieve()
+                .body(com.misc.shafagh.cif.impl.dto.response.CustomerDto.class);
+        var fund = new com.misc.shafagh.base.api.dto.FundDto();
+        fund.setCode("F-" + java.util.UUID.randomUUID()); fund.setName("صندوق"); fund.setOwnerId(owner.getId());
+        fund = client.post().uri("/base/fund").body(fund).retrieve()
+                .body(com.misc.shafagh.base.api.dto.FundDto.class);
+        var branch = new com.misc.shafagh.base.api.dto.BranchDto();
+        branch.setCode("B1"); branch.setName("شعبه"); branch.setFundId(fund.getId());
+        branch = client.post().uri("/base/branch").body(branch).retrieve()
+                .body(com.misc.shafagh.base.api.dto.BranchDto.class);
+        city.setName("شهر ویرایش شده"); fund.setName("صندوق ویرایش شده"); branch.setName("شعبه ویرایش شده");
+        assertEquals(city.getName(), client.put().uri("/base/city/{id}", city.getId()).body(city).retrieve()
+                .body(com.misc.shafagh.base.api.dto.CityDto.class).getName());
+        assertEquals(fund.getName(), client.put().uri("/base/fund/{id}", fund.getId()).body(fund).retrieve()
+                .body(com.misc.shafagh.base.api.dto.FundDto.class).getName());
+        assertEquals(branch.getName(), client.put().uri("/base/branch/{id}", branch.getId()).body(branch).retrieve()
+                .body(com.misc.shafagh.base.api.dto.BranchDto.class).getName());
+        assertEquals(city.getName(), client.post().uri("/customer/real/getById/{id}", owner.getId()).retrieve()
+                .body(com.misc.shafagh.cif.impl.dto.response.CustomerDto.class).getCity().getName());
+    }
 }

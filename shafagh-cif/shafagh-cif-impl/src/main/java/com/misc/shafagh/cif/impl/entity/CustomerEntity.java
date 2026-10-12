@@ -43,9 +43,8 @@ public class CustomerEntity extends TenantAwareEntity {
     @Column(name = "REGISTRATION_DATE", nullable = false)
     private Date registrationDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="CITY_ID", referencedColumnName = "ID", nullable = false, foreignKey = @ForeignKey(name = "CUSTOMER_FK_CITY"))
-    private CityEntity city;
+    @Column(name = "CITY_ID", nullable = false)
+    private Long cityId;
 
     @Basic
     @Column(name = "CUSTOMER_CODE")
