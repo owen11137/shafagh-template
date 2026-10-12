@@ -1,7 +1,7 @@
 package com.misc.shafagh.base.impl.service.impl;
 import com.misc.shafagh.base.api.FundService;
 import com.misc.shafagh.base.api.dto.FundDto;
-import com.misc.shafagh.base.impl.dto.mapper.FundMapper;
+import com.misc.shafagh.base.impl.dto.mapper.fund.FundMapper;
 import com.misc.shafagh.base.impl.entity.fund.FundEntity;
 import com.misc.shafagh.base.impl.repository.*;
 import com.misc.shafagh.cif.api.CustomerLookup;

@@ -1,10 +1,10 @@
 package com.misc.shafagh.base.impl.service.impl;
 import com.misc.shafagh.base.api.BranchService;
 import com.misc.shafagh.base.api.dto.BranchDto;
-import com.misc.shafagh.base.impl.dto.mapper.BranchMapper;
+import com.misc.shafagh.base.impl.dto.mapper.branch.BranchMapper;
 import com.misc.shafagh.base.impl.entity.branch.BranchEntity;
 import com.misc.shafagh.base.impl.repository.*;
-import com.misc.shafagh.cif.api.CustomerLookup;
+
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
 package com.misc.shafagh.base.impl.service.impl;
 import com.misc.shafagh.base.api.CityService;
 import com.misc.shafagh.base.api.dto.CityDto;
-import com.misc.shafagh.base.impl.dto.mapper.CityMapper;
+import com.misc.shafagh.base.impl.dto.mapper.city.CityMapper;
 import com.misc.shafagh.base.impl.entity.CityEntity;
 import com.misc.shafagh.base.impl.repository.CityRepository;
 import java.util.List;

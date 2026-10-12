@@ -1,5 +1,6 @@
-package com.misc.shafagh.base.impl.dto.mapper;
+package com.misc.shafagh.base.impl.dto.mapper.city;
 
+import com.misc.shafagh.base.impl.dto.mapper.EntityReferenceResolver;
 import com.misc.shafagh.base.impl.dto.request.CityReqDTO;
 import com.misc.shafagh.base.impl.dto.response.CityResponseDto;
 

@@ -1,10 +1,11 @@
-package com.misc.shafagh.base.impl.dto.mapper;
+package com.misc.shafagh.base.impl.dto.mapper.fund;
+import com.misc.shafagh.base.impl.dto.mapper.EntityReferenceResolver;
 import com.misc.shafagh.base.impl.dto.request.fund.FundReqDTO;
 import com.misc.shafagh.base.impl.dto.response.fund.FundResponseDto;
 import com.misc.shafagh.base.api.dto.FundDto;
 import com.misc.shafagh.base.impl.entity.fund.FundEntity;
 import org.mapstruct.*;
-@Mapper(componentModel="spring", uses=EntityReferenceResolver.class)
+@Mapper(componentModel="spring", uses= EntityReferenceResolver.class)
 public interface FundMapper {
     FundDto toDto(FundEntity entity);
     @Mapping(target="branches", ignore=true)
