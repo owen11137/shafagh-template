@@ -13,9 +13,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity(name = "InstallmentDetail")
-@Table(name = "INSTALLMENT_DETAIL", schema = SchemaName.LOAN)
+@Table(name = "INSTALLMENT_DETAIL", schema = SchemaName.LN)
 @Comment("جدول جزئیات پرداخت اقساط")
-@SequenceGenerator(schema = SchemaName.LOAN, name = "INSTALLMENT_DETAIL_SEQUENCE", sequenceName = "INSTALLMENT_DETAIL_SEQUENCE", allocationSize = 1)
+@SequenceGenerator(schema = SchemaName.LN, name = "INSTALLMENT_DETAIL_SEQUENCE", sequenceName = "INSTALLMENT_DETAIL_SEQUENCE", allocationSize = 1)
 @Getter
 @Setter
 public class InstallmentDetailEntity extends TenantAwareEntity {
