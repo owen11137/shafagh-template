@@ -3,6 +3,7 @@ package com.misc.shafagh.dpst.impl.entity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.misc.shafagh.base.impl.entity.ProductStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.math.BigDecimal;
