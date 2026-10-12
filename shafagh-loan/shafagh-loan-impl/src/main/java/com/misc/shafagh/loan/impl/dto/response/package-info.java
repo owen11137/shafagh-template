@@ -1,2 +1,0 @@
-/** پاسخ عملیات؛ ارتباط‌های مدل جدید با شناسه نمایش داده می‌شوند. */
-package com.misc.shafagh.loan.impl.dto.response;
