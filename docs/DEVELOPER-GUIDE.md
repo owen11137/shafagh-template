@@ -459,7 +459,7 @@ DPST یا LOAN نیز transaction manager همان ماژول را مشخص کن
 
 ## Swagger مشترک همه ماژول‌ها
 
-وابستگی `springdoc-openapi-starter-webmvc-ui` نسخهٔ 3.0.3 سازگار با Spring Boot 4
+وابستگی `springdoc-openapi-starter-webmvc-ui` نسخهٔ 3.1.1 سازگار با Spring Boot 4
 فقط در `shafagh-app` قرار دارد. Swagger UI در `/swagger-ui.html` (یا
 `/swagger-ui/index.html`) و سند OpenAPI در `/v3/api-docs` ارائه می‌شود؛ پورت
 پیش‌فرض برنامه 8084 است. این صفحه همهٔ Controllerهای REST در
@@ -471,3 +471,29 @@ DPST یا LOAN نیز transaction manager همان ماژول را مشخص کن
 به‌تنهایی endpoint نیستند. تنظیمات مشترک در `OpenApiConfiguration` و بخش
 `springdoc` در `application.yml` قرار دارند. تست HTTP مشترک، تولید سند، حضور
 مسیرهای BASE/CIF، schema DTO و ارائه فایل‌های Swagger UI را بررسی می‌کند.
+
+## نسخه‌های وابستگی‌ها
+
+در بررسی انتشارهای پایدار Maven Central در 2026-10-12، وابستگی‌ها به این نسخه‌ها
+هماهنگ شدند:
+
+| وابستگی | نسخه |
+| --- | --- |
+| Spring Boot | 4.1.1 |
+| springdoc | 3.1.1 |
+| Swagger Models Jakarta | 2.2.55؛ مطابق نسخهٔ مورد استفاده springdoc |
+| ArchUnit | 1.5.1 |
+| Lombok | 1.18.48 |
+| MapStruct | 1.6.3 |
+| Lombok MapStruct Binding | 0.2.0 |
+
+پین قدیمی Jackson Databind حذف شد؛ نسخه‌های Jackson، Hibernate، Spring Data،
+HTTP Client، درایور Oracle و پلاگین‌های مدیریت‌شده از BOM/parent Spring Boot
+گرفته می‌شوند تا مجموعهٔ سازگار حفظ شود. در این بیلد Jackson 2 برابر 2.21.5،
+Jackson 3 برابر 3.1.5 و Hibernate برابر 7.4.5.Final است. وجود هر دو نسل Jackson
+به دلیل نیازهای متفاوت کتابخانه‌هاست؛ بسته‌های جاوای آن‌ها جدا هستند.
+JCIP Annotations در نسخهٔ موجود 1.0 باقی مانده است.
+Java همچنان 21 است. `clean install` و هر ۱۵ تست شامل مستندات Swagger، HTTP،
+پایداری Entityها و اتصال‌های مستقل ماژول‌ها موفق بودند؛ تست Oracle واقعی
+در این بررسی اجرا نشده است. برای همگام‌سازی IntelliJ پس از pull، پروژهٔ Maven
+را از POM ریشه Reload کنید.
