@@ -1,5 +1,6 @@
 package com.misc.shafagh.dpst.impl.entity;
 
+import com.misc.shafagh.common.product.ProductStatus;
 import com.misc.shafagh.common.persistence.TenantAwareEntity;
 import jakarta.persistence.*;
 import lombok.Data;

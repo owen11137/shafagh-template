@@ -40,15 +40,17 @@ shafagh-parent/
 
 ```
 com.misc.shafagh.common
-└── persistence
-    ├── BaseEntity
-    └── TenantAwareEntity
+├── persistence
+│   ├── BaseEntity
+│   └── TenantAwareEntity
+└── product
+    └── ProductStatus
 ```
 
 ماژول‌های `impl` برای استفاده از این کلاس‌ها به `shafagh-common` وابسته می‌شوند؛
 این ماژول به هیچ دامنه‌ای وابسته نیست. Entity و Repository دامنه همچنان در
-`impl` ماژول صاحبشان می‌مانند. enum مشترک `ProductStatus` در `shafagh-base-api`
-است و وابستگی JPA ندارد.
+`impl` ماژول صاحبشان می‌مانند. enum مشترک `ProductStatus` در پکیج
+`com.misc.shafagh.common.product` قرار دارد و خودش وابستگی JPA ندارد.
 
 utilityهای عمومی آینده را در پکیج متناسب با مسئولیتشان، مثل `common.time` یا
 `common.validation`، اضافه کنید. منطق کسب‌وکار مثل محاسبهٔ اقساط در دامنهٔ تسهیلات

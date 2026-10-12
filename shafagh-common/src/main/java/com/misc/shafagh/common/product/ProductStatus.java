@@ -1,4 +1,4 @@
-package com.misc.shafagh.base.api.dto;
+package com.misc.shafagh.common.product;
 
 public enum ProductStatus {
     ACTIVE, INACTIVE

@@ -7,6 +7,9 @@ must not depend on domain modules or application configuration.
 They are JPA mapped superclasses: their fields are stored in concrete entity tables,
 and they have no tables of their own.
 
+`com.misc.shafagh.common.product.ProductStatus` is the shared product status enum.
+Its values are persisted as ordinals, so their existing order must be preserved.
+
 Future general-purpose utilities belong in responsibility-specific packages such as
 `common.time` or `common.validation`. Business logic, including installment
 calculations, belongs in its owning domain and is exposed through that domain's API.
