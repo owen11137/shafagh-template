@@ -6,8 +6,6 @@ spring:
     name: shafagh
   datasource:
     url: ${DB_URL:jdbc:oracle:thin:@//172.31.65.19:1521/centraldb}
-    username: ${DB_USERNAME:shfq_dpst}
-    password: ${DB_PASSWORD:shfq_dpst}
   jpa:
     open-in-view: false
     hibernate:
@@ -16,3 +14,29 @@ spring:
 shafagh:
   # یک صندوق ثابت برای هر پروسه؛ مقدار ۱ پیش‌فرض تمپلیت است. در استقرار واقعی FUND_ID را تنظیم کنید.
   fund-id: ${FUND_ID:1}
+  persistence:
+    module-datasources: true
+    base:
+      url: ${BASE_DB_URL:${spring.datasource.url}}
+      username: ${BASE_DB_USERNAME:shfq_base}
+      password: ${BASE_DB_PASSWORD:shfq_base}
+      driver-class-name: oracle.jdbc.OracleDriver
+      maximum-pool-size: 5
+    cif:
+      url: ${CIF_DB_URL:${spring.datasource.url}}
+      username: ${CIF_DB_USERNAME:shfq_cif}
+      password: ${CIF_DB_PASSWORD:shfq_cif}
+      driver-class-name: oracle.jdbc.OracleDriver
+      maximum-pool-size: 5
+    dpst:
+      url: ${DPST_DB_URL:${spring.datasource.url}}
+      username: ${DPST_DB_USERNAME:shfq_dpst}
+      password: ${DPST_DB_PASSWORD:shfq_dpst}
+      driver-class-name: oracle.jdbc.OracleDriver
+      maximum-pool-size: 5
+    loan:
+      url: ${LOAN_DB_URL:${spring.datasource.url}}
+      username: ${LOAN_DB_USERNAME:shfq_loan}
+      password: ${LOAN_DB_PASSWORD:shfq_loan}
+      driver-class-name: oracle.jdbc.OracleDriver
+      maximum-pool-size: 5

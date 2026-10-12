@@ -8,6 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CustomerLookupImpl implements CustomerLookup {
     private final CustomerRepository repository;
-    @Transactional(readOnly=true)
+    @Transactional(transactionManager = "cifTransactionManager", readOnly=true)
     public boolean exists(Long id) { return id!=null && repository.existsById(id); }
 }

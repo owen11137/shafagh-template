@@ -16,7 +16,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 @Service
-@Transactional
+@Transactional("cifTransactionManager")
 public class CustomerLegalServiceImpl extends AbstractCustomerService implements CustomerLegalService {
 
     private static final Set<CustomerType> ALLOWED_TYPES =
@@ -51,7 +51,7 @@ public class CustomerLegalServiceImpl extends AbstractCustomerService implements
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(transactionManager = "cifTransactionManager", readOnly = true)
     public CustomerDto getByIdentifier(String identifier) {
         return customerMapper.toDto(personRepo.getFirstByIdentifier(identifier));
     }

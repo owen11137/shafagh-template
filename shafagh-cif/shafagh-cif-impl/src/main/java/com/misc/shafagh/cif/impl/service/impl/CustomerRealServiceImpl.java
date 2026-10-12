@@ -14,7 +14,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 @Service
-@Transactional
+@Transactional("cifTransactionManager")
 public class CustomerRealServiceImpl extends AbstractCustomerService implements CustomerRealService {
 
     private static final Set<CustomerType> ALLOWED_TYPES =

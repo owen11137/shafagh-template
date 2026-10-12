@@ -13,14 +13,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional("baseTransactionManager")
 public class FundServiceImpl implements FundService {
     private final FundRepository repository;
     private final FundMapper mapper;
     private final CustomerLookup customers;
-    @Transactional(readOnly=true)
+    @Transactional(transactionManager = "baseTransactionManager", readOnly=true)
     public List<FundDto> findAll() { return repository.findAll().stream().map(mapper::toDto).toList(); }
-    @Transactional(readOnly=true)
+    @Transactional(transactionManager = "baseTransactionManager", readOnly=true)
     public FundDto getById(Long id) { return mapper.toDto(require(id)); }
     public FundDto save(FundDto dto) {
         validate(dto);

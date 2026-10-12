@@ -13,14 +13,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional("baseTransactionManager")
 public class BranchServiceImpl implements BranchService {
     private final BranchRepository repository;
     private final BranchMapper mapper;
     private final FundRepository funds;
-    @Transactional(readOnly=true)
+    @Transactional(transactionManager = "baseTransactionManager", readOnly=true)
     public List<BranchDto> findAll() { return repository.findAll().stream().map(mapper::toDto).toList(); }
-    @Transactional(readOnly=true)
+    @Transactional(transactionManager = "baseTransactionManager", readOnly=true)
     public BranchDto getById(Long id) { return mapper.toDto(require(id)); }
     public BranchDto save(BranchDto dto) {
         validate(dto);

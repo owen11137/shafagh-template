@@ -411,3 +411,47 @@ Sequenceهای مقصد را به مقداری بالاتر از بیشترین 
 CITY از قبل در BASE بوده است. جدول‌ها و داده‌های قدیمی با این تغییر حذف نمی‌شوند.
 تست‌ها روی دیتابیس H2 انجام شده‌اند؛ انتقال داده یا اتصال واقعی Oracle در این
 تغییر اجرا نشده است.
+
+
+## اتصال مستقل هر اسکیما و ساخت جدول‌ها
+
+حالت پیش‌فرض اجرای برنامه `shafagh.persistence.module-datasources=true` است.
+چهار DataSource، چهار persistence unit و چهار transaction manager مستقل تعریف
+شده‌اند. همهٔ اتصال‌ها به `DB_URL` وصل می‌شوند؛ آدرس هرکدام را نیز می‌توانید با
+`BASE_DB_URL`، `CIF_DB_URL`، `DPST_DB_URL` و `LOAN_DB_URL` جدا تنظیم کنید.
+نام کاربری و رمز پیش‌فرض هر اتصال برابر نام کوچک اسکیما است:
+`shfq_base`، `shfq_cif`، `shfq_dpst` و `shfq_loan`.
+برای تغییر آن‌ها از متغیرهای `{MODULE}_DB_USERNAME` و `{MODULE}_DB_PASSWORD`
+استفاده کنید؛ MODULE یکی از BASE، CIF، DPST، LOAN است.
+نام‌های بزرگ `SchemaName` برای Oracle بدون نقل‌قول با این کاربران مطابقت دارند.
+
+هر persistence unit فقط کلاس‌های `com.misc.shafagh.{module}.impl` را scan می‌کند
+و schema پیش‌فرض همان ماژول است. Repositoryها نیز به اتصال و transaction manager
+همان ماژول متصل‌اند. Entityهای فعلی schema جدول و Sequence را صریحاً از
+`SchemaName` می‌گیرند. Entity جدید را در پیاده‌سازی ماژول مربوط قرار دهید و برای
+جدول و Sequence از ثابت همان ماژول استفاده کنید. کلاس‌های `@MappedSuperclass`
+در common جدول مستقلی ندارند. ماژول loan فعلاً Entity ندارد؛ اتصال آن آماده است
+ولی تا اضافه شدن Entity، جدولی برای آن ساخته نمی‌شود.
+
+با `spring.jpa.hibernate.ddl-auto=update`، Hibernate در شروع برنامه جدول‌ها و
+Sequenceهای مفقود را با کاربر مالک هر اسکیما ایجاد می‌کند. خطای DDL باعث شکست
+startup می‌شود تا ساخت ناقص جدول‌ها پنهان نماند. هر کاربر Oracle باید از قبل در
+همان PDB موجود باشد و مجوزهای CREATE SESSION، CREATE TABLE، CREATE SEQUENCE
+و quota روی tablespace خود داشته باشد. فایل `scripts/oracle-schema-permissions.sql`
+برای اعطای این مجوزها به چهار کاربر موجود توسط مدیر دیتابیس ارائه شده است؛
+برنامه با این تنظیم، کاربر Oracle جدید ایجاد نمی‌کند. مجوز CREATE ANY TABLE یا
+دسترسی مستقیم به جدول‌های ماژول دیگر لازم نیست.
+
+سرویس‌های BASE از `@Transactional("baseTransactionManager")` و سرویس‌های CIF
+از `@Transactional("cifTransactionManager")` استفاده می‌کنند. برای سرویس جدید
+DPST یا LOAN نیز transaction manager همان ماژول را مشخص کنید. برای EntityManager
+از `@PersistenceContext(unitName="dpst")` (یا base/cif/loan) استفاده کنید.
+اتصال پیش‌فرض، EntityManager پیش‌فرض و transaction manager پیش‌فرض CIF هستند.
+این تراکنش‌ها مستقل‌اند؛ عملیات نوشتن در چند ماژول با این تنظیم، یک تراکنش اتمیک
+مشترک نیست. ارتباط فعلی ماژول‌ها فقط lookup از API ماژول دیگر است.
+
+تست‌های قبلی با `module-datasources=false` و یک اتصال مشترک H2 اجرا می‌شوند.
+`ModulePersistenceConfigurationTest` حالت چنداتصالی واقعی برنامه را با چهار
+کاربر H2 جداگانه اجرا می‌کند و جداسازی Entityها، ساخت همه جدول‌ها و Sequenceها،
+نام کاربر اتصال، ارتباط BASE/CIF و tenant/auditing سپرده را بررسی می‌کند.
+اتصال به Oracle واقعی و اجرای مجوزها باید در شبکهٔ دارای دسترسی به DB انجام شود.

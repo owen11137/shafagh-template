@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  *     <li>{@link #beforeSave(CustomerReqDTO)} : (اختیاری) مقداردهی پیش‌فرض مخصوص ایجاد</li>
  * </ul>
  */
-@Transactional
+@Transactional("cifTransactionManager")
 public abstract class AbstractCustomerService {
 
     @org.springframework.beans.factory.annotation.Value("${shafagh.fund-id:1}")
@@ -85,12 +85,12 @@ public abstract class AbstractCustomerService {
     // عملیات عمومی
     // ------------------------------------------------------------------
 
-    @Transactional(readOnly = true)
+    @Transactional(transactionManager = "cifTransactionManager", readOnly = true)
     public Page<CustomerDto> findAll(Pageable pageable) {
         return toDtoPage(personRepo.findAllByCustomerTypeIn(allowedTypes(), pageable));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(transactionManager = "cifTransactionManager", readOnly = true)
     public Page<CustomerDto> search(CustomerFilterDTO filter, Pageable pageable) {
         if (filter != null && filter.getCustomerType() != null) {
             validateType(filter.getCustomerType());
@@ -143,7 +143,7 @@ public abstract class AbstractCustomerService {
         return persist(entity, reqDTO);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(transactionManager = "cifTransactionManager", readOnly = true)
     public CustomerDto getById(long id) {
         CustomerDto dto = customerMapper.toDto(findOwnedOrThrow(id));
         fillProvince(dto, getProvinceMap());

@@ -15,21 +15,21 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional("baseTransactionManager")
 public class CityServiceImpl implements CityService {
     private final CityRepository repository;
     private final CityMapper mapper;
     public List<CityDto> findAll() {
         return findAllIncludingProvinces().stream().filter(c -> !Objects.equals(0L,c.getParentId())).toList();
     }
-    @Transactional(readOnly=true)
+    @Transactional(transactionManager = "baseTransactionManager", readOnly=true)
     public List<CityDto> findAllIncludingProvinces() {
         List<CityEntity> cities=repository.findAll();
         Map<Long,String> provinces=cities.stream().filter(c -> Objects.equals(0L,c.getParentId()))
             .collect(Collectors.toMap(CityEntity::getId,CityEntity::getName));
         return cities.stream().map(c -> { CityDto dto=mapper.toDto(c);dto.setProvince(provinces.get(c.getParentId()));return dto; }).toList();
     }
-    @Transactional(readOnly=true)
+    @Transactional(transactionManager = "baseTransactionManager", readOnly=true)
     public CityDto getById(Long id) {
         CityEntity city=require(id);
         CityDto dto=mapper.toDto(city);
