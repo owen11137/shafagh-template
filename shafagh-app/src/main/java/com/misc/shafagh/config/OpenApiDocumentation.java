@@ -114,6 +114,30 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
                 operation.getRequestBody().setDescription(path.endsWith("/filter") ? "فیلترهای جست‌وجو؛ برای جست‌وجوی بدون فیلتر، {} ارسال کنید." : "اطلاعات مشتری و فهرست‌های آدرس، تماس و امضا.");
             }
         }
+        if (path.equals("/loan/products") || path.equals("/loan/products/{id}")) {
+            operation.setTags(List.of("LOAN | محصولات تسهیلات"));
+            operation.setSummary(switch (method) {
+                case "POST" -> "ثبت محصول تسهیلات";
+                case "PUT" -> "ویرایش محصول تسهیلات";
+                case "DELETE" -> "حذف محصول تسهیلات";
+                default -> path.endsWith("/{id}") ? "دریافت محصول تسهیلات" : "فهرست محصولات تسهیلات";
+            });
+            operation.setDescription(switch (method) {
+                case "POST" -> "کد یکتا با حداکثر ۲۰ کاراکتر، نوع محصول و امکان تسویه زودهنگام الزامی‌اند. شناسه، صندوق فعال و اطلاعات ثبت توسط برنامه تعیین می‌شوند.";
+                case "PUT" -> "ویرایش کامل فیلدهای محصول با شناسه مسیر در صندوق فعال؛ شناسه، مالکیت و زمان ثبت حفظ می‌شوند. حداقل‌ها نباید از حداکثرها بیشتر باشند.";
+                case "DELETE" -> "حذف رکورد محصول متعلق به صندوق فعال؛ پاسخ موفق 204 و بدون بدنه است.";
+                default -> path.endsWith("/{id}") ? "مشخصات محصول با شناسه مسیر؛ محصول ناموجود یا متعلق به صندوق دیگر پاسخ 404 دارد."
+                        : "فهرست محصولات صندوق فعال؛ page از صفر، size پیش‌فرض ۲۰ و sort به شکل id,asc است.";
+            });
+            operation.getResponses().addApiResponse("400", new ApiResponse().description("ورودی نامعتبر؛ مقدار منفی، طول غیرمجاز، فیلد الزامی خالی یا بازه نامعتبر."));
+            if (path.endsWith("/{id}")) operation.getResponses().addApiResponse("404", new ApiResponse().description("محصول در صندوق فعال پیدا نشد."));
+            if (method.equals("POST") || method.equals("PUT")) {
+                operation.getRequestBody().setDescription("اطلاعات کامل محصول؛ مقادیر مالی و تعدادها نامنفی، حداقل <= حداکثر و تاریخ پایان >= شروع باشند.");
+                operation.getResponses().addApiResponse("409", new ApiResponse().description("کد محصول تکراری است؛ یکتایی کد در کل اسکیما برقرار است."));
+            }
+            if (method.equals("POST")) operation.getResponses().get("201").setDescription("محصول ثبت شد؛ شناسه و اطلاعات ثبت در پاسخ است.");
+            if (method.equals("DELETE")) operation.getResponses().get("204").setDescription("محصول حذف شد؛ بدنه ندارد.");
+        }
         if (operation.getResponses() != null && operation.getResponses().get("200") != null) {
             operation.getResponses().get("200").setDescription("عملیات موفق؛ ساختار نتیجه در Schema پاسخ نمایش داده شده است.");
         }
@@ -121,6 +145,8 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
 
     private void describeSchema(String name, Schema schema) {
         String description = switch (name) {
+            case "ProductLoanReqDTO" -> "LOAN ـ ورودی ثبت یا ویرایش کامل محصول تسهیلات؛ فاقد شناسه و اطلاعات سیستمی.";
+            case "ProductLoanResponseDto" -> "LOAN ـ مشخصات محصول تسهیلات همراه صندوق، auditing و version.";
             case "CityDto" -> "BASE ـ مشخصات شهر یا استان و نام استان والد.";
             case "FundDto" -> "BASE ـ مشخصات صندوق و شناسه مشتری مالک در CIF.";
             case "BranchDto" -> "BASE ـ مشخصات شعبه و شناسه صندوق مرتبط.";
@@ -175,6 +201,26 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
                 Map.entry("image", "تصویر امضا به صورت رشته Base64."));
         schema.getProperties().forEach((field, property) -> {
             String text = fields.get(field.toString());
+            if (name.startsWith("ProductLoan")) {
+                text = switch (field.toString()) {
+                    case "title" -> "عنوان محصول؛ حداکثر ۳۰۰ کاراکتر.";
+                    case "code" -> "کد یکتا در کل اسکیما؛ الزامی، حداکثر ۲۰ کاراکتر.";
+                    case "description" -> "شرح محصول؛ حداکثر ۳۰۰ کاراکتر.";
+                    case "productType" -> "نوع محصول؛ ADI یا VOJOH، الزامی.";
+                    case "earlySettlementAllowed" -> "امکان تسویه پیش از موعد؛ ارسال true یا false الزامی است.";
+                    case "fromDate", "toDate" -> "تاریخ شروع/پایان اعتبار؛ پایان نباید قبل از شروع باشد.";
+                    case "status" -> "وضعیت محصول مطابق مقادیر ProductStatus.";
+                    case "minAmount", "maxAmount" -> "حداقل/حداکثر مبلغ تسهیلات؛ نامنفی و حداقل <= حداکثر.";
+                    case "minFee", "maxFee" -> "حداقل/حداکثر کارمزد؛ نامنفی و حداقل <= حداکثر.";
+                    case "minFine", "maxFine" -> "حداقل/حداکثر جریمه؛ نامنفی و حداقل <= حداکثر.";
+                    case "installmentInterval" -> "فاصله اقساط؛ عدد نامنفی، بدون تعیین واحد در مدل فعلی.";
+                    case "minInstallmentCount", "maxInstallmentCount" -> "حداقل/حداکثر تعداد اقساط؛ نامنفی و حداقل <= حداکثر.";
+                    case "fundId" -> "شناسه صندوق فعال؛ از ورودی دریافت نمی‌شود.";
+                    case "version" -> "نسخه قفل خوش‌بینانه؛ توسط Hibernate تعیین می‌شود.";
+                    case "createdBy", "createdOn", "modifiedBy", "modifiedOn" -> "اطلاعات ثبت یا ویرایش که توسط auditing برنامه تعیین می‌شود.";
+                    default -> text;
+                };
+            }
             if (name.equals("CustomerFilterDTO")) {
                 text = switch (field.toString()) {
                     case "identifier", "customerCode", "shahabCode", "firstName", "lastName", "fatherName" -> "فیلتر اختیاری متن؛ تطابق شامل عبارت ارسالی و بدون حساسیت به حروف بزرگ و کوچک است.";

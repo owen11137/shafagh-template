@@ -466,8 +466,8 @@ DPST یا LOAN نیز transaction manager همان ماژول را مشخص کن
 `com.misc.shafagh` را به صورت خودکار در یک سند نشان می‌دهد و امکان ارسال درخواست
 از طریق Try it out را دارد. Controller جدید در هر ماژول نیز خودکار اضافه می‌شود.
 
-فعلاً BASE و CIF Controller دارند؛ DPST و LOAN تا زمانی که Controller REST
-نداشته باشند، endpoint در Swagger ندارند. قراردادهای سرویس جاوا و Entityها
+BASE، CIF و LOAN Controller دارند؛ DPST تا زمانی که Controller REST
+نداشته باشد، endpoint در Swagger ندارد. قراردادهای سرویس جاوا و Entityها
 به‌تنهایی endpoint نیستند. تنظیمات مشترک در `OpenApiConfiguration` و بخش
 `springdoc` در `application.yml` قرار دارند. تست HTTP مشترک، تولید سند، حضور
 مسیرهای BASE/CIF، schema DTO و ارائه فایل‌های Swagger UI را بررسی می‌کند.
@@ -503,7 +503,7 @@ Java همچنان 21 است. `clean install` و هر ۱۵ تست شامل مست
 فهرست انتخاب بالای Swagger شامل همه ماژول‌ها، BASE، CIF، DPST و LOAN است.
 گروه BASE مسیرهای `/base/**` و گروه CIF مسیرهای `/customer/**` را نشان می‌دهد؛
 مسیر استاندارد APIهای آینده DPST و LOAN به‌ترتیب `/dpst/**` و `/loan/**` است.
-دو گروه آخر فعلاً endpoint ندارند. سندهای گروهی در
+گروه DPST فعلاً endpoint ندارد و گروه LOAN مسیرهای محصول تسهیلات را نمایش می‌دهد. سندهای گروهی در
 `/v3/api-docs/00-all`، `/v3/api-docs/01-base`، `/v3/api-docs/02-cif`،
 `/v3/api-docs/03-dpst` و `/v3/api-docs/04-loan` ارائه می‌شوند.
 
@@ -516,7 +516,7 @@ Java همچنان 21 است. `clean install` و هر ۱۵ تست شامل مست
 قراردادهای API ماژول‌ها را به کتابخانه Swagger وابسته نمی‌کند.
 
 هنگام اضافه کردن مسیر یا DTO جدید، توضیح مربوط را در customizer توسعه دهید.
-تست HTTP مستندات، شرح تمام ۲۱ عملیات فعلی، توضیح DTOها، جدا بودن مسیرهای گروه‌ها
+تست HTTP مستندات، شرح تمام ۲۶ عملیات فعلی، توضیح DTOها، جدا بودن مسیرهای گروه‌ها
 و یکسان بودن توضیحات سند اصلی و سند گروه BASE را بررسی می‌کند.
 
 
@@ -542,7 +542,7 @@ LoanPersonType و CollateralType مخصوص مدل داخلی تسهیلات‌�
 اسکیما LOAN، ارتباط شخص و وام، نوع و شماره وثیقه، متن فارسی محصول، مبلغ دقیق،
 ثبت و ویرایش وضعیت، version/auditing و جداسازی tenant را روی اتصال مستقل H2
 بررسی می‌کند. این کلاس‌ها به‌تنهایی endpoint REST ایجاد نمی‌کنند؛ گروه Swagger
-LOAN تا اضافه‌شدن Controller همچنان خالی است. اجرای واقعی Oracle در این بررسی
+LOAN اکنون CRUD محصول تسهیلات را نمایش می‌دهد. اجرای واقعی Oracle در این بررسی
 انجام نشده است.
 
 ### اقساط تسهیلات
@@ -689,3 +689,51 @@ create داده‌های جدول‌های نگاشت‌شده را در هر st
 را پس از توقف برنامه حفظ می‌کند. این تنظیم همهٔ اشیای نامرتبط اسکیما یا Sequenceهای
 قدیمیِ خارج از نگاشت فعلی را حذف نمی‌کند. برای مرحلهٔ دارای داده یا محیط عملیاتی،
 create را به update یا validate متناسب با راهبرد مهاجرت تغییر دهید.
+
+
+## CRUD محصول تسهیلات
+
+Repository، سرویس داخلی و کنترلر `ProductLoanEntity` در ماژول loan اضافه شده‌اند.
+سرویس از `loanTransactionManager`، DTO و mapper موجود استفاده می‌کند. دریافت،
+فهرست، ویرایش و حذف با fundId فعال محدود می‌شوند؛ کاربر نمی‌تواند ID، fundId،
+version یا auditing را در request تعیین کند. flush قبل از ساخت response انجام
+می‌شود تا اطلاعات ثبت و version واقعی در پاسخ باشند.
+
+| عملیات | مسیر | پاسخ موفق |
+| --- | --- | --- |
+| ثبت | `POST /loan/products` | 201 و مشخصات محصول |
+| فهرست | `GET /loan/products?page=0&size=20&sort=id,asc` | 200 و صفحه نتایج |
+| دریافت | `GET /loan/products/{id}` | 200 |
+| ویرایش | `PUT /loan/products/{id}` | 200 |
+| حذف | `DELETE /loan/products/{id}` | 204 بدون بدنه |
+
+نمونهٔ بدنهٔ ثبت:
+
+```json
+{
+  "code": "QL-001",
+  "title": "محصول قرض‌الحسنه",
+  "productType": "ADI",
+  "status": "ACTIVE",
+  "earlySettlementAllowed": true,
+  "minAmount": 1000,
+  "maxAmount": 100000,
+  "installmentInterval": 1,
+  "minInstallmentCount": 1,
+  "maxInstallmentCount": 24
+}
+```
+
+code، productType و earlySettlementAllowed الزامی‌اند؛ code پس از trim حداکثر
+۲۰ کاراکتر و در کل اسکیما یکتا است. title و description حداکثر ۳۰۰ کاراکترند.
+مقادیر مالی و تعدادها نامنفی، min <= max و toDate >= fromDate هستند. ورودی
+نامعتبر 400، رکورد ناموجود یا متعلق به صندوق دیگر 404 و کد تکراری 409 دارد.
+خطاهای این کنترلر با ProblemDetail و فیلد detail برمی‌گردند؛ تداخل هم‌زمان
+ویرایش نیز 409 دارد. تشخیص تکرار در پایگاه داده، رقابت هم‌زمان یا کد متعلق به
+صندوق دیگر را هم پوشش می‌دهد و constraint موجود UK_PRODUCT_LOAN_CODE حفظ شده است.
+
+Swagger در گروه LOAN و Tag «محصولات تسهیلات»، همهٔ مسیرها، request/response و
+شرح فیلدهای محصول را نشان می‌دهد. `ProductLoanCrudTest` چهار تست HTTP واقعی
+روی اتصال مستقل LOAN دارد: چرخه CRUD با auditing/version، اعتبارسنجی، کد تکراری
+و رکورد ناموجود، و جداسازی tenant همراه یکتایی جهانی کد. Oracle واقعی در این
+بررسی اجرا نشده است.

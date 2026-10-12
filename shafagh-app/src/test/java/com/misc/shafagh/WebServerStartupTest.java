@@ -1,6 +1,7 @@
 package com.misc.shafagh;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -147,7 +148,7 @@ class WebServerStartupTest {
                     operationCount++;
                 }
             }
-            assertEquals(21, operationCount);
+            assertEquals(26, operationCount);
             for (String model : new String[]{"CityDto", "FundDto", "BranchDto", "CustomerReqDTO", "CustomerDto", "CustomerFilterDTO"}) {
                 org.junit.jupiter.api.Assertions.assertFalse(document.path("components").path("schemas").path(model)
                         .path("description").asText().isBlank(), model);
@@ -169,7 +170,14 @@ class WebServerStartupTest {
                     org.junit.jupiter.api.Assertions.assertTrue(grouped.path("paths").has("/customer/real/save"));
                     org.junit.jupiter.api.Assertions.assertFalse(grouped.path("paths").has("/base/city"));
                 }
-                if (group.equals("03-dpst") || group.equals("04-loan")) assertEquals(0, grouped.path("paths").size());
+                if (group.equals("03-dpst")) assertEquals(0, grouped.path("paths").size());
+                if (group.equals("04-loan")) {
+                    assertTrue(grouped.path("paths").has("/loan/products"));
+                    assertTrue(grouped.path("paths").path("/loan/products").path("post").path("responses").has("201"));
+                    assertTrue(grouped.path("paths").path("/loan/products/{id}").path("delete").path("responses").has("204"));
+                    assertEquals("ثبت محصول تسهیلات", grouped.path("paths").path("/loan/products").path("post").path("summary").asText());
+                    org.junit.jupiter.api.Assertions.assertFalse(grouped.path("paths").has("/base/city"));
+                }
             }
         }
     }

@@ -15,9 +15,10 @@ public class OpenApiConfiguration {
         return new OpenAPI().info(new Info()
                 .title("Shafagh API")
                 .description("مستندات API شفق. BASE: شهر، شعبه و صندوق؛ CIF: مشتری حقیقی و حقوقی. "
-                        + "DPST: سپرده و LOAN: تسهیلات؛ این دو ماژول فعلاً کنترلر REST ندارند. "
+                        + "LOAN: مدیریت محصولات تسهیلات؛ DPST: سپرده که فعلاً کنترلر REST ندارد. "
                         + "از فهرست بالای صفحه، همه APIها یا ماژول موردنظر را انتخاب کنید.")
                 .version("1.0.0"))
+                .addTagsItem(new Tag().name("LOAN | محصولات تسهیلات").description("ProductLoanController؛ ثبت، دریافت، فهرست صفحه‌بندی‌شده، ویرایش و حذف محصول تسهیلات صندوق فعال"))
                 .addTagsItem(new Tag().name("BASE | شهرها").description("CityController؛ مدیریت شهر و استان و اطلاعات جغرافیایی مشترک"))
                 .addTagsItem(new Tag().name("BASE | صندوق‌ها").description("FundController؛ مدیریت صندوق و مالک آن در CIF"))
                 .addTagsItem(new Tag().name("BASE | شعبه‌ها").description("BranchController؛ مدیریت شعبه‌های وابسته به صندوق"))
