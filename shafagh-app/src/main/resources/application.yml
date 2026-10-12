@@ -40,3 +40,10 @@ shafagh:
       password: ${LOAN_DB_PASSWORD:shfq_loan}
       driver-class-name: oracle.jdbc.OracleDriver
       maximum-pool-size: 5
+
+springdoc:
+  packages-to-scan: com.misc.shafagh
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha

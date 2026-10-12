@@ -105,4 +105,26 @@ class WebServerStartupTest {
         assertEquals(city.getName(), client.post().uri("/customer/real/getById/{id}", owner.getId()).retrieve()
                 .body(com.misc.shafagh.cif.impl.dto.response.CustomerDto.class).getCity().getName());
     }
+    @Test
+    void sharedSwaggerServesUiAndDocumentsAllCurrentModuleControllers() throws Exception {
+        int port = applicationContext.getWebServer().getPort();
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            var specificationRequest = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + "/v3/api-docs"))
+                    .timeout(Duration.ofSeconds(10)).GET().build();
+            var specification = client.send(specificationRequest, HttpResponse.BodyHandlers.ofString());
+            assertEquals(200, specification.statusCode());
+            var document = tools.jackson.databind.json.JsonMapper.builder().build().readTree(specification.body());
+            assertEquals("Shafagh API", document.path("info").path("title").asText());
+            for (String path : new String[]{"/base/city", "/base/fund", "/base/branch", "/customer/real/save", "/customer/legal/save"}) {
+                org.junit.jupiter.api.Assertions.assertTrue(document.path("paths").has(path), path);
+            }
+            org.junit.jupiter.api.Assertions.assertTrue(document.path("paths").path("/base/city").has("post"));
+            org.junit.jupiter.api.Assertions.assertTrue(document.path("components").path("schemas").has("CityDto"));
+            for (String path : new String[]{"/swagger-ui/index.html", "/swagger-ui/swagger-ui-bundle.js", "/v3/api-docs/swagger-config"}) {
+                var request = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + path))
+                        .timeout(Duration.ofSeconds(10)).GET().build();
+                assertEquals(200, client.send(request, HttpResponse.BodyHandlers.discarding()).statusCode(), path);
+            }
+        }
+    }
 }

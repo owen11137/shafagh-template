@@ -455,3 +455,19 @@ DPST یا LOAN نیز transaction manager همان ماژول را مشخص کن
 کاربر H2 جداگانه اجرا می‌کند و جداسازی Entityها، ساخت همه جدول‌ها و Sequenceها،
 نام کاربر اتصال، ارتباط BASE/CIF و tenant/auditing سپرده را بررسی می‌کند.
 اتصال به Oracle واقعی و اجرای مجوزها باید در شبکهٔ دارای دسترسی به DB انجام شود.
+
+
+## Swagger مشترک همه ماژول‌ها
+
+وابستگی `springdoc-openapi-starter-webmvc-ui` نسخهٔ 3.0.3 سازگار با Spring Boot 4
+فقط در `shafagh-app` قرار دارد. Swagger UI در `/swagger-ui.html` (یا
+`/swagger-ui/index.html`) و سند OpenAPI در `/v3/api-docs` ارائه می‌شود؛ پورت
+پیش‌فرض برنامه 8084 است. این صفحه همهٔ Controllerهای REST در
+`com.misc.shafagh` را به صورت خودکار در یک سند نشان می‌دهد و امکان ارسال درخواست
+از طریق Try it out را دارد. Controller جدید در هر ماژول نیز خودکار اضافه می‌شود.
+
+فعلاً BASE و CIF Controller دارند؛ DPST و LOAN تا زمانی که Controller REST
+نداشته باشند، endpoint در Swagger ندارند. قراردادهای سرویس جاوا و Entityها
+به‌تنهایی endpoint نیستند. تنظیمات مشترک در `OpenApiConfiguration` و بخش
+`springdoc` در `application.yml` قرار دارند. تست HTTP مشترک، تولید سند، حضور
+مسیرهای BASE/CIF، schema DTO و ارائه فایل‌های Swagger UI را بررسی می‌کند.
