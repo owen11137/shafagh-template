@@ -1,6 +1,5 @@
 package com.misc.shafagh.base.impl.entity;
 
-import com.misc.infra.framework4.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
@@ -21,7 +20,7 @@ import org.hibernate.annotations.TenantId;
  * same physical schema.
  * <p>
  * Pure reference/master data that is intentionally shared across every institution
- * (e.g. {@code CountryEntity}, {@code CityEntity}) should extend {@link com.misc.infra.framework4.entity.BaseEntity}
+ * (e.g. {@code CountryEntity}, {@code CityEntity}) should extend {@link BaseEntity}
  * directly instead, bypassing tenant filtering.
  *
  * @author core-banking-party-model

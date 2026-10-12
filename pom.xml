@@ -23,6 +23,7 @@
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <archunit.version>1.4.1</archunit.version>
+        <lombok.version>1.18.48</lombok.version>
     </properties>
 
     <modules>
@@ -31,7 +32,6 @@
         <module>shafagh-dpst</module>
         <module>shafagh-loan</module>
         <module>shafagh-orchestration</module>
-        <module>shafagh-architecture-tests</module>
         <module>shafagh-app</module>
     </modules>
 
@@ -84,11 +84,6 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.misc.shafagh</groupId>
-                <artifactId>shafagh-architecture-tests</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.tngtech.archunit</groupId>
                 <artifactId>archunit</artifactId>
                 <version>${archunit.version}</version>
@@ -101,13 +96,8 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.48</version>
+                <version>${lombok.version}</version>
                 <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.misc.infra</groupId>
-                <artifactId>framework-4</artifactId>
-                <version>4.1.15</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

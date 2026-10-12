@@ -17,6 +17,10 @@
     <dependencies>
         <dependency>
             <groupId>com.misc.shafagh</groupId>
+            <artifactId>shafagh-base-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.misc.shafagh</groupId>
             <artifactId>shafagh-dpst-api</artifactId>
         </dependency>
         <dependency>
