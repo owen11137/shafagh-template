@@ -1,4 +1,4 @@
-package com.misc.shafagh.base.impl.entity;
+package com.misc.shafagh.common.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;

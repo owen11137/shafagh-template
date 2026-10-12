@@ -17,6 +17,10 @@
     <dependencies>
         <dependency>
             <groupId>com.misc.shafagh</groupId>
+            <artifactId>shafagh-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.misc.shafagh</groupId>
             <artifactId>shafagh-cif-api</artifactId>
         </dependency>
         <dependency>

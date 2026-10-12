@@ -17,7 +17,7 @@
     <dependencies>
         <dependency>
             <groupId>com.misc.shafagh</groupId>
-            <artifactId>shafagh-base-impl</artifactId>
+            <artifactId>shafagh-common</artifactId>
         </dependency>
         <dependency>
             <groupId>com.misc.shafagh</groupId>

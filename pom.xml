@@ -27,6 +27,7 @@
     </properties>
 
     <modules>
+        <module>shafagh-common</module>
         <module>shafagh-base</module>
         <module>shafagh-cif</module>
         <module>shafagh-dpst</module>
@@ -37,6 +38,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.misc.shafagh</groupId>
+                <artifactId>shafagh-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.misc.shafagh</groupId>
                 <artifactId>shafagh-base-api</artifactId>

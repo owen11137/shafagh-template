@@ -20,11 +20,11 @@
 ```
 shafagh-parent/
 ├── pom.xml
+├── shafagh-common/                 (زیرساخت مشترک مستقل از دامنه‌ها)
 ├── shafagh-<ماژول>/                 (pom تجمیعی، فقط ظرف)
 │   ├── shafagh-<ماژول>-api/         (اینترفیس سرویس + DTO)
 │   └── shafagh-<ماژول>-impl/        (<Module>Schema, entity, repository, service)
 ├── shafagh-orchestration/           (سناریوهای چندماژولی)
-├── shafagh-architecture-tests/      (قوانین ArchUnit)
 ├── shafagh-app/                     (کلاس اصلی، تنظیمات، تست یکپارچه)
 ├── scripts/                         (اسکریپت‌های Oracle: 01 اسکیما/کاربر، 02 جدول، 03 grant)
 └── docs/DEVELOPER-GUIDE.md
@@ -36,9 +36,27 @@ shafagh-parent/
 - `...<m>.impl`: کلاس `<Module>Schema` (نام اسکیما)
 - `...<m>.impl.entity` / `impl.repository` / `impl.service`
 
-`com.misc.shafagh.base.persistence` قرار می‌گیرند. ماژول‌های `impl` می‌توانند به این
-زیرساخت وابسته شوند؛ Entity و Repository دامنه همچنان در `impl` ماژول صاحبشان
-می‌مانند. enum مشترک `ProductStatus` در `shafagh-base-api` است و وابستگی JPA ندارد.
+کلاس‌های زیرساخت مشترک در ماژول مستقل `shafagh-common` قرار می‌گیرند:
+
+```
+com.misc.shafagh.common
+└── persistence
+    ├── BaseEntity
+    └── TenantAwareEntity
+```
+
+ماژول‌های `impl` برای استفاده از این کلاس‌ها به `shafagh-common` وابسته می‌شوند؛
+این ماژول به هیچ دامنه‌ای وابسته نیست. Entity و Repository دامنه همچنان در
+`impl` ماژول صاحبشان می‌مانند. enum مشترک `ProductStatus` در `shafagh-base-api`
+است و وابستگی JPA ندارد.
+
+utilityهای عمومی آینده را در پکیج متناسب با مسئولیتشان، مثل `common.time` یا
+`common.validation`، اضافه کنید. منطق کسب‌وکار مثل محاسبهٔ اقساط در دامنهٔ تسهیلات
+می‌ماند و از API آن ارائه می‌شود. در ساختار فعلی، مصرف‌کنندهٔ `common` وابستگی‌های
+persistence را نیز دریافت می‌کند؛ ماژول‌های API به این زیرساخت وابسته نمی‌شوند.
+
+تست `ModuleBoundaryTest` در `shafagh-app` وابستگی معکوس از `common` به دامنه‌ها،
+وابستگی API به persistence و استفادهٔ مستقیم از impl دامنهٔ دیگر را بررسی می‌کند.
 
 `BaseEntity` در همین زیرساخت، زمان/کاربر ایجاد و ویرایش و نسخهٔ خوش‌بینانهٔ
 `OPT_LOCK` را تعریف می‌کند. `TenantAwareEntity` از آن ارث می‌برد و شناسهٔ صندوق
@@ -61,11 +79,12 @@ shafagh-parent/
 5. **api خالص بماند**: بدون Spring و بدون JPA. فقط اینترفیس، record و enum.
 6. **عملیاتی که بیش از یک ماژول را تغییر می‌دهد** فقط در `shafagh-orchestration` نوشته می‌شود.
 
-قوانین ۱، ۲ (روی Entityها)، ۵ و جهت وابستگی را ArchUnit کنترل می‌کند و نقضشان بیلد را می‌شکند. قوانین ۳ و ۴ (به‌خصوص native query و JPQL) را **باید در code review** بررسی کنید.
+قوانین ۱ و ۵ و استقلال زیرساخت مشترک را ArchUnit کنترل می‌کند و نقضشان بیلد را
+می‌شکند. مالکیت schema، روابط بین Entityها و SQL مستقیم را در code review بررسی کنید.
 
 ### ۳-۱. ArchUnit چطور کار می‌کند
 
-ArchUnit یک کتابخانه‌ی تست است که **ساختار کد** را بررسی می‌کند، نه رفتار آن را. در پروژه یک تست JUnit معمولی است (`ModuleArchitectureTest`) که در `mvn verify` اجرا می‌شود.
+ArchUnit یک کتابخانه‌ی تست است که **ساختار کد** را بررسی می‌کند، نه رفتار آن را. در پروژه یک تست JUnit معمولی است (`ModuleBoundaryTest`) که در `mvn verify` اجرا می‌شود.
 
 1. **کلاس‌ها را می‌خواند.** برنامه را اجرا نمی‌کند. فایل‌های `.class` (بایت‌کد) پکیج `com.misc.shafagh` را می‌خواند و مدلی می‌سازد: هر کلاس در کدام پکیج است، به کدام کلاس‌ها وابسته است (import، فیلد، پارامتر، فراخوانی، ارث‌بری) و چه annotation‌هایی دارد.
 2. **قانون را مثل یک جمله می‌نویسی.** مثال: «هیچ کلاسی در `dpst.impl` نباید به impl ماژول‌های دیگر وابسته باشد»:
@@ -79,18 +98,21 @@ noClasses().that().resideInAPackage("com.misc.shafagh.dpst.impl..")
 
 3. **اگر حتی یک کلاس قانون را نقض کند، تست قرمز می‌شود** و پیام خطا دقیقاً می‌گوید کدام کلاس به چه چیزی وابسته شده است.
 
-قوانین فعلی: api به impl و به Spring/JPA وابسته نیست؛ impl یک ماژول به impl ماژول دیگر وابسته نیست؛ جهت وابستگی `base ← cif ← dpst ← loan` و بدون حلقه؛ orchestration فقط به api وابسته است؛ هر Entity در اسکیمای ماژول خودش است.
+قوانین فعلی تست: api به impl، persistence مشترک یا Spring/JPA/Hibernate وابسته
+نیست؛ impl یک دامنه به impl دامنهٔ دیگر وابسته نیست؛ common به دامنه‌ها و تنظیمات
+برنامه وابسته نیست.
 
 چون ArchUnit بایت‌کد را می‌بیند، **رشته‌ها (String) را نمی‌فهمد**: native query و JPQL که جدول ماژول دیگر را بزند تشخیص داده نمی‌شود و باید در code review دیده شود.
 
-برای دیدن عملی: در یک Entity `@Table(schema = "SHFQ_BASE")` بگذار ولی آن را در پکیج `loan.impl.entity` بساز و `mvn verify` بزن. تست `entitiesMapOnlyToTheSchemaOfTheirOwnModule` قرمز می‌شود و پیامش را بخوان.
+اگر وابستگی به impl دامنهٔ دیگر را به POM اضافه کنید و کد آن را مستقیم استفاده
+کند، تست `domainsUseOtherDomainsOnlyThroughApis` در `mvn verify` شکست می‌خورد.
 
 ### ۳-۲. چرا ماژول‌ها به impl همدیگر دسترسی ندارند
 
 مثلاً `shafagh-loan-impl` نمی‌تواند به `shafagh-dpst-impl` دسترسی داشته باشد. دو لایه مانع می‌شود:
 
 1. **Maven (زمان کامپایل):** در pom ماژول `shafagh-loan-impl` فقط `shafagh-loan-api`، `shafagh-dpst-api`، `shafagh-cif-api` و `shafagh-base-api` هست. `shafagh-dpst-impl` در کلاس‌پث کامپایل آن نیست و import کردن `DepositServiceImpl` یا `DepositRepository` خطای کامپایل می‌دهد.
-2. **ArchUnit (تست):** اگر کسی وابستگی `dpst-impl` را به pom اضافه کند تا کامپایل شود، قانون `implOfOneModuleNeverUsesImplOfAnotherModule` تست را قرمز می‌کند.
+2. **ArchUnit (تست):** اگر کسی وابستگی `dpst-impl` را به pom اضافه کند و از کلاس‌های داخلی آن استفاده کند، قانون `domainsUseOtherDomainsOnlyThroughApis` تست را قرمز می‌کند.
 
 ارتباط درست فقط از طریق اینترفیس api است:
 
@@ -209,17 +231,15 @@ mvn clean verify -Dtest.profile=oracle
 
 | تست | چه چیزی را ثابت می‌کند |
 |---|---|
-| `ModuleArchitectureTest` (ArchUnit) | مرز ماژول‌ها: فقط api، جهت وابستگی، بدون حلقه، Entity فقط در اسکیمای ماژول خودش |
-| `ModuleCollaborationTest` | ارتباط ماژول‌ها فقط با سرویس‌های expose شده (سپرده به شخص و ارز، تسهیلات به شخص و سپرده) و اعتبارسنجی‌های هر ماژول |
-| `MultiModuleTransactionTest` | «یا همه یا هیچ»: موفقیت کامل؛ شکست در مرحله‌ی ۱، ۲ یا ۳ همه را برمی‌گرداند؛ مالک اشتباه سپرده؛ الگوهای اشتباه (checked exception، قورت‌دادن exception) |
-| `ConcurrencyTest` | دو بلوکه‌ی هم‌زمان بیش از موجودی: فقط یکی موفق می‌شود و بازنده کاملاً rollback می‌شود |
-| `OracleSchemaTest` (فقط Oracle) | جدول و sequence هر ماژول در اسکیمای خودش است، بین اسکیماها FK نیست، کاربر اتصال به همه‌ی اسکیماها دسترسی دارد |
+| `ModuleBoundaryTest` (ArchUnit، سه تست) | استقلال common، API بدون persistence و منع دسترسی به impl دامنهٔ دیگر |
+| `DepositPersistenceTest` | ذخیرهٔ محصول، سپرده و شخص مرتبط؛ شناسهٔ صندوق، auditing و افزایش نسخهٔ خوش‌بینانه |
+| `WebServerStartupTest` | راه‌اندازی وب‌سرور و پاسخ به درخواست HTTP |
 
 برای نوشتن تست سناریوی جدید:
 
-- از `AbstractScenarioSupport` ارث ببر. داده‌ی تست را با `newPerson()` و `newDeposit()` بساز تا خودکار پاک شود.
-- تست را **بدون `@Transactional`** بنویس تا rollback واقعی دیده شود.
-- نتیجه را با `blockedInDb`، `loansInDb`، `rowCount` (JDBC مستقیم) بررسی کن، نه فقط با پاسخ سرویس.
+- از `@SpringBootTest` برای راه‌اندازی برنامه و از EntityManager یا Repository برای ساخت داده استفاده کن.
+- برای بررسی commit/rollback واقعی، تست را بدون `@Transactional` اجرا کن و داده‌های خودت را پاک کن.
+- برای تست صرفاً persistence، مانند `DepositPersistenceTest` تراکنش تست را rollback کن.
 - برای هر سناریوی چندماژولی تست «شکست در هر مرحله» بنویس.
 
 ## ۶. افزودن قابلیت به ماژول موجود
@@ -288,8 +308,8 @@ public class XxxApplicationService {
 4. پکیج‌ها: `com.misc.shafagh.<m>.api` و `com.misc.shafagh.<m>.impl.{entity,repository,service}`.
 5. در `com.misc.shafagh.<m>.impl` کلاس `<M>Schema` با ثابت `NAME` بساز (مثلاً `XyzSchema`). اسکیمای Oracle را با DBA هماهنگ و در DDL اضافه کن.
 6. Entityها را با `@Table(schema = XyzSchema.NAME, ...)` و sequenceها را با `schema = XyzSchema.NAME` بنویس.
-7. impl را به pom مربوط به `shafagh-app` و `shafagh-architecture-tests` اضافه کن.
-8. در `ModuleArchitectureTest`: نام ماژول را به `MODULES` اضافه کن و جایگاهش را در قوانین جهت وابستگی مشخص کن.
+7. impl را به pom مربوط به `shafagh-app` اضافه کن؛ برای زیرساخت مشترک به `shafagh-common` وابسته شو.
+8. در `ModuleBoundaryTest` نام دامنه را به `DOMAINS` و پکیجش را به ممنوعیت‌های وابستگی common اضافه کن.
 9. نام اسکیمای ماژول جدید را به ساخت اسکیماهای H2 در `shafagh-app/src/test/resources/application.yml` اضافه کن.
 10. اگر ماژول جدید بین ماژول‌های موجود قرار می‌گیرد، تیم معماری باید جهت وابستگی را تأیید کند.
 
@@ -323,7 +343,7 @@ public class XxxApplicationService {
 
 ## ۱۲. محدودیت‌های شناخته‌شده
 
-- ArchUnit فقط Entityها را بررسی می‌کند و native query یا JPQL که اسکیمای ماژول دیگر را بزند تشخیص نمی‌دهد. در code review بررسی شود.
+- ArchUnit وابستگی کلاس‌ها را بررسی می‌کند؛ SQL رشته‌ای و مالکیت schemaها نیازمند بررسی جداگانه‌اند.
 - کاربر اتصال به همه‌ی اسکیماها دسترسی دارد، پس جداسازی در سطح دیتابیس اجباری نشده است (در انتظار تصمیم معماری فنی).
 - لایه‌ی REST هنوز در تمپلیت نیست. controllerها در `shafagh-app` (یا یک ماژول وب جدا) نوشته شوند و برای عملیات چندماژولی فقط orchestration را صدا بزنند.
 - تست‌ها به‌صورت پیش‌فرض روی H2 اجرا می‌شوند؛ برای اطمینان از DDL و دسترسی‌های واقعی باید با `-Dtest.profile=oracle` هم اجرا شوند.
