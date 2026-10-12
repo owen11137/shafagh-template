@@ -8,10 +8,10 @@
 
 | ماژول | پکیج | اسکیمای Oracle | کلاس اسکیما |
 |---|---|---|---|
-| اطلاعات پایه و مشترک | `com.misc.shafagh.base` | `SHFQ_BASE` | `BaseSchema` |
-| اشخاص | `com.misc.shafagh.cif` | `SHFQ_CIF` | `CifSchema` |
-| سپرده | `com.misc.shafagh.dpst` | `SHFQ_DPST` | `DpstSchema` |
-| تسهیلات | `com.misc.shafagh.loan` | `SHFQ_LOAN` | `LoanSchema` |
+| اطلاعات پایه و مشترک | `com.misc.shafagh.base` | `SHFQ_BASE` | `SchemaName.BASE` |
+| اشخاص | `com.misc.shafagh.cif` | `SHFQ_CIF` | `SchemaName.CIF` |
+| سپرده | `com.misc.shafagh.dpst` | `SHFQ_DPST` | `SchemaName.DPST` |
+| تسهیلات | `com.misc.shafagh.loan` | `SHFQ_LOAN` | `SchemaName.LOAN` |
 
 جهت وابستگی ثابت است: `base ← cif ← dpst ← loan`. یعنی base به هیچ ماژولی وابسته نیست، cif فقط به base، و به همین ترتیب. وابستگی برعکس یا حلقه ممنوع است.
 
@@ -23,7 +23,7 @@ shafagh-parent/
 ├── shafagh-common/                 (زیرساخت مشترک مستقل از دامنه‌ها)
 ├── shafagh-<ماژول>/                 (pom تجمیعی، فقط ظرف)
 │   ├── shafagh-<ماژول>-api/         (اینترفیس سرویس + DTO)
-│   └── shafagh-<ماژول>-impl/        (<Module>Schema, entity, repository, service)
+│   └── shafagh-<ماژول>-impl/        (entity, repository, service)
 ├── shafagh-orchestration/           (سناریوهای چندماژولی)
 ├── shafagh-app/                     (کلاس اصلی، تنظیمات، تست یکپارچه)
 ├── scripts/                         (اسکریپت‌های Oracle: 01 اسکیما/کاربر، 02 جدول، 03 grant)
@@ -33,7 +33,7 @@ shafagh-parent/
 داخل هر ماژول:
 
 - `...<m>.api`: `XxxService` (اینترفیس) و `api.dto` (record و enum عمومی)
-- `...<m>.impl`: کلاس `<Module>Schema` (نام اسکیما)
+- `com.misc.shafagh.common.SchemaName`: ثابت‌های نام اسکیما برای همهٔ دامنه‌ها
 - `...<m>.impl.entity` / `impl.repository` / `impl.service`
 
 کلاس‌های زیرساخت مشترک در ماژول مستقل `shafagh-common` قرار می‌گیرند:
@@ -75,7 +75,7 @@ persistence را نیز دریافت می‌کند؛ ماژول‌های API ب�
 ## ۳. قوانین طلایی
 
 1. **فقط به api ماژول دیگر وابسته شو، هرگز به impl.**
-2. **فقط به اسکیمای ماژول خودت دسترسی داشته باش.** هر Entity باید `@Table(schema = <Module>Schema.NAME, name = "...")` داشته باشد.
+2. **فقط به اسکیمای ماژول خودت دسترسی داشته باش.** هر Entity باید `@Table(schema = SchemaName.<MODULE>, name = "...")` داشته باشد.
 3. **رابطه‌ی JPA بین ماژول‌ها ممنوع است** (`@ManyToOne` و مانند آن به Entity ماژول دیگر). فقط شناسه (`Long personId`) نگه دار.
 4. **join یا query مستقیم روی جدول اسکیمای دیگر ممنوع است**، حتی با native query. اطلاعات را از سرویس همان ماژول بگیر.
 5. **api خالص بماند**: بدون Spring و بدون JPA. فقط اینترفیس، record و enum.
@@ -132,20 +132,18 @@ class LoanServiceImpl implements LoanService {
 
 ## ۴. اسکیمای هر ماژول
 
-هر ماژول اسکیمای Oracle خودش را در یک کلاس ثابت اعلام می‌کند و نام اسکیما فقط همان‌جا نوشته می‌شود:
+نام اسکیماها در کلاس مشترک `SchemaName` تعریف می‌شود. مقدار جدول و sequence باید
+از همان ثابت خوانده شود. شهر مرجع در `SchemaName.BASE` و مدل‌های مشتری در
+`SchemaName.CIF` قرار می‌گیرند:
 
 ```java
-// com.misc.shafagh.dpst.impl.DpstSchema
-public final class DpstSchema {
-    public static final String NAME = "SHFQ_DPST";
-    private DpstSchema() {}
-}
+import com.misc.shafagh.common.SchemaName;
 
 @Entity
-@Table(schema = DpstSchema.NAME, name = "SHFQ_DPST_DEPOSIT")
+@Table(schema = SchemaName.DPST, name = "SHFQ_DPST_DEPOSIT")
 public class DepositEntity { ... }
 
-@SequenceGenerator(name = "...", schema = DpstSchema.NAME, sequenceName = "SHFQ_DPST_DEPOSIT_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "...", schema = SchemaName.DPST, sequenceName = "SHFQ_DPST_DEPOSIT_SEQ", allocationSize = 1)
 ```
 
 - نام اسکیماها در همه‌ی محیط‌ها یکی است.
@@ -308,8 +306,8 @@ public class XxxApplicationService {
 2. داخلش `shafagh-<m>-api` و `shafagh-<m>-impl` را بساز و در pom هر دو `<relativePath>../../pom.xml</relativePath>` بگذار.
 3. در pom ریشه: پوشه‌ی گروه را به `modules` و artifactهای api/impl را به `dependencyManagement` اضافه کن.
 4. پکیج‌ها: `com.misc.shafagh.<m>.api` و `com.misc.shafagh.<m>.impl.{entity,repository,service}`.
-5. در `com.misc.shafagh.<m>.impl` کلاس `<M>Schema` با ثابت `NAME` بساز (مثلاً `XyzSchema`). اسکیمای Oracle را با DBA هماهنگ و در DDL اضافه کن.
-6. Entityها را با `@Table(schema = XyzSchema.NAME, ...)` و sequenceها را با `schema = XyzSchema.NAME` بنویس.
+5. ثابت نام اسکیمای جدید را به `SchemaName` در `shafagh-common` اضافه کن و ساخت اسکیمای Oracle را با DBA هماهنگ کن.
+6. Entityها را با `@Table(schema = SchemaName.<MODULE>, ...)` و sequenceها را با `schema = SchemaName.<MODULE>` بنویس.
 7. impl را به pom مربوط به `shafagh-app` اضافه کن؛ برای زیرساخت مشترک به `shafagh-common` وابسته شو.
 8. در `ModuleBoundaryTest` نام دامنه را به `DOMAINS` و پکیجش را به ممنوعیت‌های وابستگی common اضافه کن.
 9. نام اسکیمای ماژول جدید را به ساخت اسکیماهای H2 در `shafagh-app/src/test/resources/application.yml` اضافه کن.
@@ -321,7 +319,7 @@ public class XxxApplicationService {
 |---|---|---|
 | شکست `implOfOneModuleNeverUsesImplOfAnotherModule` | کلاس impl ماژول دیگر را import کرده‌ای | اینترفیس api را تزریق کن |
 | شکست `moduleDependencyDirectionIsRespected` | ماژول پایین‌تر به بالاتر وابسته شده | سناریو را به orchestration ببر |
-| شکست `entitiesMapOnlyToTheSchemaOfTheirOwnModule` | `@Table` اسکیمای ماژول خودت را ندارد | `schema = <Module>Schema.NAME` |
+| شکست `entitiesMapOnlyToTheSchemaOfTheirOwnModule` | `@Table` اسکیمای ماژول خودت را ندارد | `schema = SchemaName.<MODULE>` |
 | شکست `everyModuleDeclaresItsOwnDistinctSchema` | کلاس `<M>Schema` نیست یا نام اسکیما تکراری است | کلاس را بساز یا نام را اصلاح کن |
 | شکست `apiPackagesAreFrameworkFree` | در api از Spring یا JPA استفاده شده | به impl منتقل کن |
 | `UnexpectedRollbackException` | exception داخل تراکنش catch شده | دوباره throw کن یا ساختار را عوض کن |
@@ -335,7 +333,7 @@ public class XxxApplicationService {
 
 - [ ] `mvn clean verify` سبز است.
 - [ ] فقط به api ماژول‌های دیگر وابسته‌ام و join یا query مستقیم روی اسکیمای دیگر ندارم.
-- [ ] Entityهای جدید `@Table(schema = <Module>Schema.NAME ...)` دارند و رابطه‌ی JPA بین‌ماژولی ندارند.
+- [ ] Entityهای جدید `@Table(schema = SchemaName.<MODULE> ...)` دارند و رابطه‌ی JPA بین‌ماژولی ندارند.
 - [ ] sequenceهای جدید هم `schema` دارند.
 - [ ] عملیات چندماژولی در orchestration است و تست rollback دارد.
 - [ ] DDL جدید به‌روز شده و grant لازم برای کاربر اتصال در نظر گرفته شده است.
@@ -349,3 +347,21 @@ public class XxxApplicationService {
 - کاربر اتصال به همه‌ی اسکیماها دسترسی دارد، پس جداسازی در سطح دیتابیس اجباری نشده است (در انتظار تصمیم معماری فنی).
 - لایه‌ی REST هنوز در تمپلیت نیست. controllerها در `shafagh-app` (یا یک ماژول وب جدا) نوشته شوند و برای عملیات چندماژولی فقط orchestration را صدا بزنند.
 - تست‌ها به‌صورت پیش‌فرض روی H2 اجرا می‌شوند؛ برای اطمینان از DDL و دسترسی‌های واقعی باید با `-Dtest.profile=oracle` هم اجرا شوند.
+
+
+## تنظیمات و بررسی CIF
+
+کدهای CIF به Lombok، MapStruct، اعتبارسنجی Jakarta، Spring MVC، OAuth2 Resource Server
+و Apache HttpClient وابسته‌اند. annotation processorهای MapStruct و Lombok در POM
+همین ماژول همراه `lombok-mapstruct-binding` تنظیم شده‌اند.
+
+`CifCustomerServiceTest` ثبت و ویرایش مشتری با آدرس و تماس، ثبت تکراری و ورودی
+نامعتبر را روی H2 بررسی می‌کند. شناسهٔ صندوق از `shafagh.fund-id` گرفته می‌شود؛
+Entityهای مشتری از `TenantAwareEntity` مشترک ارث می‌برند.
+
+برای درخواست‌های HTTP محافظت‌شده، verifier واقعی JWT باید با
+`spring.security.oauth2.resourceserver.jwt.issuer-uri` یا `jwk-set-uri` تنظیم شود.
+بدون آن، درخواست‌ها طبق سیاست امنیتی فعلی رد می‌شوند. کلاینت‌های HTTPS از اعتبارسنجی
+عادی گواهی و hostname استفاده می‌کنند؛ برای CA داخلی truststore معتبر پیکربندی کنید.
+ارتباط واقعی با Oracle، Keycloak و سرویس‌های بیرونی نیازمند بررسی جداگانه در محیط
+دارای اتصال و تنظیمات آن سرویس‌هاست.

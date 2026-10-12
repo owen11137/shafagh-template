@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "DEPOSIT_PERSON", schema = SchemaName.DPST)
 @Comment("جدول اشخاص مرتبط با سپرده")
-@SequenceGenerator(name = "DEPOSIT_PERSON_ID_SEQ", sequenceName = "DEPOSIT_PERSON_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "DEPOSIT_PERSON_ID_SEQ", schema = SchemaName.DPST, sequenceName = "DEPOSIT_PERSON_ID_SEQ", allocationSize = 1)
 @Data
 public class DepositPersonEntity extends TenantAwareEntity {
 

@@ -1,5 +1,7 @@
 package com.misc.shafagh.cif.impl.entity.branch;
 
+import com.misc.shafagh.common.SchemaName;
+
 import com.misc.shafagh.cif.impl.entity.fund.FundEntity;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -11,11 +13,11 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Entity(name = "BRANCH")
-@Table(schema = CifSchema.NAME, uniqueConstraints = {@UniqueConstraint(name = "BRANCH_FUND_CODE_UK", columnNames = {"FUND_ID", "CODE"})})
+@Table(schema = SchemaName.CIF, uniqueConstraints = {@UniqueConstraint(name = "BRANCH_FUND_CODE_UK", columnNames = {"FUND_ID", "CODE"})})
 @Getter
 @Setter
 @Data
-@SequenceGenerator(name = "BRANCH_ID_SEQ", schema = CifSchema.NAME, sequenceName = "BRANCH_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "BRANCH_ID_SEQ", schema = SchemaName.CIF, sequenceName = "BRANCH_ID_SEQ", allocationSize = 1)
 public class BranchEntity {
 
     @Id

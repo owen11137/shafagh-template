@@ -1,5 +1,7 @@
 package com.misc.shafagh.cif.impl.entity.fund;
 
+import com.misc.shafagh.common.SchemaName;
+
 import com.misc.shafagh.cif.impl.entity.branch.BranchEntity;
 import com.misc.shafagh.cif.impl.entity.enums.ContactType;
 import jakarta.persistence.*;
@@ -8,10 +10,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(schema = CifSchema.NAME, name = "FUND_CONTACT")
+@Table(schema = SchemaName.CIF, name = "FUND_CONTACT")
 @Getter
 @Setter
-@SequenceGenerator(name = "FUND_CONTACT_ID_SEQ", schema = CifSchema.NAME, sequenceName = "FUND_CONTACT_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "FUND_CONTACT_ID_SEQ", schema = SchemaName.CIF, sequenceName = "FUND_CONTACT_ID_SEQ", allocationSize = 1)
 public class FundContactEntity {
 
     @Id

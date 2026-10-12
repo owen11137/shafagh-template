@@ -1,5 +1,7 @@
 package com.misc.shafagh.cif.impl.entity.branch;
 
+import com.misc.shafagh.common.SchemaName;
+
 import com.misc.shafagh.cif.impl.entity.CityEntity;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
@@ -7,8 +9,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(schema = CifSchema.NAME, name = "BRANCH_ADDRESS")
-@SequenceGenerator(name = "BRANCH_ADDRESS_ID_SEQ", schema = CifSchema.NAME, sequenceName = "BRANCH_ADDRESS_ID_SEQ", allocationSize = 1)
+@Table(schema = SchemaName.CIF, name = "BRANCH_ADDRESS")
+@SequenceGenerator(name = "BRANCH_ADDRESS_ID_SEQ", schema = SchemaName.CIF, sequenceName = "BRANCH_ADDRESS_ID_SEQ", allocationSize = 1)
 @Getter
 @Setter
 public class BranchAddressEntity {

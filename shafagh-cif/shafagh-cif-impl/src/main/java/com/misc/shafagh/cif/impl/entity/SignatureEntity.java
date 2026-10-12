@@ -1,5 +1,9 @@
 package com.misc.shafagh.cif.impl.entity;
 
+import com.misc.shafagh.common.persistence.TenantAwareEntity;
+
+import com.misc.shafagh.common.SchemaName;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,8 +13,8 @@ import java.util.Date;
 
 
 @Entity
-@Table(schema = CifSchema.NAME, name = "SIGNATURE")
-@SequenceGenerator(name = "SIGNATURE_ID_SEQ", schema = CifSchema.NAME, sequenceName = "SIGNATURE_ID_SEQ", allocationSize = 1)
+@Table(schema = SchemaName.CIF, name = "SIGNATURE")
+@SequenceGenerator(name = "SIGNATURE_ID_SEQ", schema = SchemaName.CIF, sequenceName = "SIGNATURE_ID_SEQ", allocationSize = 1)
 @Getter
 @Setter
 public class SignatureEntity extends TenantAwareEntity {

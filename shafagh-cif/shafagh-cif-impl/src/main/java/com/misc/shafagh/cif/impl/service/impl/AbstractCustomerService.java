@@ -45,7 +45,8 @@ import java.util.stream.Collectors;
 public abstract class AbstractCustomerService {
 
     // TODO: read from keycloak
-    private static final long DEFAULT_FUND_ID = 100L;
+    @org.springframework.beans.factory.annotation.Value("${shafagh.fund-id:1}")
+    private long fundId;
 
     protected final CustomerRepository personRepo;
     protected final CityRepository cityRepo;
@@ -100,6 +101,10 @@ public abstract class AbstractCustomerService {
     }
 
     public CustomerDto save(CustomerReqDTO reqDTO) {
+        requireRequest(reqDTO);
+        if (reqDTO.getId() != null) {
+            throw new ValidationException("برای ثبت مشتری جدید نباید شناسه ارسال شود");
+        }
         validateType(reqDTO.getCustomerType());
         applyCommonDefaults(reqDTO);
         reqDTO.setCustomerCode(generateCustomerCode());
@@ -116,6 +121,10 @@ public abstract class AbstractCustomerService {
     }
 
     public CustomerDto update(CustomerReqDTO reqDTO) {
+        requireRequest(reqDTO);
+        if (reqDTO.getId() == null) {
+            throw new ValidationException("شناسه مشتری برای ویرایش الزامی است");
+        }
         CustomerEntity entity = findOwnedOrThrow(reqDTO.getId());
         validateType(reqDTO.getCustomerType());
         applyCommonDefaults(reqDTO);
@@ -162,16 +171,27 @@ public abstract class AbstractCustomerService {
     }
 
     private void applyCommonDefaults(CustomerReqDTO reqDTO) {
-        reqDTO.setFundId(DEFAULT_FUND_ID);
+        reqDTO.setFundId(fundId);
         reqDTO.setCustomerStatus(CustomerStatus.ACTIVE);
-        forEachSafe(reqDTO.getContacts(), x -> x.setFundId(DEFAULT_FUND_ID));
-        forEachSafe(reqDTO.getAddresses(), x -> x.setFundId(DEFAULT_FUND_ID));
-        forEachSafe(reqDTO.getSignatures(), x -> x.setFundId(DEFAULT_FUND_ID));
+        forEachSafe(reqDTO.getContacts(), x -> x.setFundId(fundId));
+        forEachSafe(reqDTO.getAddresses(), x -> x.setFundId(fundId));
+        forEachSafe(reqDTO.getSignatures(), x -> x.setFundId(fundId));
+    }
+
+    private void requireRequest(CustomerReqDTO dto) {
+        if (dto == null) {
+            throw new ValidationException("درخواست نمی‌تواند خالی باشد");
+        }
     }
 
     protected static <T> void forEachSafe(List<T> list, Consumer<T> action) {
         if (list != null) {
-            list.forEach(action);
+            list.forEach(item -> {
+                if (item == null) {
+                    throw new ValidationException("اطلاعات وابسته نمی‌تواند خالی باشد");
+                }
+                action.accept(item);
+            });
         }
     }
 

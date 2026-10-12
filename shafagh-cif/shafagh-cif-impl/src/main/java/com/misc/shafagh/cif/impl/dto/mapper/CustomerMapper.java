@@ -14,7 +14,7 @@ import org.mapstruct.Named;
 
 import java.util.List;
 
-@Mapper(uses = CustomerAddressMapper.class, componentModel = "spring")
+@Mapper(uses = {CustomerAddressMapper.class, CustomerContactMapper.class, SignatureMapper.class}, componentModel = "spring")
 public interface CustomerMapper {
 
     @Mapping(target = "city", source = "cityId", qualifiedByName = "cityFromId")

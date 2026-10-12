@@ -27,8 +27,8 @@ class WebServerStartupTest {
                 .build();
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpResponse<Void> response = client.send(request, HttpResponse.BodyHandlers.discarding());
-            // The template has no controller for this route, so MVC returns a real HTTP 404.
-            assertEquals(404, response.statusCode());
+            // With CIF security enabled, anonymous requests are denied without a JWT verifier.
+            assertEquals(403, response.statusCode());
         }
     }
 }

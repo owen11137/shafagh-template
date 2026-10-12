@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "PRODUCT_DEPOSIT", schema = SchemaName.DPST)
 @Comment("جدول محصولات سپرده")
-@SequenceGenerator(name = "PRODUCT_DEPOSIT_ID_SEQ", sequenceName = "PRODUCT_DEPOSIT_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "PRODUCT_DEPOSIT_ID_SEQ", schema = SchemaName.DPST, sequenceName = "PRODUCT_DEPOSIT_ID_SEQ", allocationSize = 1)
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 public class ProductDepositEntity extends TenantAwareEntity {

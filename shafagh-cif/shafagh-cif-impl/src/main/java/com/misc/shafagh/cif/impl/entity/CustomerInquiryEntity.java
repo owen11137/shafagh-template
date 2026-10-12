@@ -1,5 +1,9 @@
 package com.misc.shafagh.cif.impl.entity;
 
+import com.misc.shafagh.common.persistence.TenantAwareEntity;
+
+import com.misc.shafagh.common.SchemaName;
+
 import com.misc.shafagh.cif.impl.entity.enums.CustomerInquiryStatus;
 import com.misc.shafagh.cif.impl.entity.enums.CustomerType;
 import jakarta.persistence.*;
@@ -7,9 +11,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-@Table(schema = CifSchema.NAME, name = "CUSTOMER_INQUIRY")
+@Table(schema = SchemaName.CIF, name = "CUSTOMER_INQUIRY")
 @Entity(name = "CUSTOMERInquiry")
-@SequenceGenerator(name = "CUSTOMER_INQUIRY_ID_SEQ", schema = CifSchema.NAME, sequenceName = "CUSTOMER_INQUIRY_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "CUSTOMER_INQUIRY_ID_SEQ", schema = SchemaName.CIF, sequenceName = "CUSTOMER_INQUIRY_ID_SEQ", allocationSize = 1)
 @Getter
 @Setter
 public class CustomerInquiryEntity extends TenantAwareEntity {

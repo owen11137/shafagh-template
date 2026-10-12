@@ -4,10 +4,8 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
-import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder;
-import org.apache.hc.client5.http.ssl.TrustAllStrategy;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -41,16 +39,9 @@ public class RestClientConfiguration {
 
     @Bean(value = "sslBypass")
     RestClient.Builder getSSLBypassBuilder() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        CloseableHttpClient client = HttpClients.custom()
-                .setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create()
-                        .setSSLSocketFactory(SSLConnectionSocketFactoryBuilder.create()
-                                .setSslContext(SSLContextBuilder.create().loadTrustMaterial(TrustAllStrategy.INSTANCE).build())
-                                .setHostnameVerifier(NoopHostnameVerifier.INSTANCE).build())
-                        .build())
-                .build();
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-        factory.setHttpClient(client);
-        return RestClient.builder().requestFactory(factory);
+        // Retain the legacy bean name while using normal certificate and hostname verification.
+        CloseableHttpClient client = HttpClients.createSystem();
+        return RestClient.builder().requestFactory(new HttpComponentsClientHttpRequestFactory(client));
     }
 
    /* @Bean(value = "siamSSL")
@@ -136,7 +127,7 @@ public class RestClientConfiguration {
     private CloseableHttpClient createHttpClient(SSLContext sslContext) {
         SSLConnectionSocketFactory sslSocketFactory = SSLConnectionSocketFactoryBuilder.create()
                 .setSslContext(sslContext)
-                .setHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                .setHostnameVerifier(HttpsURLConnection.getDefaultHostnameVerifier())
                 .build();
 
         HttpClientConnectionManager cm = PoolingHttpClientConnectionManagerBuilder.create()

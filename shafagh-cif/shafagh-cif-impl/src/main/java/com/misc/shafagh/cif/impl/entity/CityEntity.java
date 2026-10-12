@@ -2,6 +2,7 @@ package com.misc.shafagh.cif.impl.entity;
 
 import com.misc.shafagh.common.SchemaName;
 import jakarta.persistence.*;
+import lombok.*;
 
 
 @Entity
@@ -10,7 +11,7 @@ import jakarta.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@SequenceGenerator(name = "CITY_ID_SEQ", schema = CifSchema.NAME, sequenceName = "CITY_ID_SEQ", allocationSize = 1)
+@SequenceGenerator(name = "CITY_ID_SEQ", schema = SchemaName.BASE, sequenceName = "CITY_ID_SEQ", allocationSize = 1)
 public class CityEntity {
 
     @Id

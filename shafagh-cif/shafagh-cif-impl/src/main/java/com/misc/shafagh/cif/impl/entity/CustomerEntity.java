@@ -1,5 +1,9 @@
 package com.misc.shafagh.cif.impl.entity;
 
+import com.misc.shafagh.common.persistence.TenantAwareEntity;
+
+import com.misc.shafagh.common.SchemaName;
+
 import com.misc.shafagh.cif.impl.entity.enums.CustomerStatus;
 import com.misc.shafagh.cif.impl.entity.enums.CustomerType;
 import com.misc.shafagh.cif.impl.entity.enums.Gender;
@@ -15,8 +19,8 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(schema = CifSchema.NAME, name = "CUSTOMER")
-@SequenceGenerator(name = "CUSTOMER_ID_SEQ", schema = CifSchema.NAME, sequenceName = "CUSTOMER_ID_SEQ", allocationSize = 1)
+@Table(schema = SchemaName.CIF, name = "CUSTOMER")
+@SequenceGenerator(name = "CUSTOMER_ID_SEQ", schema = SchemaName.CIF, sequenceName = "CUSTOMER_ID_SEQ", allocationSize = 1)
 @Getter
 @Setter
 public class CustomerEntity extends TenantAwareEntity {
