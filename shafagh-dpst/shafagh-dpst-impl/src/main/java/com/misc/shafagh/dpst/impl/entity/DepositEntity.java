@@ -1,6 +1,5 @@
 package com.misc.shafagh.dpst.impl.entity;
 
-import com.misc.shafagh.base.persistence.entity.TenantAwareEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

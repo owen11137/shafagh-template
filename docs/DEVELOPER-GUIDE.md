@@ -23,7 +23,6 @@ shafagh-parent/
 ├── shafagh-<ماژول>/                 (pom تجمیعی، فقط ظرف)
 │   ├── shafagh-<ماژول>-api/         (اینترفیس سرویس + DTO)
 │   └── shafagh-<ماژول>-impl/        (<Module>Schema, entity, repository, service)
-├── shafagh-base/shafagh-base-persistence/ (زیرساخت مشترک persistence)
 ├── shafagh-orchestration/           (سناریوهای چندماژولی)
 ├── shafagh-architecture-tests/      (قوانین ArchUnit)
 ├── shafagh-app/                     (کلاس اصلی، تنظیمات، تست یکپارچه)
@@ -37,7 +36,6 @@ shafagh-parent/
 - `...<m>.impl`: کلاس `<Module>Schema` (نام اسکیما)
 - `...<m>.impl.entity` / `impl.repository` / `impl.service`
 
-کلاس‌های زیرساختی مشترک JPA در `shafagh-base-persistence` با پکیج
 `com.misc.shafagh.base.persistence` قرار می‌گیرند. ماژول‌های `impl` می‌توانند به این
 زیرساخت وابسته شوند؛ Entity و Repository دامنه همچنان در `impl` ماژول صاحبشان
 می‌مانند. enum مشترک `ProductStatus` در `shafagh-base-api` است و وابستگی JPA ندارد.
