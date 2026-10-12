@@ -9,14 +9,13 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: update   # ساخت جدول‌ها و sequenceهای لازم و به‌روزرسانی ساختار هنگام اجرا
+      ddl-auto: create   # توسعه: حذف و ساخت مجدد جدول‌های Entityها در هر اجرای برنامه
 
 shafagh:
   # یک صندوق ثابت برای هر پروسه؛ مقدار ۱ پیش‌فرض تمپلیت است. در استقرار واقعی FUND_ID را تنظیم کنید.
   fund-id: ${FUND_ID:1}
   persistence:
     module-datasources: true
-    reset-schema-on-startup: false
     base:
       url: ${BASE_DB_URL:${spring.datasource.url}}
       username: ${BASE_DB_USERNAME:shfq_base}

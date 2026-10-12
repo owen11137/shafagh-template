@@ -2,7 +2,6 @@ package com.misc.shafagh.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import com.misc.shafagh.common.SchemaName;
-import com.misc.shafagh.config.persistence.TestSchemaReset;
 import java.util.HashMap;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -13,7 +12,6 @@ import org.springframework.boot.hibernate.autoconfigure.HibernatePropertiesCusto
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -42,14 +40,6 @@ public class ModulePersistenceConfiguration {
         source.setPassword(environment.getRequiredProperty(prefix + "password"));
         source.setDriverClassName(environment.getProperty(prefix + "driver-class-name", "oracle.jdbc.OracleDriver"));
         source.setMaximumPoolSize(environment.getProperty(prefix + "maximum-pool-size", Integer.class, 5));
-        if (environment.getProperty("shafagh.persistence.reset-schema-on-startup", Boolean.class, false)) {
-            try {
-                TestSchemaReset.reset(source, schema(module));
-            } catch (RuntimeException exception) {
-                source.close();
-                throw exception;
-            }
-        }
         return source;
     }
 
@@ -84,7 +74,6 @@ public class ModulePersistenceConfiguration {
     HikariDataSource baseDataSource() { return dataSource("base"); }
 
     @Bean(name = "baseEntityManagerFactory")
-    @DependsOn({"baseDataSource", "cifDataSource", "dpstDataSource", "loanDataSource"})
     LocalContainerEntityManagerFactoryBean baseEntityManagerFactory(
             @Qualifier("baseDataSource") DataSource source) {
         return entityManagerFactory("base", source);
@@ -108,7 +97,6 @@ public class ModulePersistenceConfiguration {
 
     @Bean(name = {"cifEntityManagerFactory", "entityManagerFactory"})
     @Primary
-    @DependsOn({"baseDataSource", "cifDataSource", "dpstDataSource", "loanDataSource"})
     LocalContainerEntityManagerFactoryBean cifEntityManagerFactory(
             @Qualifier("cifDataSource") DataSource source) {
         return entityManagerFactory("cif", source);
@@ -131,7 +119,6 @@ public class ModulePersistenceConfiguration {
     HikariDataSource dpstDataSource() { return dataSource("dpst"); }
 
     @Bean(name = "dpstEntityManagerFactory")
-    @DependsOn({"baseDataSource", "cifDataSource", "dpstDataSource", "loanDataSource"})
     LocalContainerEntityManagerFactoryBean dpstEntityManagerFactory(
             @Qualifier("dpstDataSource") DataSource source) {
         return entityManagerFactory("dpst", source);
@@ -153,7 +140,6 @@ public class ModulePersistenceConfiguration {
     HikariDataSource loanDataSource() { return dataSource("loan"); }
 
     @Bean(name = "loanEntityManagerFactory")
-    @DependsOn({"baseDataSource", "cifDataSource", "dpstDataSource", "loanDataSource"})
     LocalContainerEntityManagerFactoryBean loanEntityManagerFactory(
             @Qualifier("loanDataSource") DataSource source) {
         return entityManagerFactory("loan", source);

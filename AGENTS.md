@@ -48,12 +48,14 @@ already authorized and does not require another confirmation.
   test; report the distinction.
 - Do not add package-info.java files; the user requested their removal.
 
-## Test reset authorization
+## Development schema creation
 
-The user explicitly confirmed these four schemas are disposable test schemas.
-The application offers an opt-in `reset` Spring profile that drops their tables
-and sequences and then recreates mapped objects. Normal startup must keep reset
-turned off. Do not enable reset globally or use it in production. For a requested
-test reset, reuse this authorization and the existing profile; do not ask the same
-confirmation again. Report whether the real database was reached/reset or only
-local H2/offline tests ran. Never claim the user's Oracle was cleared from tests.
+The user confirmed the four schemas have no required data and explicitly wants
+standard Hibernate recreation, without a reset profile, custom reset code or
+manual SQL. Main configuration uses `spring.jpa.hibernate.ddl-auto=create` for
+this development phase. Hibernate drops/recreates mapped objects when the user
+runs the application with their database connection. Do not claim the real Oracle
+was recreated unless that runtime action was observed. Change to update/validate
+when the user moves to persistent data or production; do not introduce a custom
+wipe mechanism or require another confirmation for the already authorized dev
+configuration.
