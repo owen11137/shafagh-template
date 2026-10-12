@@ -4,6 +4,7 @@ import com.misc.shafagh.base.api.dto.CityDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+/** کنترلر REST ماژول BASE برای مدیریت شهر و استان؛ مستندات کامل در Swagger مشترک برنامه. */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/base/city")

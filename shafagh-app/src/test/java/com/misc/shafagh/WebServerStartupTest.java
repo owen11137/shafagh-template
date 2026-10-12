@@ -127,4 +127,50 @@ class WebServerStartupTest {
             }
         }
     }
+    @Test
+    void swaggerDocumentsOperationsModelsAndSeparatesModuleGroups() throws Exception {
+        String root = "http://127.0.0.1:" + applicationContext.getWebServer().getPort();
+        var mapper = tools.jackson.databind.json.JsonMapper.builder().build();
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            var response = client.send(HttpRequest.newBuilder(URI.create(root + "/v3/api-docs"))
+                    .timeout(Duration.ofSeconds(10)).GET().build(), HttpResponse.BodyHandlers.ofString());
+            assertEquals(200, response.statusCode());
+            var document = mapper.readTree(response.body());
+            int operationCount = 0;
+            for (var path : document.path("paths")) {
+                for (String method : new String[]{"get", "post", "put", "delete", "patch"}) {
+                    if (!path.has(method)) continue;
+                    var operation = path.path(method);
+                    org.junit.jupiter.api.Assertions.assertFalse(operation.path("summary").asText().isBlank());
+                    org.junit.jupiter.api.Assertions.assertFalse(operation.path("description").asText().isBlank());
+                    org.junit.jupiter.api.Assertions.assertTrue(operation.path("tags").size() > 0);
+                    operationCount++;
+                }
+            }
+            assertEquals(21, operationCount);
+            for (String model : new String[]{"CityDto", "FundDto", "BranchDto", "CustomerReqDTO", "CustomerDto", "CustomerFilterDTO"}) {
+                org.junit.jupiter.api.Assertions.assertFalse(document.path("components").path("schemas").path(model)
+                        .path("description").asText().isBlank(), model);
+            }
+            org.junit.jupiter.api.Assertions.assertTrue(document.path("components").path("schemas").path("FundDto")
+                    .path("properties").path("ownerId").path("description").asText().contains("CIF"));
+            for (String group : new String[]{"00-all", "01-base", "02-cif", "03-dpst", "04-loan"}) {
+                var groupedResponse = client.send(HttpRequest.newBuilder(URI.create(root + "/v3/api-docs/" + group))
+                        .timeout(Duration.ofSeconds(10)).GET().build(), HttpResponse.BodyHandlers.ofString());
+                assertEquals(200, groupedResponse.statusCode(), group);
+                var grouped = mapper.readTree(groupedResponse.body());
+                if (group.equals("00-all")) assertEquals(document.path("paths").size(), grouped.path("paths").size());
+                if (group.equals("01-base")) {
+                    org.junit.jupiter.api.Assertions.assertTrue(grouped.path("paths").has("/base/city"));
+                    org.junit.jupiter.api.Assertions.assertFalse(grouped.path("paths").has("/customer/real/save"));
+                    assertEquals("ثبت شهر جدید", grouped.path("paths").path("/base/city").path("post").path("summary").asText());
+                }
+                if (group.equals("02-cif")) {
+                    org.junit.jupiter.api.Assertions.assertTrue(grouped.path("paths").has("/customer/real/save"));
+                    org.junit.jupiter.api.Assertions.assertFalse(grouped.path("paths").has("/base/city"));
+                }
+                if (group.equals("03-dpst") || group.equals("04-loan")) assertEquals(0, grouped.path("paths").size());
+            }
+        }
+    }
 }

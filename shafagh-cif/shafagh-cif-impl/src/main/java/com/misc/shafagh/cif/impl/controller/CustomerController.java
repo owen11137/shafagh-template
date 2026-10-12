@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+/** کنترلر REST ماژول CIF برای مدیریت مشتریان حقیقی و حقوقی؛ مستندات کامل در Swagger مشترک برنامه. */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/customer")
