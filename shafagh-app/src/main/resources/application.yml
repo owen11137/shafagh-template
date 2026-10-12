@@ -11,7 +11,7 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: none   # جدول‌ها با اسکریپت scripts/02-create-tables.sql ساخته می‌شوند
+      ddl-auto: update   # ساخت جدول‌ها و sequenceهای لازم و به‌روزرسانی ساختار هنگام اجرا
 
 shafagh:
   # یک صندوق ثابت برای هر پروسه؛ مقدار ۱ پیش‌فرض تمپلیت است. در استقرار واقعی FUND_ID را تنظیم کنید.
