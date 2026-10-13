@@ -168,8 +168,8 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
             case "SignatureDto" -> "CIF ـ امضای مشتری؛ تصویر پاسخ به صورت Base64 در JSON نمایش داده می‌شود.";
             default -> null;
         };
-        if (name.equals("OpenDepositRequest")) description = "ورودی افتتاح حساب: nationalCode شماره ملی ده رقمی معتبر و productCode کد محصول سپرده.";
-        if (name.equals("OpenDepositResponse")) description = "نتیجه افتتاح: شناسه، شماره حساب داخلی، مشتری، محصول، وضعیت و مانده.";
+        if (name.equals("OpenDepositRequest")) description = "ورودی افتتاح حساب: nationalCode شماره ملی ده رقمی معتبر و productCode کد محصول سپرده؛ description توضیحات اختیاری تا ۲۵۵ کاراکتر.";
+        if (name.equals("OpenDepositResponse")) description = "نتیجه افتتاح: شناسه، شماره حساب داخلی، مشتری، محصول، وضعیت، مانده و توضیحات.";
         if (description == null) return;
         schema.setDescription(description);
         if (schema.getProperties() == null) return;

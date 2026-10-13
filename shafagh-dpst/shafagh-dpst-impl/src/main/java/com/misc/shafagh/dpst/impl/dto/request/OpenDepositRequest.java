@@ -5,4 +5,5 @@ import jakarta.validation.constraints.Size;
 /** شماره ملی مشتری ثبت‌شده و کد محصول سپرده انتخاب‌شده. */
 public record OpenDepositRequest(
     @NotBlank @Pattern(regexp="[0-9]{10}") String nationalCode,
-    @NotBlank @Size(max=255) String productCode) {}
+    @NotBlank @Size(max=255) String productCode,
+    @Size(max=255) String description) {}

@@ -44,7 +44,7 @@ class DepositOpeningTest {
         return code;
     }
     OpenDepositResponse open(String national,String code) {
-        var response=client().post().uri("/dpst/deposits").body(Map.of("nationalCode",national,"productCode",code)).retrieve().toEntity(OpenDepositResponse.class);
+        var response=client().post().uri("/dpst/deposits").body(Map.of("nationalCode",national,"productCode",code,"description","توضیحات افتتاح حساب")).retrieve().toEntity(OpenDepositResponse.class);
         assertEquals(201,response.getStatusCode().value());return response.getBody();
     }
     void reject(int status,String national,String code) {
@@ -62,6 +62,8 @@ class DepositOpeningTest {
             for(var future:executor.invokeAll(jobs)) {
                 var account=future.get(); assertTrue(numbers.add(account.depositNumber()));
                 assertTrue(account.depositNumber().matches("[0-9]{20}"));
+                assertEquals("توضیحات افتتاح حساب",account.description());
+                assertEquals(account.description(),d.queryForObject("select DESCRIPTION from SHFQ_DPST.DEPOSIT where ID=?",String.class,account.id()));
                 assertEquals("OPN",account.status().name());assertEquals(0,account.balance().signum());
                 assertEquals(account.depositNumber(),d.queryForObject("select DEPOSIT_NUMBER from SHFQ_DPST.DEPOSIT where ID=?",String.class,account.id()));
                 assertEquals(1,d.queryForObject("select count(*) from SHFQ_DPST.DEPOSIT_PERSON where DEPOSIT_ID=? and CUSTOMER_ID=? and FUND_ID=43 and DEPOSIT_PERSON_TYPE=0",Integer.class,account.id(),account.customerId()));
@@ -72,6 +74,9 @@ class DepositOpeningTest {
     @Test void rejectsInvalidMissingInactiveExpiredAndOtherFundInputsWithoutWrites() {
         String code=seed(0,43L,"0023549874");
         var d=new JdbcTemplate(dpst);long before=d.queryForObject("select count(*) from SHFQ_DPST.DEPOSIT",Long.class);
+        var tooLong=Map.of("nationalCode","0023549874","productCode",code,"description","x".repeat(256));
+        var lengthError=assertThrows(RestClientResponseException.class,()->client().post().uri("/dpst/deposits").body(tooLong).retrieve().toBodilessEntity());
+        assertEquals(400,lengthError.getStatusCode().value());
         reject(400,"123",code);reject(400,"1111111111",code);reject(400,"0023549870",code);
         reject(404,"0033549877",code);reject(404,"0023549874","missing");
         reject(409,"0023549874",product(1,43L));reject(404,"0023549874",product(0,44L));

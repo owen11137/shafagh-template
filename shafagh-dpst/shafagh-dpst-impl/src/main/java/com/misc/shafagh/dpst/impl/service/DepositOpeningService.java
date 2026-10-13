@@ -41,6 +41,7 @@ public class DepositOpeningService {
         deposit.setFundId(fundId); deposit.setCustomerId(customerId);
         deposit.setProductCode(product.getCode()); deposit.setDepositStatus(DepositStatus.OPN);
         deposit.setBalance(BigDecimal.ZERO);
+        deposit.setDescription(request.description());
         // SEQUENCE assigns the ID on persist; finalize before any flush/insert or further query.
         deposit.setDepositNumber("PENDING-" + UUID.randomUUID());
         deposit = deposits.save(deposit);
@@ -50,7 +51,7 @@ public class DepositOpeningService {
         owner.setDepositPersonType(DepositPersonType.OWNER); owner.setFromDate(now);
         persons.saveAndFlush(owner);
         return new OpenDepositResponse(deposit.getId(), deposit.getDepositNumber(), customerId,
-                product.getCode(), deposit.getDepositStatus(), deposit.getBalance());
+                product.getCode(), deposit.getDepositStatus(), deposit.getBalance(), deposit.getDescription());
     }
 
     private boolean validNationalCode(String code) {

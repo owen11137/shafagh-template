@@ -12,6 +12,7 @@ import org.hibernate.boot.model.relational.SqlStringGenerationContext;
 import org.hibernate.dialect.OracleDialect;
 import org.hibernate.engine.jdbc.dialect.spi.DialectResolutionInfo;
 import org.hibernate.mapping.Table;
+import org.hibernate.mapping.ForeignKey;
 import org.hibernate.mapping.UniqueKey;
 import org.hibernate.tool.schema.internal.StandardSequenceExporter;
 import org.hibernate.tool.schema.internal.StandardTableExporter;
@@ -37,6 +38,10 @@ public class ShafaghOracleDialect extends OracleDialect {
                     }
                 }
                 return sql;
+            }
+            @Override
+            public String[] getSqlDropStrings(Sequence sequence, Metadata metadata, SqlStringGenerationContext context) {
+                return ignoreMissing(super.getSqlDropStrings(sequence, metadata, context), -2289);
             }
         };
     }
@@ -68,6 +73,10 @@ public class ShafaghOracleDialect extends OracleDialect {
                 }
                 return statements.toArray(String[]::new);
             }
+            @Override
+            public String[] getSqlDropStrings(Table table, Metadata metadata, SqlStringGenerationContext context) {
+                return ignoreMissing(super.getSqlDropStrings(table, metadata, context), -942);
+            }
         };
     }
 
@@ -83,9 +92,30 @@ public class ShafaghOracleDialect extends OracleDialect {
                 return statements.toArray(String[]::new);
             }
             public String[] getSqlDropStrings(UniqueKey key, Metadata metadata, SqlStringGenerationContext context) {
-                return delegate.getSqlDropStrings(key, metadata, context);
+                return ignoreMissing(delegate.getSqlDropStrings(key, metadata, context), -942, -2443);
             }
         };
+    }
+
+    @Override
+    public Exporter<ForeignKey> getForeignKeyExporter() {
+        var delegate = super.getForeignKeyExporter();
+        return new Exporter<>() {
+            public String[] getSqlCreateStrings(ForeignKey key, Metadata metadata, SqlStringGenerationContext context) {
+                return delegate.getSqlCreateStrings(key, metadata, context);
+            }
+            public String[] getSqlDropStrings(ForeignKey key, Metadata metadata, SqlStringGenerationContext context) {
+                return ignoreMissing(delegate.getSqlDropStrings(key, metadata, context), -942, -2443);
+            }
+        };
+    }
+
+    /** Oracle versions without DROP IF EXISTS: suppress only the expected missing-object codes. */
+    private String[] ignoreMissing(String[] commands, int... codes) {
+        String allowed = Arrays.stream(codes).mapToObj(Integer::toString).collect(Collectors.joining(", "));
+        return Arrays.stream(commands).map(sql -> "begin execute immediate '" + sql.replace("'", "''")
+                + "'; exception when others then if SQLCODE not in (" + allowed
+                + ") then raise; end if; end;").toArray(String[]::new);
     }
 
     private String renameIndex(Table table, String oldName, List<org.hibernate.mapping.Column> columns) {

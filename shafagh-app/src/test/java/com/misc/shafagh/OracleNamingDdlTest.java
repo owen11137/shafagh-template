@@ -23,14 +23,16 @@ class OracleNamingDdlTest {
     @Test
     void oracleDdlNamesKeysChecksIndexesAndUsesExplicitSequenceOptions() throws Exception {
         Path script = directory.resolve("oracle-schema.sql");
+        Path dropScript = directory.resolve("oracle-drop.sql");
         var bootstrap = new BootstrapServiceRegistryBuilder().applyIntegrator(new ConstraintNamingIntegrator()).build();
         var registry = new StandardServiceRegistryBuilder(bootstrap)
                 .applySetting("hibernate.dialect", ShafaghOracleDialect.class.getName())
                 .applySetting("hibernate.boot.allow_jdbc_metadata_access", false)
                 .applySetting("hibernate.implicit_naming_strategy", new DatabaseNamingStrategy())
                 .applySetting("jakarta.persistence.schema-generation.database.action", "none")
-                .applySetting("jakarta.persistence.schema-generation.scripts.action", "create")
+                .applySetting("jakarta.persistence.schema-generation.scripts.action", "drop-and-create")
                 .applySetting("jakarta.persistence.schema-generation.scripts.create-target", script.toString())
+                .applySetting("jakarta.persistence.schema-generation.scripts.drop-target", dropScript.toString())
                 .build();
         try {
             var sources = new MetadataSources(registry);
@@ -62,6 +64,16 @@ class OracleNamingDdlTest {
             assertTrue(ddl.contains("CHK_LOAN_AMOUNT_NOT_NULL"));
             assertTrue(ddl.contains("CHK_LOAN_LOAN_STATUS"));
             assertFalse(ddl.contains("SYS_C"));
+            String drops = Files.readString(dropScript).toUpperCase(Locale.ROOT);
+            assertEquals(20, drops.lines().filter(line -> line.contains("DROP SEQUENCE")).count());
+            assertEquals(20, drops.lines().filter(line -> line.contains("DROP TABLE")).count());
+            drops.lines().filter(line -> !line.isBlank()).forEach(line -> {
+                assertTrue(line.startsWith("BEGIN EXECUTE IMMEDIATE"), line);
+                assertTrue(line.contains("THEN RAISE; END IF; END;"), line);
+                if (line.contains("DROP SEQUENCE")) assertTrue(line.contains("SQLCODE NOT IN (-2289)"), line);
+                else if (line.contains("DROP TABLE")) assertTrue(line.contains("SQLCODE NOT IN (-942)"), line);
+                else assertTrue(line.contains("SQLCODE NOT IN (-942, -2443)"), line);
+            });
         } finally {
             StandardServiceRegistryBuilder.destroy(registry);
         }
