@@ -17,6 +17,7 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
         if (api.getPaths() != null) {
             api.getPaths().forEach((path, item) -> item.readOperationsMap().forEach((method, operation) -> {
                 describeOperation(path, method.name(), operation);
+                if (isPaged(path, method.name())) documentPagination(operation);
                 if (operation.getParameters() != null) {
                     operation.getParameters().forEach(parameter -> {
                         String text = switch (parameter.getName()) {
@@ -35,6 +36,27 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
         if (api.getComponents() != null && api.getComponents().getSchemas() != null) {
             api.getComponents().getSchemas().forEach(this::describeSchema);
         }
+    }
+
+    private boolean isPaged(String path, String method) {
+        return method.equals("GET") && List.of("/base/city", "/base/fund", "/base/branch", "/dpst/products", "/loan/products").contains(path)
+            || method.equals("POST") && List.of("/customer/real/filter", "/customer/legal/filter").contains(path);
+    }
+
+    /** Explicit query parameters keep the Swagger form consistent across every paged endpoint. */
+    private void documentPagination(Operation operation) {
+        var parameters = operation.getParameters() == null ? new java.util.ArrayList<io.swagger.v3.oas.models.parameters.Parameter>()
+            : new java.util.ArrayList<>(operation.getParameters());
+        parameters.removeIf(parameter -> List.of("page", "size", "sort", "pageable").contains(parameter.getName()));
+        parameters.add(new io.swagger.v3.oas.models.parameters.Parameter().name("page").in("query").required(false)
+            .description("شماره صفحه از صفر؛ پیش‌فرض صفر.").schema(new io.swagger.v3.oas.models.media.IntegerSchema().minimum(java.math.BigDecimal.ZERO)._default(0)));
+        parameters.add(new io.swagger.v3.oas.models.parameters.Parameter().name("size").in("query").required(false)
+            .description("تعداد رکورد در صفحه؛ پیش‌فرض ۲۰، حداکثر ۲۰۰۰.").schema(new io.swagger.v3.oas.models.media.IntegerSchema().minimum(java.math.BigDecimal.ONE).maximum(java.math.BigDecimal.valueOf(2000))._default(20)));
+        parameters.add(new io.swagger.v3.oas.models.parameters.Parameter().name("sort").in("query").required(false)
+            .description("مرتب‌سازی مانند id,asc یا title,desc؛ برای چند فیلد پارامتر را تکرار کنید.")
+            .style(io.swagger.v3.oas.models.parameters.Parameter.StyleEnum.FORM).explode(true)
+            .schema(new io.swagger.v3.oas.models.media.ArraySchema().items(new io.swagger.v3.oas.models.media.StringSchema())._default(List.of("id,asc"))));
+        operation.setParameters(parameters);
     }
 
     private void describeOperation(String path, String method, Operation operation) {
@@ -64,8 +86,8 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
                     boolean single = path.endsWith("/{id}");
                     operation.setSummary(single ? "دریافت " + label + " با شناسه" : "فهرست " + label + "ها");
                     operation.setDescription(single ? "مشخصات رکورد با شناسه مسیر را برمی‌گرداند؛ شناسه ناموجود پاسخ 404 دارد."
-                            : resource.equals("city") ? "فهرست شهرها همراه نام استان؛ رکوردهای استان با parentId=0 در این فهرست نمی‌آیند."
-                            : "فهرست همه رکوردهای ثبت‌شده؛ خروجی فعلی صفحه‌بندی ندارد.");
+                            : resource.equals("city") ? "فهرست صفحه‌بندی‌شده شهرها همراه نام استان؛ استان‌های parentId=0 در فهرست و شمارش صفحات نمی‌آیند. page از صفر، size پیش‌فرض ۲۰ و sort پیش‌فرض id,asc است."
+                            : "فهرست صفحه‌بندی‌شده؛ پاسخ شامل content و مشخصات صفحه است. page از صفر، size پیش‌فرض ۲۰ و sort پیش‌فرض id,asc است.");
                 }
                 case "POST" -> {
                     operation.setSummary("ثبت " + label + " جدید");

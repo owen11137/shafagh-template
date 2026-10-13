@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 
 /** کنترلر REST ماژول CIF برای مدیریت مشتریان حقیقی و حقوقی؛ مستندات کامل در Swagger مشترک برنامه. */
 @RestController
@@ -35,7 +36,7 @@ public class CustomerController {
     }
 
     @PostMapping("/real/filter")
-    public Page<CustomerDto> searchReal(@RequestBody CustomerFilterDTO filter, Pageable pageable) {
+    public Page<CustomerDto> searchReal(@RequestBody CustomerFilterDTO filter, @PageableDefault(size=20, sort="id") Pageable pageable) {
         return customerRealService.search(filter, pageable);
     }
 
@@ -55,7 +56,7 @@ public class CustomerController {
     }
 
     @PostMapping("/legal/filter")
-    public Page<CustomerDto> searchLegal(@RequestBody CustomerFilterDTO filter, Pageable pageable) {
+    public Page<CustomerDto> searchLegal(@RequestBody CustomerFilterDTO filter, @PageableDefault(size=20, sort="id") Pageable pageable) {
         return customerLegalService.search(filter, pageable);
     }
 
