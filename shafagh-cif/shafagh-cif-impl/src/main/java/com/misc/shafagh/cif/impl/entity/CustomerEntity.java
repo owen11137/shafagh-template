@@ -19,7 +19,7 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(schema = SchemaName.CIF, name = "CUSTOMER", comment = "جدول مشتریان حقیقی و حقوقی")
+@Table(schema = SchemaName.CIF, name = "CUSTOMER", uniqueConstraints = @UniqueConstraint(name = "UK_CUSTOMER_FUND_ID_IDENTIFIER", columnNames = {"FUND_ID", "IDENTIFIER"}), comment = "جدول مشتریان حقیقی و حقوقی")
 @SequenceGenerator(name = "SEQ_CUSTOMER_ID", schema = SchemaName.CIF, sequenceName = "SEQ_CUSTOMER_ID", allocationSize = 1)
 @Getter
 @Setter

@@ -137,6 +137,9 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
                 operation.getRequestBody().setDescription(path.endsWith("/filter") ? "فیلترهای جست‌وجو؛ برای جست‌وجوی بدون فیلتر، {} ارسال کنید." : "اطلاعات مشتری و فهرست‌های آدرس، تماس و امضا.");
             }
         }
+        if (path.startsWith("/customer/") && (path.endsWith("/save") || path.endsWith("/update"))) {
+            operation.getResponses().addApiResponse("409", new ApiResponse().description("شناسه مشتری در همین صندوق تکراری است؛ شناسه یکسان در صندوق دیگر مجاز است."));
+        }
         if (path.equals("/dpst/deposits")) {
             operation.setTags(List.of("DPST | افتتاح حساب"));
             operation.setSummary("افتتاح حساب سپرده");

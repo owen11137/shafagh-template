@@ -75,6 +75,16 @@ class CifCustomerServiceTest {
         assertThrows(ValidationException.class, () -> service.save(invalid));
     }
 
+    @Test
+    void rejectsChangingIdentifierToAnotherCustomer() {
+        var firstRequest=request();var first=service.save(firstRequest);
+        var secondRequest=request();var second=service.save(secondRequest);
+        secondRequest.setId(second.getId());secondRequest.setIdentifier(firstRequest.getIdentifier());
+        assertThrows(com.misc.shafagh.cif.impl.exception.DuplicateCustomerIdentifierException.class,()->service.update(secondRequest));
+        // An exception marks the surrounding transaction rollback-only, so verify unchanged value directly.
+        assertEquals(firstRequest.getIdentifier(),entityManager.find(CustomerEntity.class,first.getId()).getIdentifier());
+    }
+
     private CustomerReqDTO request() {
         CityEntity city = new CityEntity();
         city.setName("تهران");

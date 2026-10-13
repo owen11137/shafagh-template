@@ -113,7 +113,7 @@ public abstract class AbstractCustomerService {
         validateSpecific(reqDTO);
 
         if (personRepo.getFirstByIdentifier(reqDTO.getIdentifier()) != null) {
-            throw new ValidationException("شماره ی شناسه شخص " + personLabel() + " تکراری میباشد");
+            throw new com.misc.shafagh.cif.impl.exception.DuplicateCustomerIdentifierException();
         }
 
         return persist(customerMapper.toEntity(reqDTO), reqDTO);
@@ -130,6 +130,11 @@ public abstract class AbstractCustomerService {
 
         customerValidator.validateCommon(reqDTO);
         validateSpecific(reqDTO);
+
+        CustomerEntity duplicate = personRepo.getFirstByIdentifier(reqDTO.getIdentifier());
+        if (duplicate != null && !duplicate.getId().equals(entity.getId())) {
+            throw new com.misc.shafagh.cif.impl.exception.DuplicateCustomerIdentifierException();
+        }
 
         // Important: addresses are deliberately ignored by MapStruct during update.
         // Map the request to a temporary graph, then copy address values onto the
@@ -163,7 +168,20 @@ public abstract class AbstractCustomerService {
         resolveCities(entity);
         signatureHelper.sync(entity, reqDTO.getSignatures());
 
-        CustomerEntity saved = personRepo.save(entity);
+        CustomerEntity saved;
+        try {
+            saved = personRepo.saveAndFlush(entity);
+        } catch (org.springframework.dao.DataIntegrityViolationException exception) {
+            for (Throwable cause = exception; cause != null; cause = cause.getCause()) {
+                if (cause instanceof org.hibernate.exception.ConstraintViolationException violation
+                        && violation.getConstraintName() != null) {
+                    String name = violation.getConstraintName().toUpperCase(java.util.Locale.ROOT);
+                    if (name.contains("UK_CUSTOMER_FUND_ID_IDENTIFIER") || name.contains("UDX_CUSTOMER_FUND_ID_IDENTIFIER"))
+                        throw new com.misc.shafagh.cif.impl.exception.DuplicateCustomerIdentifierException();
+                }
+            }
+            throw exception;
+        }
         CustomerDto result = customerMapper.toDto(saved);
         fillProvince(result, getProvinceMap());
         return result;

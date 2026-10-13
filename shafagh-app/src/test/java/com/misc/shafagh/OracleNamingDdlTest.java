@@ -60,6 +60,8 @@ class OracleNamingDdlTest {
                 assertTrue(line.contains("NOCYCLE CACHE 50 NOORDER"), line);
             });
             assertTrue(ddl.contains("UK_PRODUCT_LOAN_CODE"));
+            assertTrue(ddl.contains("CONSTRAINT UK_CUSTOMER_FUND_ID_IDENTIFIER UNIQUE (FUND_ID, IDENTIFIER)"));
+            assertTrue(ddl.contains("RENAME TO UDX_CUSTOMER_FUND_ID_IDENTIFIER"));
             assertTrue(ddl.contains("FK_LOAN_PERSON_LOAN"));
             assertTrue(ddl.contains("CHK_LOAN_AMOUNT_NOT_NULL"));
             assertTrue(ddl.contains("CHK_LOAN_LOAN_STATUS"));
