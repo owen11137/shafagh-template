@@ -2,28 +2,24 @@ package com.misc.shafagh.config;
 
 import org.hibernate.cfg.MultiTenancySettings;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
-import org.springframework.beans.factory.annotation.Value;
+import com.misc.shafagh.common.context.CurrentUserContext;
 import org.springframework.boot.hibernate.autoconfigure.HibernatePropertiesCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * One fixed fund per application process. Only entities annotated with
+ * Fund resolved from the shared current-user context for each Hibernate session. Only entities annotated with
  * {@code @TenantId} are scoped; entities without it remain shared.
  */
 @Configuration(proxyBeanMethods = false)
 public class TenantConfiguration {
 
     @Bean
-    HibernatePropertiesCustomizer tenantIdentifierCustomizer(@Value("${shafagh.fund-id:1}") long fundId) {
-        if (fundId <= 0) {
-            throw new IllegalArgumentException("shafagh.fund-id must be positive");
-        }
-
+    HibernatePropertiesCustomizer tenantIdentifierCustomizer(CurrentUserContext currentUserContext) {
         CurrentTenantIdentifierResolver<Long> resolver = new CurrentTenantIdentifierResolver<>() {
             @Override
             public Long resolveCurrentTenantIdentifier() {
-                return fundId;
+                return currentUserContext.fundId();
             }
 
             @Override

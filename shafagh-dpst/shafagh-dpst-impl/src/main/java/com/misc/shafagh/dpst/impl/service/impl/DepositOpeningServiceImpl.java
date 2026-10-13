@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import com.misc.shafagh.common.context.CurrentUserContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,10 +23,11 @@ public class DepositOpeningServiceImpl implements DepositOpeningService {
     private final ProductDepositRepository products;
     private final DepositRepository deposits;
     private final DepositPersonRepository persons;
-    @Value("${shafagh.fund-id:1}") private Long fundId;
+    private final CurrentUserContext currentUserContext;
 
     @Transactional(transactionManager="dpstTransactionManager")
     public OpenDepositResponse open(OpenDepositRequest request) {
+        long fundId = currentUserContext.fundId();
         if (request.nationalCode()==null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "شماره ملی معتبر نیست");
         Long customerId = customers.findActiveIndividualId(request.nationalCode())

@@ -10,7 +10,7 @@ import com.misc.shafagh.dpst.impl.service.api.ProductDepositService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Value;
+import com.misc.shafagh.common.context.CurrentUserContext;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,16 +24,16 @@ public class ProductDepositServiceImpl implements ProductDepositService {
     private final com.misc.shafagh.dpst.impl.repository.DepositRepository deposits;
     private final ProductDepositMapper mapper;
     private final Validator validator;
-    private final long fundId;
+    private final CurrentUserContext currentUserContext;
 
     public ProductDepositServiceImpl(ProductDepositRepository repository, ProductDepositMapper mapper,
-            Validator validator, com.misc.shafagh.dpst.impl.repository.DepositRepository deposits, @Value("${shafagh.fund-id:1}") long fundId) {
-        this.deposits = deposits; this.repository = repository; this.mapper = mapper; this.validator = validator; this.fundId = fundId;
+            Validator validator, com.misc.shafagh.dpst.impl.repository.DepositRepository deposits, CurrentUserContext currentUserContext) {
+        this.deposits = deposits; this.repository = repository; this.mapper = mapper; this.validator = validator; this.currentUserContext = currentUserContext;
     }
 
     public ProductDepositResponseDto create(ProductDepositReqDTO request) {
         validate(request);
-        if (repository.existsByCodeAndFundId(request.getCode(), fundId)) throw new DuplicateProductDepositCodeException();
+        if (repository.existsByCodeAndFundId(request.getCode(), currentUserContext.fundId())) throw new DuplicateProductDepositCodeException();
         return persist(mapper.toEntity(request));
     }
 
@@ -42,14 +42,14 @@ public class ProductDepositServiceImpl implements ProductDepositService {
 
     @Transactional(transactionManager = "dpstTransactionManager", readOnly = true)
     public Page<ProductDepositResponseDto> findAll(Pageable pageable) {
-        return repository.findAllByFundId(fundId, pageable).map(mapper::toResponse);
+        return repository.findAllByFundId(currentUserContext.fundId(), pageable).map(mapper::toResponse);
     }
 
     public ProductDepositResponseDto update(Long id, ProductDepositReqDTO request) {
         ProductDepositEntity entity = require(id, true);
         validate(request);
-        if (repository.existsByCodeAndFundIdAndIdNot(request.getCode(), fundId, id)) throw new DuplicateProductDepositCodeException();
-        if (!entity.getCode().equals(request.getCode()) && deposits.existsByProductCodeAndFundId(entity.getCode(), fundId))
+        if (repository.existsByCodeAndFundIdAndIdNot(request.getCode(), currentUserContext.fundId(), id)) throw new DuplicateProductDepositCodeException();
+        if (!entity.getCode().equals(request.getCode()) && deposits.existsByProductCodeAndFundId(entity.getCode(), currentUserContext.fundId()))
             throw new ProductDepositInUseException();
         mapper.updateFromRequest(request, entity);
         return persist(entity);
@@ -57,7 +57,7 @@ public class ProductDepositServiceImpl implements ProductDepositService {
 
     public void delete(Long id) {
         ProductDepositEntity entity = require(id, true);
-        if (deposits.existsByProductCodeAndFundId(entity.getCode(), fundId)) throw new ProductDepositInUseException();
+        if (deposits.existsByProductCodeAndFundId(entity.getCode(), currentUserContext.fundId())) throw new ProductDepositInUseException();
         repository.delete(entity); repository.flush();
     }
 
@@ -65,7 +65,7 @@ public class ProductDepositServiceImpl implements ProductDepositService {
 
     private ProductDepositEntity require(Long id, boolean lock) {
         if (id == null || id <= 0) throw new InvalidProductDepositException("شناسه محصول باید مثبت باشد");
-        return (lock ? repository.findLockedByIdAndFundId(id, fundId) : repository.findByIdAndFundId(id, fundId)).orElseThrow(ProductDepositNotFoundException::new);
+        return (lock ? repository.findLockedByIdAndFundId(id, currentUserContext.fundId()) : repository.findByIdAndFundId(id, currentUserContext.fundId())).orElseThrow(ProductDepositNotFoundException::new);
     }
 
     private ProductDepositResponseDto persist(ProductDepositEntity entity) {

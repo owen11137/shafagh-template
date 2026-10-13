@@ -12,8 +12,10 @@ spring:
       ddl-auto: create   # توسعه: حذف و ساخت مجدد جدول‌های Entityها در هر اجرای برنامه
 
 shafagh:
-  # یک صندوق ثابت برای هر پروسه؛ مقدار ۱ پیش‌فرض تمپلیت است. در استقرار واقعی FUND_ID را تنظیم کنید.
+  # هویت موقت مشترک تا زمان اتصال CurrentUserContext به SecurityContext.
   fund-id: ${FUND_ID:1}
+  user-id: ${USER_ID:1}
+  branch-id: ${BRANCH_ID:1}
   persistence:
     module-datasources: true
     base:

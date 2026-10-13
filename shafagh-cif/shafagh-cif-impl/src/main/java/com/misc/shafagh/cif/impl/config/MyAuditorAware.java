@@ -1,18 +1,10 @@
 package com.misc.shafagh.cif.impl.config;
-
+import com.misc.shafagh.common.context.CurrentUserContext;
 import org.springframework.data.domain.AuditorAware;
-
-import java.util.List;
 import java.util.Optional;
-import java.util.Random;
-
-/**
- * @author m_kor
- * date 3/8/2025
- */
+/** Compatibility adapter; application auditing is configured centrally. */
 public class MyAuditorAware implements AuditorAware<String> {
-    @Override
-    public Optional<String> getCurrentAuditor() {
-        return Optional.of(List.of("test1", "test2", "test3").get((new Random()).nextInt(3)));
-    }
+    private final CurrentUserContext context;
+    public MyAuditorAware(CurrentUserContext context) { this.context = context; }
+    public Optional<String> getCurrentAuditor() { return Optional.of(Long.toString(context.userId())); }
 }

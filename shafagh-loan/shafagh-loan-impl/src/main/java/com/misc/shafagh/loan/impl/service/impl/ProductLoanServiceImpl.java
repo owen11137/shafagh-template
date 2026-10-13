@@ -11,7 +11,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import java.math.BigDecimal;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Value;
+import com.misc.shafagh.common.context.CurrentUserContext;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,16 +24,16 @@ public class ProductLoanServiceImpl implements ProductLoanService {
     private final ProductLoanRepository repository;
     private final ProductLoanMapper mapper;
     private final Validator validator;
-    private final long fundId;
+    private final CurrentUserContext currentUserContext;
 
     public ProductLoanServiceImpl(ProductLoanRepository repository, ProductLoanMapper mapper,
-            Validator validator, @Value("${shafagh.fund-id:1}") long fundId) {
-        this.repository = repository; this.mapper = mapper; this.validator = validator; this.fundId = fundId;
+            Validator validator, CurrentUserContext currentUserContext) {
+        this.repository = repository; this.mapper = mapper; this.validator = validator; this.currentUserContext = currentUserContext;
     }
 
     public ProductLoanResponseDto create(ProductLoanReqDTO request) {
         validate(request);
-        if (repository.existsByCodeAndFundId(request.getCode(), fundId)) throw new DuplicateProductLoanCodeException();
+        if (repository.existsByCodeAndFundId(request.getCode(), currentUserContext.fundId())) throw new DuplicateProductLoanCodeException();
         return persist(mapper.toEntity(request));
     }
 
@@ -42,13 +42,13 @@ public class ProductLoanServiceImpl implements ProductLoanService {
 
     @Transactional(transactionManager = "loanTransactionManager", readOnly = true)
     public Page<ProductLoanResponseDto> findAll(Pageable pageable) {
-        return repository.findAllByFundId(fundId, pageable).map(mapper::toResponse);
+        return repository.findAllByFundId(currentUserContext.fundId(), pageable).map(mapper::toResponse);
     }
 
     public ProductLoanResponseDto update(Long id, ProductLoanReqDTO request) {
         ProductLoanEntity entity = require(id);
         validate(request);
-        if (repository.existsByCodeAndFundIdAndIdNot(request.getCode(), fundId, id)) throw new DuplicateProductLoanCodeException();
+        if (repository.existsByCodeAndFundIdAndIdNot(request.getCode(), currentUserContext.fundId(), id)) throw new DuplicateProductLoanCodeException();
         mapper.updateFromRequest(request, entity);
         return persist(entity);
     }
@@ -57,7 +57,7 @@ public class ProductLoanServiceImpl implements ProductLoanService {
 
     private ProductLoanEntity require(Long id) {
         if (id == null || id <= 0) throw new InvalidProductLoanException("شناسه محصول باید مثبت باشد");
-        return repository.findByIdAndFundId(id, fundId).orElseThrow(ProductLoanNotFoundException::new);
+        return repository.findByIdAndFundId(id, currentUserContext.fundId()).orElseThrow(ProductLoanNotFoundException::new);
     }
 
     private ProductLoanResponseDto persist(ProductLoanEntity entity) {
