@@ -8,6 +8,7 @@ import com.misc.shafagh.base.impl.entity.CityEntity;
 import com.misc.shafagh.base.impl.entity.branch.*;
 import com.misc.shafagh.base.impl.entity.fund.*;
 import com.misc.shafagh.cif.api.CustomerLookup;
+import com.misc.shafagh.cif.api.dto.CustomerExistenceStatus;
 import com.misc.shafagh.cif.impl.dto.request.*;
 import com.misc.shafagh.cif.impl.dto.request.CustomerFilterDTO;
 import com.misc.shafagh.cif.impl.entity.enums.*;
@@ -114,21 +115,21 @@ class BaseModuleIntegrationTest {
         customer.setCustomerStatus(CustomerStatus.INACTIVE);customer.setRegistrationDate(new Date());
         customer.setCityId(1L);em.persist(customer);em.flush();em.clear();
         capturedQueries.clear();
-        assertTrue(customerLookup.existsByIdentifier(identifier));
+        assertEquals(CustomerExistenceStatus.EXIST, customerLookup.existsByIdentifier(identifier));
         String lookupSql = capturedQueries.stream().filter(sql -> sql.toLowerCase(java.util.Locale.ROOT).contains("count("))
             .findFirst().orElseThrow().toLowerCase(java.util.Locale.ROOT);
         assertTrue(lookupSql.contains("identifier=?") || lookupSql.contains("identifier = ?"), lookupSql);
         assertTrue(lookupSql.contains("fund_id=?") || lookupSql.contains("fund_id = ?"), lookupSql);
-        assertFalse(customerLookup.existsByIdentifier(identifier.substring(2)));
-        assertFalse(customerLookup.existsByIdentifier(" " + identifier));
-        assertFalse(customerLookup.existsByIdentifier(UUID.randomUUID().toString()));
-        assertFalse(customerLookup.existsByIdentifier(null));
-        assertFalse(customerLookup.existsByIdentifier(""));
-        assertFalse(customerLookup.existsByIdentifier("   "));
+        assertEquals(CustomerExistenceStatus.NOT_EXIST, customerLookup.existsByIdentifier(identifier.substring(2)));
+        assertEquals(CustomerExistenceStatus.NOT_EXIST, customerLookup.existsByIdentifier(" " + identifier));
+        assertEquals(CustomerExistenceStatus.NOT_EXIST, customerLookup.existsByIdentifier(UUID.randomUUID().toString()));
+        assertEquals(CustomerExistenceStatus.NOT_EXIST, customerLookup.existsByIdentifier(null));
+        assertEquals(CustomerExistenceStatus.NOT_EXIST, customerLookup.existsByIdentifier(""));
+        assertEquals(CustomerExistenceStatus.NOT_EXIST, customerLookup.existsByIdentifier("   "));
         String otherFund="OTHER-"+UUID.randomUUID();
         em.createNativeQuery("insert into " + SchemaName.CIF + ".CUSTOMER (ID,FUND_ID,IDENTIFIER,CUSTOMER_TYPE,CUSTOMER_STATUS,REGISTRATION_DATE,CITY_ID) values(88888888,38,:identifier,0,1,CURRENT_TIMESTAMP,1)")
             .setParameter("identifier",otherFund).executeUpdate();
-        assertFalse(customerLookup.existsByIdentifier(otherFund));
+        assertEquals(CustomerExistenceStatus.NOT_EXIST, customerLookup.existsByIdentifier(otherFund));
     }
 
     @Test

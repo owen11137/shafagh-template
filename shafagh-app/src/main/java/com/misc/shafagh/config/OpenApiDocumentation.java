@@ -114,7 +114,7 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
             operation.setTags(List.of(real ? "CIF | اشخاص حقیقی" : legal ? "CIF | اشخاص حقوقی" : "CIF | جست‌وجوی شناسه"));
             if (path.equals("/customer/exists")) {
                 operation.setSummary("بررسی وجود مشتری در صندوق جاری");
-                operation.setDescription("identifier را به صورت کد ملی یا شماره ثبت شرکت در query ارسال کنید. شرط FUND_ID از resolver فعلی tenant گرفته می‌شود و از درخواست دریافت نمی‌شود. خروجی boolean است؛ مشتری ناموجود یا متعلق به صندوق دیگر false دارد. همه انواع و وضعیت‌های مشتری بررسی می‌شوند.");
+                operation.setDescription("identifier را به صورت کد ملی یا شماره ثبت شرکت در query درخواست POST ارسال کنید؛ فقط ارقام 0 تا 9 و حداکثر ۲۰ رقم مجاز است. شرط FUND_ID از resolver فعلی tenant گرفته می‌شود و از درخواست دریافت نمی‌شود. خروجی EXIST یا NOT_EXIST است؛ مشتری ناموجود یا متعلق به صندوق دیگر NOT_EXIST دارد. همه انواع و وضعیت‌های مشتری بررسی می‌شوند.");
             } else if (path.endsWith("/save")) {
                 operation.setSummary("ثبت شخص " + label);
                 operation.setDescription("id نفرستید. شناسه شناسایی یکتا، نوع شخص، تاریخ ثبت، شهر موجود، حداقل یک آدرس و یک راه ارتباطی لازم است. "

@@ -74,3 +74,11 @@ service implementations use the `Impl` suffix. Public contracts in the separate
 `shafagh-*-api` Maven modules retain their public API packages and cross-module
 boundary rules. Internal `impl.service.api` interfaces may refer to the same
 module's DTOs and pagination types; they are not public module API contracts.
+
+## HTTP conventions
+
+Use POST for new business lookup endpoints as requested by the user. Customer
+identifier lookup accepts a String containing only ASCII digits, at most 20
+characters, preserving leading zeros, and returns EXIST or NOT_EXIST. Resolve
+fundId from Hibernate's current tenant resolver and include it explicitly in
+identifier existence queries; never accept the lookup fund from the client.

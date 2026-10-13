@@ -7,11 +7,13 @@ import com.misc.shafagh.cif.impl.service.api.CustomerLegalService;
 import com.misc.shafagh.cif.impl.service.api.CustomerRealService;
 import lombok.RequiredArgsConstructor;
 import com.misc.shafagh.cif.api.CustomerLookup;
+import com.misc.shafagh.cif.api.dto.CustomerExistenceStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,11 +30,11 @@ public class CustomerController {
     private final CustomerLegalService customerLegalService;
     private final CustomerLookup customerLookup;
 
-    @Operation(summary="بررسی وجود مشتری در صندوق جاری", description="کد ملی یا شماره ثبت شرکت را در identifier ارسال کنید. شرط FUND_ID از tenant جاری گرفته می‌شود؛ وجود مشتری در صندوق دیگر کافی نیست. خروجی true یا false است و به نوع یا وضعیت مشتری محدود نمی‌شود.")
-    @GetMapping(value="/exists", produces=org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-    public boolean existsByIdentifier(
-            @Parameter(description="کد ملی یا شماره ثبت شرکت؛ مقدار متنی دقیق با حفظ صفر ابتدایی", required=true)
-            @RequestParam("identifier") @NotBlank @Size(max=255) String identifier) {
+    @Operation(summary="بررسی وجود مشتری در صندوق جاری", description="کد ملی یا شماره ثبت شرکت را در identifier ارسال کنید. شرط FUND_ID از tenant جاری گرفته می‌شود؛ وجود مشتری در صندوق دیگر کافی نیست. خروجی EXIST یا NOT_EXIST است و به نوع یا وضعیت مشتری محدود نمی‌شود.")
+    @PostMapping(value="/exists", produces=org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+    public CustomerExistenceStatus existsByIdentifier(
+            @Parameter(description="کد ملی یا شماره ثبت شرکت؛ فقط ارقام ۰ تا ۹، حداکثر ۲۰ رقم، با حفظ صفر ابتدایی", required=true)
+            @RequestParam("identifier") @NotBlank @Size(max=20) @Pattern(regexp="[0-9]+") String identifier) {
         return customerLookup.existsByIdentifier(identifier);
     }
 

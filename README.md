@@ -29,6 +29,6 @@ shafagh-template
 
 ## بررسی وجود مشتری در صندوق جاری
 
-`GET /customer/exists?identifier=0012345678` برای کد ملی یا شماره ثبت شرکت، پاسخ boolean (`true`/`false`) با HTTP 200 می‌دهد. این مسیر در Swagger عمومی و گروه CIF موجود است. ورودی الزامی، غیرخالی و حداکثر ۲۵۵ کاراکتر است؛ ورودی نامعتبر 400 دارد. identifier به‌صورت متن و با حفظ صفر ابتدایی مقایسه می‌شود و محدود به نوع یا وضعیت خاصی از مشتری نیست.
+`POST /customer/exists?identifier=0012345678` برای کد ملی یا شماره ثبت شرکت، پاسخ رشته‌ای JSON (`"EXIST"`/`"NOT_EXIST"`) با HTTP 200 می‌دهد. این مسیر در Swagger عمومی و گروه CIF موجود است. ورودی الزامی، فقط شامل ارقام 0 تا 9 و حداکثر ۲۰ رقم است؛ ورودی نامعتبر 400 دارد. identifier به‌صورت متن و با حفظ صفر ابتدایی مقایسه می‌شود و محدود به نوع یا وضعیت خاصی از مشتری نیست.
 
-کنترلر از قرارداد عمومی `CustomerLookup.existsByIdentifier` در cif-api استفاده می‌کند. پیاده‌سازی سرویس، fundId را از `CurrentTenantIdentifierResolver<Long>` می‌گیرد. Repository با کوئری صریح `c.identifier = :identifier AND c.fundId = :fundId` بررسی می‌کند. fundId پارامتر درخواست نیست؛ همان identifier در صندوق دیگر، true برنمی‌گرداند.
+کنترلر از قرارداد عمومی `CustomerLookup.existsByIdentifier` در cif-api استفاده می‌کند. پیاده‌سازی سرویس، fundId را از `CurrentTenantIdentifierResolver<Long>` می‌گیرد. Repository با کوئری صریح `c.identifier = :identifier AND c.fundId = :fundId` بررسی می‌کند. fundId پارامتر درخواست نیست؛ همان identifier در صندوق دیگر، EXIST برنمی‌گرداند.
