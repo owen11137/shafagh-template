@@ -10,4 +10,10 @@ public class CustomerLookupImpl implements CustomerLookup {
     private final CustomerRepository repository;
     @Transactional(transactionManager = "cifTransactionManager", readOnly=true)
     public boolean exists(Long id) { return id!=null && repository.existsById(id); }
+    @Transactional(transactionManager = "cifTransactionManager", readOnly=true)
+    public java.util.Optional<Long> findActiveIndividualId(String nationalCode) {
+        return repository.findByIdentifierAndCustomerTypeAndCustomerStatus(nationalCode,
+                com.misc.shafagh.cif.impl.entity.enums.CustomerType.REAL,
+                com.misc.shafagh.cif.impl.entity.enums.CustomerStatus.ACTIVE).map(customer -> customer.getId());
+    }
 }

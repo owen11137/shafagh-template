@@ -114,6 +114,14 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
                 operation.getRequestBody().setDescription(path.endsWith("/filter") ? "فیلترهای جست‌وجو؛ برای جست‌وجوی بدون فیلتر، {} ارسال کنید." : "اطلاعات مشتری و فهرست‌های آدرس، تماس و امضا.");
             }
         }
+        if (path.equals("/dpst/deposits")) {
+            operation.setTags(List.of("DPST | افتتاح حساب"));
+            operation.setSummary("افتتاح حساب سپرده");
+            operation.setDescription("شماره ملی معتبر مشتری حقیقی فعال و productCode محصول فعال در صندوق جاری را ارسال کنید. حساب با مانده صفر و وضعیت OPN به همراه مالک ثبت می‌شود. شماره حساب داخلی ۲۰ رقمی از شناسه یکتای سپرده تولید می‌شود؛ شبا نیست.");
+            operation.getResponses().addApiResponse("400", new ApiResponse().description("شماره ملی یا کد محصول نامعتبر است."))
+                .addApiResponse("404", new ApiResponse().description("مشتری یا محصول در صندوق پیدا نشد."))
+                .addApiResponse("409", new ApiResponse().description("محصول غیرفعال یا خارج از بازه اعتبار است."));
+        }
         if (path.equals("/loan/products") || path.equals("/loan/products/{id}")) {
             operation.setTags(List.of("LOAN | محصولات تسهیلات"));
             operation.setSummary(switch (method) {
@@ -160,6 +168,8 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
             case "SignatureDto" -> "CIF ـ امضای مشتری؛ تصویر پاسخ به صورت Base64 در JSON نمایش داده می‌شود.";
             default -> null;
         };
+        if (name.equals("OpenDepositRequest")) description = "ورودی افتتاح حساب: nationalCode شماره ملی ده رقمی معتبر و productCode کد محصول سپرده.";
+        if (name.equals("OpenDepositResponse")) description = "نتیجه افتتاح: شناسه، شماره حساب داخلی، مشتری، محصول، وضعیت و مانده.";
         if (description == null) return;
         schema.setDescription(description);
         if (schema.getProperties() == null) return;

@@ -19,6 +19,8 @@ import java.util.Optional;
         CustomerEntity getFirstByIdAndCustomerTypeIn(long id, Collection<CustomerType> customerTypes);
         CustomerEntity getFirstByIdentifier(String identifier);
 
+    Optional<CustomerEntity> findByIdentifierAndCustomerTypeAndCustomerStatus(String identifier,
+        CustomerType type, com.misc.shafagh.cif.impl.entity.enums.CustomerStatus status);
     Optional<CustomerEntity> findByIdAndFundId(Long id, Long fundId);
 
     }
