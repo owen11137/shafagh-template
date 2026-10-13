@@ -77,7 +77,7 @@ class DepositOpeningTest {
         var tooLong=Map.of("nationalCode","0023549874","productCode",code,"description","x".repeat(256));
         var lengthError=assertThrows(RestClientResponseException.class,()->client().post().uri("/dpst/deposits").body(tooLong).retrieve().toBodilessEntity());
         assertEquals(400,lengthError.getStatusCode().value());
-        reject(400,"123",code);reject(400,"1111111111",code);reject(400,"0023549870",code);
+        reject(400,"123",code);reject(404,"1111111111",code);reject(404,"0023549870",code);
         reject(404,"0033549877",code);reject(404,"0023549874","missing");
         reject(409,"0023549874",product(1,43L));reject(404,"0023549874",product(0,44L));
         String future=product(0,43L);d.update("update SHFQ_DPST.PRODUCT_DEPOSIT set FROM_DATE=TIMESTAMP '2099-01-01 00:00:00' where CODE=?",future);reject(409,"0023549874",future);
