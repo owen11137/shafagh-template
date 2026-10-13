@@ -1,4 +1,4 @@
-package com.misc.shafagh.config.persistence;
+package com.misc.shafagh.config;
 
 import java.util.Locale;
 import java.util.Map;

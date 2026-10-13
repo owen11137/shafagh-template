@@ -1,4 +1,4 @@
-package com.misc.shafagh.config.persistence;
+package com.misc.shafagh.config;
 
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.jdbc.dialect.spi.DialectResolver;

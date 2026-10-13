@@ -1,6 +1,6 @@
 package com.misc.shafagh;
 import static org.junit.jupiter.api.Assertions.*;
-import com.misc.shafagh.config.persistence.FixedFundTenantIdentifierResolver;
+import com.misc.shafagh.config.FixedFundTenantIdentifierResolver;
 import com.misc.shafagh.dpst.impl.entity.*;
 import com.misc.shafagh.common.product.ProductStatus;
 import jakarta.persistence.EntityManagerFactory;

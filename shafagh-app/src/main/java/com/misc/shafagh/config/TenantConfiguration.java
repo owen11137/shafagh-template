@@ -1,5 +1,5 @@
 package com.misc.shafagh.config;
-import com.misc.shafagh.config.persistence.FixedFundTenantIdentifierResolver;
+import com.misc.shafagh.config.FixedFundTenantIdentifierResolver;
 import org.hibernate.cfg.MultiTenancySettings;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,4 +1,4 @@
-package com.misc.shafagh.config.persistence;
+package com.misc.shafagh.config;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 /** Temporary fixed fund resolver. Replace this implementation with authenticated JWT tenant resolution later. */
 public final class FixedFundTenantIdentifierResolver implements CurrentTenantIdentifierResolver<Long> {

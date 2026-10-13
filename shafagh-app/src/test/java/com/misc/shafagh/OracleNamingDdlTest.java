@@ -2,9 +2,9 @@ package com.misc.shafagh;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.misc.shafagh.config.persistence.ConstraintNamingIntegrator;
-import com.misc.shafagh.config.persistence.DatabaseNamingStrategy;
-import com.misc.shafagh.config.persistence.ShafaghOracleDialect;
+import com.misc.shafagh.config.ConstraintNamingIntegrator;
+import com.misc.shafagh.config.DatabaseNamingStrategy;
+import com.misc.shafagh.config.ShafaghOracleDialect;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import java.nio.file.Files;
