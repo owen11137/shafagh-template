@@ -148,7 +148,7 @@ class WebServerStartupTest {
                     operationCount++;
                 }
             }
-            assertEquals(27, operationCount);
+            assertEquals(32, operationCount);
             for (String model : new String[]{"CityDto", "FundDto", "BranchDto", "CustomerReqDTO", "CustomerDto", "CustomerFilterDTO"}) {
                 org.junit.jupiter.api.Assertions.assertFalse(document.path("components").path("schemas").path(model)
                         .path("description").asText().isBlank(), model);
@@ -170,7 +170,13 @@ class WebServerStartupTest {
                     org.junit.jupiter.api.Assertions.assertTrue(grouped.path("paths").has("/customer/real/save"));
                     org.junit.jupiter.api.Assertions.assertFalse(grouped.path("paths").has("/base/city"));
                 }
-                if (group.equals("03-dpst")) assertTrue(grouped.path("paths").has("/dpst/deposits"));
+                if (group.equals("03-dpst")) {
+                    assertTrue(grouped.path("paths").has("/dpst/deposits"));
+                    assertTrue(grouped.path("paths").has("/dpst/products"));
+                    assertTrue(grouped.path("paths").has("/dpst/products/{id}"));
+                    assertTrue(grouped.path("paths").path("/dpst/products").path("post").path("responses").has("201"));
+                    assertTrue(grouped.path("paths").path("/dpst/products/{id}").path("delete").path("responses").has("204"));
+                }
                 if (group.equals("04-loan")) {
                     assertTrue(grouped.path("paths").has("/loan/products"));
                     assertTrue(grouped.path("paths").path("/loan/products").path("post").path("responses").has("201"));

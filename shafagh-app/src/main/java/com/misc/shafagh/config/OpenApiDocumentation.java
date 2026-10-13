@@ -122,6 +122,31 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
                 .addApiResponse("404", new ApiResponse().description("مشتری یا محصول در صندوق پیدا نشد."))
                 .addApiResponse("409", new ApiResponse().description("محصول غیرفعال یا خارج از بازه اعتبار است."));
         }
+        if (path.equals("/dpst/products") || path.equals("/dpst/products/{id}")) {
+            operation.setTags(List.of("DPST | محصولات سپرده"));
+            operation.setSummary(switch (method) {
+                case "POST" -> "ثبت محصول سپرده";
+                case "PUT" -> "ویرایش محصول سپرده";
+                case "DELETE" -> "حذف محصول سپرده";
+                default -> path.endsWith("/{id}") ? "دریافت محصول سپرده" : "فهرست محصولات سپرده";
+            });
+            operation.setDescription(switch (method) {
+                case "POST" -> "کد یکتا با حداکثر ۲۵۵ کاراکتر، depositType و status الزامی‌اند. شناسه، صندوق فعال و اطلاعات ثبت توسط برنامه تعیین می‌شوند.";
+                case "PUT" -> "ویرایش کامل فیلدهای محصول با شناسه مسیر در صندوق فعال؛ شناسه، مالکیت و زمان ثبت حفظ می‌شوند. تاریخ پایان نباید قبل از شروع باشد. کد محصول دارای حساب قابل تغییر نیست.";
+                case "DELETE" -> "حذف محصول فاقد حساب در صندوق فعال؛ محصول دارای حساب با 409 رد می‌شود. پاسخ موفق 204 است.";
+                default -> path.endsWith("/{id}") ? "مشخصات محصول با شناسه مسیر؛ محصول ناموجود یا متعلق به صندوق دیگر پاسخ 404 دارد."
+                        : "فهرست محصولات صندوق فعال؛ page از صفر، size پیش‌فرض ۲۰ و sort به شکل id,asc است.";
+            });
+            operation.getResponses().addApiResponse("400", new ApiResponse().description("ورودی نامعتبر؛ طول غیرمجاز، فیلد الزامی خالی یا بازه زمانی نامعتبر."));
+            if (path.endsWith("/{id}")) operation.getResponses().addApiResponse("404", new ApiResponse().description("محصول در صندوق فعال پیدا نشد."));
+            if (method.equals("POST") || method.equals("PUT")) {
+                operation.getRequestBody().setDescription("اطلاعات کامل محصول؛ عنوان، کد و توضیحات حداکثر ۲۵۵ کاراکتر؛ تاریخ پایان >= شروع باشد.");
+                operation.getResponses().addApiResponse("409", new ApiResponse().description("کد محصول تکراری است؛ یکتایی کد در کل اسکیما برقرار است."));
+            }
+            if (method.equals("DELETE") || method.equals("PUT")) operation.getResponses().addApiResponse("409", new ApiResponse().description("کد تکراری یا محصول دارای حساب؛ حذف و تغییر کد محصول دارای حساب مجاز نیست."));
+            if (method.equals("POST")) operation.getResponses().get("201").setDescription("محصول ثبت شد؛ شناسه و اطلاعات ثبت در پاسخ است.");
+            if (method.equals("DELETE")) operation.getResponses().get("204").setDescription("محصول حذف شد؛ بدنه ندارد.");
+        }
         if (path.equals("/loan/products") || path.equals("/loan/products/{id}")) {
             operation.setTags(List.of("LOAN | محصولات تسهیلات"));
             operation.setSummary(switch (method) {
@@ -153,6 +178,8 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
 
     private void describeSchema(String name, Schema schema) {
         String description = switch (name) {
+            case "ProductDepositReqDTO" -> "DPST ـ ورودی ثبت یا ویرایش محصول سپرده؛ کد، نوع سپرده و وضعیت الزامی‌اند.";
+            case "ProductDepositResponseDto" -> "DPST ـ مشخصات محصول سپرده همراه صندوق و اطلاعات ثبت و ویرایش.";
             case "ProductLoanReqDTO" -> "LOAN ـ ورودی ثبت یا ویرایش کامل محصول تسهیلات؛ فاقد شناسه و اطلاعات سیستمی.";
             case "ProductLoanResponseDto" -> "LOAN ـ مشخصات محصول تسهیلات همراه صندوق، auditing و version.";
             case "CityDto" -> "BASE ـ مشخصات شهر یا استان و نام استان والد.";
@@ -228,6 +255,22 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
                     case "fundId" -> "شناسه صندوق فعال؛ از ورودی دریافت نمی‌شود.";
                     case "version" -> "نسخه قفل خوش‌بینانه؛ توسط Hibernate تعیین می‌شود.";
                     case "createdBy", "createdOn", "modifiedBy", "modifiedOn" -> "اطلاعات ثبت یا ویرایش که توسط auditing برنامه تعیین می‌شود.";
+                    default -> text;
+                };
+            }
+            if (name.startsWith("ProductDeposit")) {
+                text = switch (field.toString()) {
+                    case "id" -> "شناسه محصول؛ در پاسخ برگردانده می‌شود و در ویرایش از مسیر گرفته می‌شود.";
+                    case "code" -> "کد یکتا در اسکیما؛ الزامی، حداکثر ۲۵۵ کاراکتر؛ برای محصول دارای حساب قابل تغییر نیست.";
+                    case "title" -> "عنوان اختیاری محصول؛ حداکثر ۲۵۵ کاراکتر.";
+                    case "description" -> "توضیحات اختیاری محصول؛ حداکثر ۲۵۵ کاراکتر.";
+                    case "depositType" -> "نوع سپرده؛ DEPOSIT1 یا DEPOSIT2، الزامی.";
+                    case "status" -> "وضعیت محصول؛ ACTIVE یا INACTIVE، الزامی.";
+                    case "fromDate" -> "ابتدای بازه اعتبار؛ اختیاری، شامل تاریخ شروع.";
+                    case "toDate" -> "انتهای بازه اعتبار؛ اختیاری، نباید قبل از شروع باشد؛ انتهای بازه شامل نمی‌شود.";
+                    case "fundId" -> "صندوق فعال؛ توسط برنامه تعیین می‌شود.";
+                    case "version" -> "نسخه قفل خوش‌بینانه؛ توسط Hibernate تعیین می‌شود.";
+                    case "createdBy", "createdOn", "modifiedBy", "modifiedOn" -> "اطلاعات ثبت و ویرایش؛ توسط auditing برنامه تعیین می‌شود.";
                     default -> text;
                 };
             }

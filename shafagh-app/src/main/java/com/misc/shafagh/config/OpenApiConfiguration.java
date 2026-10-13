@@ -15,9 +15,10 @@ public class OpenApiConfiguration {
         return new OpenAPI().info(new Info()
                 .title("Shafagh API")
                 .description("مستندات API شفق. BASE: شهر، شعبه و صندوق؛ CIF: مشتری حقیقی و حقوقی. "
-                        + "LOAN: مدیریت محصولات تسهیلات؛ DPST: افتتاح حساب سپرده. "
+                        + "LOAN: مدیریت محصولات تسهیلات؛ DPST: محصولات و افتتاح حساب سپرده. "
                         + "از فهرست بالای صفحه، همه APIها یا ماژول موردنظر را انتخاب کنید.")
                 .version("1.0.0"))
+                .addTagsItem(new Tag().name("DPST | محصولات سپرده").description("ثبت، دریافت، فهرست، ویرایش و حذف محصول سپرده در صندوق فعال"))
                 .addTagsItem(new Tag().name("DPST | افتتاح حساب").description("افتتاح حساب سپرده و ثبت مالک برای مشتری حقیقی فعال"))
                 .addTagsItem(new Tag().name("LOAN | محصولات تسهیلات").description("ProductLoanController؛ ثبت، دریافت، فهرست صفحه‌بندی‌شده، ویرایش و حذف محصول تسهیلات صندوق فعال"))
                 .addTagsItem(new Tag().name("BASE | شهرها").description("CityController؛ مدیریت شهر و استان و اطلاعات جغرافیایی مشترک"))
