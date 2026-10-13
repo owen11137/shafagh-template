@@ -7,48 +7,39 @@ import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Comment;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity(name = "InstallmentDetail")
-@Table(name = "INSTALLMENT_DETAIL", schema = SchemaName.LN)
-@Comment("جدول جزئیات پرداخت اقساط")
+@Table(name = "INSTALLMENT_DETAIL", schema = SchemaName.LN, comment = "جدول جزئیات پرداخت اقساط")
 @SequenceGenerator(schema = SchemaName.LN, name = "SEQ_INSTALLMENT_DETAIL_ID", sequenceName = "SEQ_INSTALLMENT_DETAIL_ID", allocationSize = 1)
 @Getter
 @Setter
 public class InstallmentDetailEntity extends TenantAwareEntity {
 
     @Id
-    @Column(name = "ID", columnDefinition = "number(19,0)")
+    @Column(name = "ID", columnDefinition = "number(19,0)", comment = "شناسه یکتای جزئیات قسط")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_INSTALLMENT_DETAIL_ID")
     @EqualsAndHashCode.Include
-    @Comment("شناسه یکتای جزئیات قسط")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "LOAN_ID", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_INSTALLMENT_DETAIL_LOAN"))
-    @Comment("شناسه وام")
+    @JoinColumn(name = "LOAN_ID", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_INSTALLMENT_DETAIL_LOAN"), comment = "شناسه وام")
     private LoanEntity loan;
 
-    @Column(name = "INSTALLMENT_NUMBER", nullable = false)
-    @Comment("شماره قسط")
+    @Column(name = "INSTALLMENT_NUMBER", nullable = false, comment = "شماره قسط")
     private int installmentNumber;
 
-    @Column(name = "PAID_AMOUNT", nullable = false)
-    @Comment("مبلغ پرداخت‌شده")
+    @Column(name = "PAID_AMOUNT", nullable = false, comment = "مبلغ پرداخت‌شده")
     private BigDecimal paidAmount;
 
-    @Column(name = "PAID_DATE")
-    @Comment("تاریخ پرداخت")
+    @Column(name = "PAID_DATE", comment = "تاریخ پرداخت")
     private LocalDateTime paidDate;
 
-    @Column(name = "FINE_AMOUNT")
-    @Comment("مبلغ جریمه")
+    @Column(name = "FINE_AMOUNT", comment = "مبلغ جریمه")
     private BigDecimal fineAmount;
 
-    @Column(name = "TRANSACTION_NO")
-    @Comment("شماره تراکنش")
+    @Column(name = "TRANSACTION_NO", comment = "شماره تراکنش")
     private long transactionNO;
 }

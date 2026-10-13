@@ -4,7 +4,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.TenantId;
 
 /**
@@ -30,7 +29,6 @@ import org.hibernate.annotations.TenantId;
 public abstract class TenantAwareEntity extends BaseEntity {
 
     @TenantId
-    @Column(name = "FUND_ID")
-    @Comment("شناسه صندوق (مستاجر) مالک رکورد")
+    @Column(name = "FUND_ID", comment = "شناسه صندوق (مستاجر) مالک رکورد")
     private Long fundId;
 }

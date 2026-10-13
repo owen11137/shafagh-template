@@ -1,6 +1,5 @@
 package com.misc.shafagh.common.persistence;
 
-import org.hibernate.annotations.Comment;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -38,34 +37,29 @@ public abstract class BaseEntity implements Serializable, Cloneable {
     protected static final Timestamp DELETE_AT = Timestamp.valueOf("1970-01-01 00:00:00.0000000");
 
     @CreatedBy
-    @Column(name = "CREATED_BY", nullable = true, updatable = false, length = 30)
-    @Comment("شناسه کاربر ایجادکننده رکورد")
+    @Column(name = "CREATED_BY", nullable = true, updatable = false, length = 30, comment = "شناسه کاربر ایجادکننده رکورد")
     private String createdBy;
 
     @CreatedDate
-    @Column(name = "CREATED_ON", nullable = true, updatable = false)
+    @Column(name = "CREATED_ON", nullable = true, updatable = false, comment = "زمان ایجاد رکورد")
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSSS")
-    @Comment("زمان ایجاد رکورد")
     private Date createdOn;
 
     @LastModifiedBy
-    @Column(name = "MODIFIED_BY", nullable = true, length = 30)
-    @Comment("شناسه آخرین کاربر ویرایش‌کننده رکورد")
+    @Column(name = "MODIFIED_BY", nullable = true, length = 30, comment = "شناسه آخرین کاربر ویرایش‌کننده رکورد")
     private String modifiedBy;
 
     @LastModifiedDate
-    @Column(name = "MODIFIED_ON", nullable = true)
+    @Column(name = "MODIFIED_ON", nullable = true, comment = "زمان آخرین ویرایش رکورد")
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSSS")
-    @Comment("زمان آخرین ویرایش رکورد")
     private Date modifiedOn;
 
     @JsonIgnore
     @Version
-    @Column(name = "OPT_LOCK", nullable = true)
+    @Column(name = "OPT_LOCK", nullable = true, comment = "نسخه رکورد برای کنترل هم‌زمانی و قفل خوش‌بینانه")
     @ColumnDefault("0")
     @Setter(onMethod_ = @JsonIgnore)
-    @Comment("نسخه رکورد برای کنترل هم‌زمانی و قفل خوش‌بینانه")
     private Long version = 0L;
 }

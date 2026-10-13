@@ -1,14 +1,12 @@
 package com.misc.shafagh.base.impl.entity;
 
-import org.hibernate.annotations.Comment;
 import com.misc.shafagh.common.SchemaName;
 import jakarta.persistence.*;
 import lombok.*;
 
 
-@Comment("جدول شهرها و استان‌ها")
 @Entity
-@Table(schema = SchemaName.BASE, name = "CITY")
+@Table(schema = SchemaName.BASE, name = "CITY", comment = "جدول شهرها و استان‌ها")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,29 +15,24 @@ import lombok.*;
 public class CityEntity {
 
     @Id
-    @Column(name = "ID", columnDefinition = "number(19,0)")
+    @Column(name = "ID", columnDefinition = "number(19,0)", comment = "شناسه یکتای رکورد شهرها و استان‌ها")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_CITY_ID")
     @EqualsAndHashCode.Include
-    @Comment("شناسه یکتای رکورد شهرها و استان‌ها")
     private Long id;
 
     @Basic
-    @Column(name = "NAME",  length = 255)
-    @Comment("نام شهر یا استان")
+    @Column(name = "NAME",  length = 255, comment = "نام شهر یا استان")
     private String name;
 
     @Basic
-    @Column(name = "PHONE_CODE",  length = 255)
-    @Comment("پیش‌شماره تلفن شهر")
+    @Column(name = "PHONE_CODE",  length = 255, comment = "پیش‌شماره تلفن شهر")
     private String phoneCode;
 
     @Basic
-    @Column(name = "CODE",  length = 255)
-    @Comment("کد شهر یا استان")
+    @Column(name = "CODE",  length = 255, comment = "کد شهر یا استان")
     private String code;
 
-    @Column(name = "PARENT_ID", columnDefinition = "number(19,0)")
-    @Comment("شناسه والد جغرافیایی؛ مقدار صفر نشان‌دهنده استان است")
+    @Column(name = "PARENT_ID", columnDefinition = "number(19,0)", comment = "شناسه والد جغرافیایی؛ مقدار صفر نشان‌دهنده استان است")
     private Long parentId;
 
 }
