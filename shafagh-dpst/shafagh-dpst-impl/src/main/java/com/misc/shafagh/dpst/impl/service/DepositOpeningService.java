@@ -26,7 +26,7 @@ public class DepositOpeningService {
 
     @Transactional(transactionManager="dpstTransactionManager")
     public OpenDepositResponse open(OpenDepositRequest request) {
-        if (!validNationalCode(request.nationalCode()))
+        if (request.nationalCode()==null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "شماره ملی معتبر نیست");
         Long customerId = customers.findActiveIndividualId(request.nationalCode())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "مشتری حقیقی فعال در صندوق پیدا نشد"));
@@ -53,12 +53,5 @@ public class DepositOpeningService {
         return new OpenDepositResponse(deposit.getId(), deposit.getDepositNumber(), customerId,
                 product.getCode(), deposit.getDepositStatus(), deposit.getBalance(), deposit.getDescription());
     }
-
-    private boolean validNationalCode(String code) {
-        if (code==null || !code.matches("[0-9]{10}") || code.chars().distinct().count()==1) return false;
-        int sum=0;
-        for (int i=0;i<9;i++) sum+=(code.charAt(i)-'0')*(10-i);
-        int remainder=sum%11;
-        return code.charAt(9)-'0' == (remainder<2 ? remainder : 11-remainder);
-    }
+    
 }
