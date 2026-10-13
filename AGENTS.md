@@ -70,14 +70,3 @@ service implementations use the `Impl` suffix. Public contracts in the separate
 `shafagh-*-api` Maven modules retain their public API packages and cross-module
 boundary rules. Internal `impl.service.api` interfaces may refer to the same
 module's DTOs and pagination types; they are not public module API contracts.
-
-## Current user identity
-
-Consume `com.misc.shafagh.common.context.CurrentUserContext` through constructor
-injection for the current fund/user/branch. Read `current()` at operation time;
-do not cache caller identity in singleton/static fields or constructor values.
-Only the temporary provider configuration reads shafagh.fund-id/user-id/branch-id
-properties. Hibernate tenant resolution and auditing use the same provider.
-Future JWT support replaces the provider with authenticated SecurityContext data;
-never fall back to temporary IDs for missing authentication/claims. Explicitly
-propagate identity for async/jobs and do not switch funds inside an open JPA session.

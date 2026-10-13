@@ -44,7 +44,8 @@ import java.util.stream.Collectors;
 @Transactional("cifTransactionManager")
 public abstract class AbstractCustomerService {
 
-    private final com.misc.shafagh.common.context.CurrentUserContext currentUserContext;
+    @org.springframework.beans.factory.annotation.Value("${shafagh.fund-id:1}")
+    private long fundId;
 
     protected final CustomerRepository personRepo;
     protected final CityService cityService;
@@ -56,8 +57,7 @@ public abstract class AbstractCustomerService {
                                       CityService cityService,
                                       CustomerMapper customerMapper,
                                       CustomerValidator customerValidator,
-                                      CustomerSignatureHelper signatureHelper, com.misc.shafagh.common.context.CurrentUserContext currentUserContext) {
-        this.currentUserContext = currentUserContext;
+                                      CustomerSignatureHelper signatureHelper) {
         this.personRepo = personRepo;
         this.cityService = cityService;
         this.customerMapper = customerMapper;
@@ -170,11 +170,11 @@ public abstract class AbstractCustomerService {
     }
 
     private void applyCommonDefaults(CustomerReqDTO reqDTO) {
-        reqDTO.setFundId(currentUserContext.fundId());
+        reqDTO.setFundId(fundId);
         reqDTO.setCustomerStatus(CustomerStatus.ACTIVE);
-        forEachSafe(reqDTO.getContacts(), x -> x.setFundId(currentUserContext.fundId()));
-        forEachSafe(reqDTO.getAddresses(), x -> x.setFundId(currentUserContext.fundId()));
-        forEachSafe(reqDTO.getSignatures(), x -> x.setFundId(currentUserContext.fundId()));
+        forEachSafe(reqDTO.getContacts(), x -> x.setFundId(fundId));
+        forEachSafe(reqDTO.getAddresses(), x -> x.setFundId(fundId));
+        forEachSafe(reqDTO.getSignatures(), x -> x.setFundId(fundId));
     }
 
     private void requireRequest(CustomerReqDTO dto) {

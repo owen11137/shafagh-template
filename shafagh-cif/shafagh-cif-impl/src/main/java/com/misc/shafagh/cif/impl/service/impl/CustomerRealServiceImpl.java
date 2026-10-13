@@ -24,8 +24,8 @@ public class CustomerRealServiceImpl extends AbstractCustomerService implements 
                                    CityService cityService,
                                    CustomerMapper customerMapper,
                                    CustomerValidator customerValidator,
-                                   CustomerSignatureHelper signatureHelper, com.misc.shafagh.common.context.CurrentUserContext currentUserContext) {
-        super(personRepo, cityService, customerMapper, customerValidator, signatureHelper, currentUserContext);
+                                   CustomerSignatureHelper signatureHelper) {
+        super(personRepo, cityService, customerMapper, customerValidator, signatureHelper);
     }
 
     @Override
