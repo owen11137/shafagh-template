@@ -17,10 +17,14 @@ already authorized and does not require another confirmation.
 - CHECK: CHK_<TABLE>_<RULE>. Existing enum/boolean checks use the column as the
   rule name; NOT NULL checks use <COLUMN>_NOT_NULL. Do not invent new business
   checks or change the permitted data solely to rename constraints.
-- Name all constraints explicitly; avoid Oracle-generated SYS_* and hash names.
-  Hibernate PK, implicit one-to-one UK and enum/boolean CHECK names are handled by
-  DatabaseNamingConfiguration/ConstraintNamingIntegrator. Oracle NOT NULL names
-  and backing PK/UK index names are handled by ShafaghOracleDialect.
+- Declare supported constraint names directly in entity annotations (@UniqueConstraint,
+  @ForeignKey, explicit @CheckConstraint) using the patterns above. Do not add
+  naming strategies, metadata naming integrators, or SQL rename operations.
+  Standard JPA cannot name PKs and some automatically generated constraints;
+  retain standard Hibernate/Oracle names for those instead of custom naming code.
+  Declare one-to-one unique constraints explicitly at table level.
+  ShafaghOracleDialect only handles missing-object drops and sequence options;
+  it must not assign constraint/index names or emit ALTER ... RENAME.
 - Index names: IDX_<TABLE>_<COL>, UDX_<TABLE>_<COL> for unique indexes,
   IDX_<TABLE>_<COL1>_<COL2> for composites, FDI_<TABLE>_<DESC> for function indexes,
   BDX_<TABLE>_<COL> for bitmap indexes. Use FDI from the rule table; do not silently

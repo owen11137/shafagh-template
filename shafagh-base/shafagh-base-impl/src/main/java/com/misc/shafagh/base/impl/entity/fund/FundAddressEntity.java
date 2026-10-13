@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(schema = SchemaName.BASE, name = "FUND_ADDRESS", comment = "جدول نشانی صندوق")
+@Table(schema = SchemaName.BASE, name = "FUND_ADDRESS", uniqueConstraints = @UniqueConstraint(name = "UK_FUND_ADDRESS_FUND_ID", columnNames = "FUND_ID"), comment = "جدول نشانی صندوق")
 @SequenceGenerator(name = "SEQ_FUND_ADDRESS_ID", schema = SchemaName.BASE, sequenceName = "SEQ_FUND_ADDRESS_ID", allocationSize = 1)
 @Getter
 @Setter
@@ -21,7 +21,8 @@ public class FundAddressEntity {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @OneToOne
+    // One address per owner is enforced by the explicitly named table unique constraint.
+    @ManyToOne
     @JoinColumn(name = "FUND_ID", referencedColumnName = "ID", nullable = false, foreignKey = @ForeignKey(name = "FK_FUND_ADDRESS_FUND"), comment = "شناسه صندوق مرتبط با رکورد")
     private FundEntity fundEntity;
 

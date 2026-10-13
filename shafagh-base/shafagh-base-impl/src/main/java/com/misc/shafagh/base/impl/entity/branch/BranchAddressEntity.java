@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(schema = SchemaName.BASE, name = "BRANCH_ADDRESS", comment = "جدول نشانی شعبه")
+@Table(schema = SchemaName.BASE, name = "BRANCH_ADDRESS", uniqueConstraints = @UniqueConstraint(name = "UK_BRANCH_ADDRESS_BRANCH_ID", columnNames = "BRANCH_ID"), comment = "جدول نشانی شعبه")
 @SequenceGenerator(name = "SEQ_BRANCH_ADDRESS_ID", schema = SchemaName.BASE, sequenceName = "SEQ_BRANCH_ADDRESS_ID", allocationSize = 1)
 @Getter
 @Setter
@@ -22,7 +22,8 @@ public class BranchAddressEntity extends TenantAwareEntity {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @OneToOne
+    // One address per owner is enforced by the explicitly named table unique constraint.
+    @ManyToOne
     @JoinColumn(name = "BRANCH_ID", referencedColumnName = "ID", nullable = false, foreignKey = @ForeignKey(name = "FK_BRANCH_ADDRESS_BRANCH"), comment = "شناسه شعبه مرتبط با رکورد")
     private BranchEntity branchEntity;
 

@@ -33,7 +33,7 @@ public class BranchEntity extends TenantAwareEntity {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FUND_ID", insertable = false, updatable = false, referencedColumnName = "ID", foreignKey = @ForeignKey(name = "BRANCH_FK_FUND"), comment = "شناسه صندوق مرتبط با رکورد")
+    @JoinColumn(name = "FUND_ID", insertable = false, updatable = false, referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_BRANCH_FUND"), comment = "شناسه صندوق مرتبط با رکورد")
     private FundEntity fund;
 
     @Basic

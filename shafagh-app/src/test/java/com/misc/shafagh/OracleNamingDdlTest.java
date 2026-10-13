@@ -2,8 +2,6 @@ package com.misc.shafagh;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.misc.shafagh.config.ConstraintNamingIntegrator;
-import com.misc.shafagh.config.DatabaseNamingStrategy;
 import com.misc.shafagh.config.ShafaghOracleDialect;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
@@ -24,11 +22,10 @@ class OracleNamingDdlTest {
     void oracleDdlNamesKeysChecksIndexesAndUsesExplicitSequenceOptions() throws Exception {
         Path script = directory.resolve("oracle-schema.sql");
         Path dropScript = directory.resolve("oracle-drop.sql");
-        var bootstrap = new BootstrapServiceRegistryBuilder().applyIntegrator(new ConstraintNamingIntegrator()).build();
+        var bootstrap = new BootstrapServiceRegistryBuilder().build();
         var registry = new StandardServiceRegistryBuilder(bootstrap)
                 .applySetting("hibernate.dialect", ShafaghOracleDialect.class.getName())
                 .applySetting("hibernate.boot.allow_jdbc_metadata_access", false)
-                .applySetting("hibernate.implicit_naming_strategy", new DatabaseNamingStrategy())
                 .applySetting("jakarta.persistence.schema-generation.database.action", "none")
                 .applySetting("jakarta.persistence.schema-generation.scripts.action", "drop-and-create")
                 .applySetting("jakarta.persistence.schema-generation.scripts.create-target", script.toString())
@@ -50,9 +47,8 @@ class OracleNamingDdlTest {
                 if (!type.isAnnotatedWith(jakarta.persistence.Entity.class)) continue;
                 Class<?> entity = type.reflect();
                 String table = entity.getAnnotation(jakarta.persistence.Table.class).name();
-                assertTrue(ddl.contains("CONSTRAINT PK_" + table + " PRIMARY KEY"), table);
+                assertTrue(ddl.contains("PRIMARY KEY (ID)"), table);
                 assertTrue(ddl.contains("SEQ_" + table + "_ID"), table);
-                assertTrue(ddl.contains("RENAME TO UDX_" + table + "_ID"), table);
             }
             long sequences = ddl.lines().filter(line -> line.startsWith("CREATE SEQUENCE")).count();
             assertEquals(20, sequences);
@@ -61,10 +57,12 @@ class OracleNamingDdlTest {
             });
             assertTrue(ddl.contains("UK_PRODUCT_LOAN_CODE"));
             assertTrue(ddl.contains("CONSTRAINT UK_CUSTOMER_FUND_ID_IDENTIFIER UNIQUE (FUND_ID, IDENTIFIER)"));
-            assertTrue(ddl.contains("RENAME TO UDX_CUSTOMER_FUND_ID_IDENTIFIER"));
+            assertFalse(ddl.contains("ALTER INDEX"));
+            assertFalse(ddl.contains("RENAME TO"));
+            assertTrue(ddl.contains("CONSTRAINT UK_BRANCH_ADDRESS_BRANCH_ID UNIQUE"));
+            assertTrue(ddl.contains("CONSTRAINT UK_FUND_ADDRESS_FUND_ID UNIQUE"));
+            assertTrue(ddl.contains("FK_BRANCH_FUND"));
             assertTrue(ddl.contains("FK_LOAN_PERSON_LOAN"));
-            assertTrue(ddl.contains("CHK_LOAN_AMOUNT_NOT_NULL"));
-            assertTrue(ddl.contains("CHK_LOAN_LOAN_STATUS"));
             assertFalse(ddl.contains("SYS_C"));
             // Verify every physical column, including inherited audit/tenant and join columns.
             int commentedColumns = 0;
