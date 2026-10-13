@@ -18,6 +18,10 @@ import java.util.Optional;
         Page<CustomerEntity> findAllByCustomerTypeIn(Collection<CustomerType> customerTypes, Pageable pageable);
         CustomerEntity getFirstByIdAndCustomerTypeIn(long id, Collection<CustomerType> customerTypes);
         CustomerEntity getFirstByIdentifier(String identifier);
+        @org.springframework.data.jpa.repository.Query("select (count(c) > 0) from CustomerEntity c where c.identifier = :identifier and c.fundId = :fundId")
+        boolean existsByIdentifierAndFundId(
+            @org.springframework.data.repository.query.Param("identifier") String identifier,
+            @org.springframework.data.repository.query.Param("fundId") Long fundId);
 
     Optional<CustomerEntity> findByIdentifierAndCustomerTypeAndCustomerStatus(String identifier,
         CustomerType type, com.misc.shafagh.cif.impl.entity.enums.CustomerStatus status);

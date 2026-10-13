@@ -17,6 +17,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations-jakarta</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.misc.shafagh</groupId>
             <artifactId>shafagh-common</artifactId>
         </dependency>

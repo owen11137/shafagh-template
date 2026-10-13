@@ -148,7 +148,7 @@ class WebServerStartupTest {
                     operationCount++;
                 }
             }
-            assertEquals(32, operationCount);
+            assertEquals(33, operationCount);
             for (String model : new String[]{"CityDto", "FundDto", "BranchDto", "CustomerReqDTO", "CustomerDto", "CustomerFilterDTO"}) {
                 org.junit.jupiter.api.Assertions.assertFalse(document.path("components").path("schemas").path(model)
                         .path("description").asText().isBlank(), model);

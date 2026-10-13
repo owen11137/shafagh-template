@@ -27,7 +27,17 @@ import org.springframework.web.server.ResponseStatusException;
 
 @SpringBootTest(properties="shafagh.fund-id=37")
 @Transactional
+@org.springframework.context.annotation.Import(BaseModuleIntegrationTest.QueryCaptureConfiguration.class)
 class BaseModuleIntegrationTest {
+    private static final java.util.Queue<String> capturedQueries = new java.util.concurrent.ConcurrentLinkedQueue<>();
+    @org.springframework.boot.test.context.TestConfiguration(proxyBeanMethods=false)
+    static class QueryCaptureConfiguration {
+        @org.springframework.context.annotation.Bean
+        org.springframework.boot.hibernate.autoconfigure.HibernatePropertiesCustomizer lookupQueryCapture() {
+            return properties -> properties.put("hibernate.session_factory.statement_inspector",
+                (org.hibernate.resource.jdbc.spi.StatementInspector) sql -> { capturedQueries.add(sql); return sql; });
+        }
+    }
     @Autowired private CityService cities;
     @Autowired private FundService funds;
     @Autowired private BranchService branches;
@@ -94,6 +104,31 @@ class BaseModuleIntegrationTest {
         Number oldTables=(Number)em.createNativeQuery("select count(*) from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA=:schema and TABLE_NAME in ('FUND','BRANCH','BRANCH_ADDRESS','FUND_ADDRESS','FUND_CONTACT','BRANCH_CONTACT','CITY')")
                 .setParameter("schema",SchemaName.CIF).getSingleResult();
         assertEquals(0,oldTables.intValue());
+    }
+
+    @Test
+    void identifierLookupUsesExactValueAndCurrentFundRegardlessOfStatusAndType() {
+        String identifier="00"+UUID.randomUUID();
+        var customer=new com.misc.shafagh.cif.impl.entity.CustomerEntity();
+        customer.setIdentifier(identifier);customer.setCustomerType(CustomerType.LEGAL);
+        customer.setCustomerStatus(CustomerStatus.INACTIVE);customer.setRegistrationDate(new Date());
+        customer.setCityId(1L);em.persist(customer);em.flush();em.clear();
+        capturedQueries.clear();
+        assertTrue(customerLookup.existsByIdentifier(identifier));
+        String lookupSql = capturedQueries.stream().filter(sql -> sql.toLowerCase(java.util.Locale.ROOT).contains("count("))
+            .findFirst().orElseThrow().toLowerCase(java.util.Locale.ROOT);
+        assertTrue(lookupSql.contains("identifier=?") || lookupSql.contains("identifier = ?"), lookupSql);
+        assertTrue(lookupSql.contains("fund_id=?") || lookupSql.contains("fund_id = ?"), lookupSql);
+        assertFalse(customerLookup.existsByIdentifier(identifier.substring(2)));
+        assertFalse(customerLookup.existsByIdentifier(" " + identifier));
+        assertFalse(customerLookup.existsByIdentifier(UUID.randomUUID().toString()));
+        assertFalse(customerLookup.existsByIdentifier(null));
+        assertFalse(customerLookup.existsByIdentifier(""));
+        assertFalse(customerLookup.existsByIdentifier("   "));
+        String otherFund="OTHER-"+UUID.randomUUID();
+        em.createNativeQuery("insert into " + SchemaName.CIF + ".CUSTOMER (ID,FUND_ID,IDENTIFIER,CUSTOMER_TYPE,CUSTOMER_STATUS,REGISTRATION_DATE,CITY_ID) values(88888888,38,:identifier,0,1,CURRENT_TIMESTAMP,1)")
+            .setParameter("identifier",otherFund).executeUpdate();
+        assertFalse(customerLookup.existsByIdentifier(otherFund));
     }
 
     @Test

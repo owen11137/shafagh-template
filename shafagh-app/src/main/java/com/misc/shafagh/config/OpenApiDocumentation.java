@@ -112,7 +112,10 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
             boolean legal = path.startsWith("/customer/legal/");
             String label = real ? "حقیقی" : "حقوقی";
             operation.setTags(List.of(real ? "CIF | اشخاص حقیقی" : legal ? "CIF | اشخاص حقوقی" : "CIF | جست‌وجوی شناسه"));
-            if (path.endsWith("/save")) {
+            if (path.equals("/customer/exists")) {
+                operation.setSummary("بررسی وجود مشتری در صندوق جاری");
+                operation.setDescription("identifier را به صورت کد ملی یا شماره ثبت شرکت در query ارسال کنید. شرط FUND_ID از resolver فعلی tenant گرفته می‌شود و از درخواست دریافت نمی‌شود. خروجی boolean است؛ مشتری ناموجود یا متعلق به صندوق دیگر false دارد. همه انواع و وضعیت‌های مشتری بررسی می‌شوند.");
+            } else if (path.endsWith("/save")) {
                 operation.setSummary("ثبت شخص " + label);
                 operation.setDescription("id نفرستید. شناسه شناسایی یکتا، نوع شخص، تاریخ ثبت، شهر موجود، حداقل یک آدرس و یک راه ارتباطی لازم است. "
                         + "صندوق فعال و وضعیت ACTIVE توسط سرویس تعیین می‌شوند. "

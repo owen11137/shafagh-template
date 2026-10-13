@@ -8,8 +8,17 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CustomerLookupImpl implements CustomerLookup {
     private final CustomerRepository repository;
+    private final org.hibernate.context.spi.CurrentTenantIdentifierResolver<Long> tenantIdentifierResolver;
     @Transactional(transactionManager = "cifTransactionManager", readOnly=true)
     public boolean exists(Long id) { return id!=null && repository.existsById(id); }
+    @Override
+    @Transactional(transactionManager = "cifTransactionManager", readOnly=true)
+    public boolean existsByIdentifier(String identifier) {
+        if (identifier == null || identifier.isBlank()) return false;
+        Long fundId = tenantIdentifierResolver.resolveCurrentTenantIdentifier();
+        if (fundId == null || fundId <= 0) throw new IllegalStateException("Current fund tenant is required");
+        return repository.existsByIdentifierAndFundId(identifier, fundId);
+    }
     @Transactional(transactionManager = "cifTransactionManager", readOnly=true)
     public java.util.Optional<Long> findActiveIndividualId(String nationalCode) {
         return repository.findByIdentifierAndCustomerTypeAndCustomerStatus(nationalCode,

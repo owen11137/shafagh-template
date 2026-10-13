@@ -6,12 +6,19 @@ import com.misc.shafagh.cif.impl.dto.response.CustomerDto;
 import com.misc.shafagh.cif.impl.service.api.CustomerLegalService;
 import com.misc.shafagh.cif.impl.service.api.CustomerRealService;
 import lombok.RequiredArgsConstructor;
+import com.misc.shafagh.cif.api.CustomerLookup;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 
 /** کنترلر REST ماژول CIF برای مدیریت مشتریان حقیقی و حقوقی؛ مستندات کامل در Swagger مشترک برنامه. */
+@Tag(name="CIF | جست‌وجوی شناسه", description="بررسی و جست‌وجوی مشتری در صندوق جاری")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/customer")
@@ -19,6 +26,15 @@ public class CustomerController {
 
     private final CustomerRealService customerRealService;
     private final CustomerLegalService customerLegalService;
+    private final CustomerLookup customerLookup;
+
+    @Operation(summary="بررسی وجود مشتری در صندوق جاری", description="کد ملی یا شماره ثبت شرکت را در identifier ارسال کنید. شرط FUND_ID از tenant جاری گرفته می‌شود؛ وجود مشتری در صندوق دیگر کافی نیست. خروجی true یا false است و به نوع یا وضعیت مشتری محدود نمی‌شود.")
+    @GetMapping(value="/exists", produces=org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+    public boolean existsByIdentifier(
+            @Parameter(description="کد ملی یا شماره ثبت شرکت؛ مقدار متنی دقیق با حفظ صفر ابتدایی", required=true)
+            @RequestParam("identifier") @NotBlank @Size(max=255) String identifier) {
+        return customerLookup.existsByIdentifier(identifier);
+    }
 
     @PostMapping("/real/save")
     public CustomerDto saveReal(@RequestBody CustomerReqDTO request) {
