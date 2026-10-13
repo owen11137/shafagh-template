@@ -144,55 +144,6 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
                 .addApiResponse("404", new ApiResponse().description("مشتری یا محصول در صندوق پیدا نشد."))
                 .addApiResponse("409", new ApiResponse().description("محصول غیرفعال یا خارج از بازه اعتبار است."));
         }
-        if (path.equals("/dpst/products") || path.equals("/dpst/products/{id}")) {
-            operation.setTags(List.of("DPST | محصولات سپرده"));
-            operation.setSummary(switch (method) {
-                case "POST" -> "ثبت محصول سپرده";
-                case "PUT" -> "ویرایش محصول سپرده";
-                case "DELETE" -> "حذف محصول سپرده";
-                default -> path.endsWith("/{id}") ? "دریافت محصول سپرده" : "فهرست محصولات سپرده";
-            });
-            operation.setDescription(switch (method) {
-                case "POST" -> "کد یکتا با حداکثر ۲۵۵ کاراکتر، depositType و status الزامی‌اند. شناسه، صندوق فعال و اطلاعات ثبت توسط برنامه تعیین می‌شوند.";
-                case "PUT" -> "ویرایش کامل فیلدهای محصول با شناسه مسیر در صندوق فعال؛ شناسه، مالکیت و زمان ثبت حفظ می‌شوند. تاریخ پایان نباید قبل از شروع باشد. کد محصول دارای حساب قابل تغییر نیست.";
-                case "DELETE" -> "حذف محصول فاقد حساب در صندوق فعال؛ محصول دارای حساب با 409 رد می‌شود. پاسخ موفق 204 است.";
-                default -> path.endsWith("/{id}") ? "مشخصات محصول با شناسه مسیر؛ محصول ناموجود یا متعلق به صندوق دیگر پاسخ 404 دارد."
-                        : "فهرست محصولات صندوق فعال؛ page از صفر، size پیش‌فرض ۲۰ و sort به شکل id,asc است.";
-            });
-            operation.getResponses().addApiResponse("400", new ApiResponse().description("ورودی نامعتبر؛ طول غیرمجاز، فیلد الزامی خالی یا بازه زمانی نامعتبر."));
-            if (path.endsWith("/{id}")) operation.getResponses().addApiResponse("404", new ApiResponse().description("محصول در صندوق فعال پیدا نشد."));
-            if (method.equals("POST") || method.equals("PUT")) {
-                operation.getRequestBody().setDescription("اطلاعات کامل محصول؛ عنوان، کد و توضیحات حداکثر ۲۵۵ کاراکتر؛ تاریخ پایان >= شروع باشد.");
-                operation.getResponses().addApiResponse("409", new ApiResponse().description("کد محصول تکراری است؛ یکتایی کد در کل اسکیما برقرار است."));
-            }
-            if (method.equals("DELETE") || method.equals("PUT")) operation.getResponses().addApiResponse("409", new ApiResponse().description("کد تکراری یا محصول دارای حساب؛ حذف و تغییر کد محصول دارای حساب مجاز نیست."));
-            if (method.equals("POST")) operation.getResponses().get("201").setDescription("محصول ثبت شد؛ شناسه و اطلاعات ثبت در پاسخ است.");
-            if (method.equals("DELETE")) operation.getResponses().get("204").setDescription("محصول حذف شد؛ بدنه ندارد.");
-        }
-        if (path.equals("/loan/products") || path.equals("/loan/products/{id}")) {
-            operation.setTags(List.of("LOAN | محصولات تسهیلات"));
-            operation.setSummary(switch (method) {
-                case "POST" -> "ثبت محصول تسهیلات";
-                case "PUT" -> "ویرایش محصول تسهیلات";
-                case "DELETE" -> "حذف محصول تسهیلات";
-                default -> path.endsWith("/{id}") ? "دریافت محصول تسهیلات" : "فهرست محصولات تسهیلات";
-            });
-            operation.setDescription(switch (method) {
-                case "POST" -> "کد یکتا با حداکثر ۲۰ کاراکتر، نوع محصول و امکان تسویه زودهنگام الزامی‌اند. شناسه، صندوق فعال و اطلاعات ثبت توسط برنامه تعیین می‌شوند.";
-                case "PUT" -> "ویرایش کامل فیلدهای محصول با شناسه مسیر در صندوق فعال؛ شناسه، مالکیت و زمان ثبت حفظ می‌شوند. حداقل‌ها نباید از حداکثرها بیشتر باشند.";
-                case "DELETE" -> "حذف رکورد محصول متعلق به صندوق فعال؛ پاسخ موفق 204 و بدون بدنه است.";
-                default -> path.endsWith("/{id}") ? "مشخصات محصول با شناسه مسیر؛ محصول ناموجود یا متعلق به صندوق دیگر پاسخ 404 دارد."
-                        : "فهرست محصولات صندوق فعال؛ page از صفر، size پیش‌فرض ۲۰ و sort به شکل id,asc است.";
-            });
-            operation.getResponses().addApiResponse("400", new ApiResponse().description("ورودی نامعتبر؛ مقدار منفی، طول غیرمجاز، فیلد الزامی خالی یا بازه نامعتبر."));
-            if (path.endsWith("/{id}")) operation.getResponses().addApiResponse("404", new ApiResponse().description("محصول در صندوق فعال پیدا نشد."));
-            if (method.equals("POST") || method.equals("PUT")) {
-                operation.getRequestBody().setDescription("اطلاعات کامل محصول؛ مقادیر مالی و تعدادها نامنفی، حداقل <= حداکثر و تاریخ پایان >= شروع باشند.");
-                operation.getResponses().addApiResponse("409", new ApiResponse().description("کد محصول تکراری است؛ یکتایی کد در کل اسکیما برقرار است."));
-            }
-            if (method.equals("POST")) operation.getResponses().get("201").setDescription("محصول ثبت شد؛ شناسه و اطلاعات ثبت در پاسخ است.");
-            if (method.equals("DELETE")) operation.getResponses().get("204").setDescription("محصول حذف شد؛ بدنه ندارد.");
-        }
         if (operation.getResponses() != null && operation.getResponses().get("200") != null) {
             operation.getResponses().get("200").setDescription("عملیات موفق؛ ساختار نتیجه در Schema پاسخ نمایش داده شده است.");
         }
