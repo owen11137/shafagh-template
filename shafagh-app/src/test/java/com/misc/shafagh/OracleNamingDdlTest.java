@@ -64,6 +64,24 @@ class OracleNamingDdlTest {
             assertTrue(ddl.contains("CHK_LOAN_AMOUNT_NOT_NULL"));
             assertTrue(ddl.contains("CHK_LOAN_LOAN_STATUS"));
             assertFalse(ddl.contains("SYS_C"));
+            // Verify every physical column, including inherited audit/tenant and join columns.
+            int commentedColumns = 0;
+            for (var namespace : metadata.getDatabase().getNamespaces()) {
+                for (var table : namespace.getTables()) {
+                    if (!table.isPhysicalTable()) continue;
+                    assertNotNull(table.getComment(), table.getName());
+                    assertFalse(table.getComment().isBlank(), table.getName());
+                    for (var column : table.getColumns()) {
+                        assertNotNull(column.getComment(), table.getName() + "." + column.getName());
+                        assertFalse(column.getComment().isBlank(), table.getName() + "." + column.getName());
+                        String statement = "COMMENT ON COLUMN " + table.getSchema() + "." + table.getName() + "." + column.getName() + " IS '";
+                        assertTrue(ddl.contains(statement.toUpperCase(Locale.ROOT)), statement);
+                        assertTrue(ddl.contains(column.getComment().replace("'", "''").toUpperCase(Locale.ROOT)), column.getComment());
+                        commentedColumns++;
+                    }
+                }
+            }
+            assertTrue(commentedColumns > 100, "All physical columns must have Oracle comments");
             String drops = Files.readString(dropScript).toUpperCase(Locale.ROOT);
             assertEquals(20, drops.lines().filter(line -> line.contains("DROP SEQUENCE")).count());
             assertEquals(20, drops.lines().filter(line -> line.contains("DROP TABLE")).count());

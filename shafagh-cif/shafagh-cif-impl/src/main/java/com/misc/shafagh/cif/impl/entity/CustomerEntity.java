@@ -1,5 +1,6 @@
 package com.misc.shafagh.cif.impl.entity;
 
+import org.hibernate.annotations.Comment;
 import com.misc.shafagh.common.persistence.TenantAwareEntity;
 
 import com.misc.shafagh.common.SchemaName;
@@ -18,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
+@Comment("جدول مشتریان حقیقی و حقوقی")
 @Entity
 @Table(schema = SchemaName.CIF, name = "CUSTOMER")
 @SequenceGenerator(name = "SEQ_CUSTOMER_ID", schema = SchemaName.CIF, sequenceName = "SEQ_CUSTOMER_ID", allocationSize = 1)
@@ -29,48 +31,61 @@ public class CustomerEntity extends TenantAwareEntity {
     @Column(name = "ID", columnDefinition = "number(19,0)")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_CUSTOMER_ID")
     @EqualsAndHashCode.Include
+    @Comment("شناسه یکتای رکورد مشتریان حقیقی و حقوقی")
     private Long id;
 
     @Basic
     @Column(name = "IDENTIFIER", nullable = false)
+    @Comment("شناسه شناسایی مشتری؛ شماره ملی، شناسه ملی یا شناسه شخص خارجی بر اساس نوع مشتری")
     private String identifier;
 
     @Column(name = "CUSTOMER_TYPE", nullable = false)
     @Enumerated(EnumType.ORDINAL)
+    @Comment("نوع مشتری؛ حقیقی، حقوقی، حقیقی خارجی یا حقوقی خارجی")
     private CustomerType customerType;
 
     @Basic
     @Column(name = "REGISTRATION_DATE", nullable = false)
+    @Comment("تاریخ ثبت مشتری")
     private Date registrationDate;
 
     @Column(name = "CITY_ID", nullable = false)
+    @Comment("شناسه شهر مرتبط با رکورد")
     private Long cityId;
 
     @Basic
     @Column(name = "CUSTOMER_CODE")
+    @Comment("کد مشتری")
     private String customerCode;
 
     @Basic
     @Column(name = "SHAHAB_CODE")
+    @Comment("کد شهاب مشتری")
     private String shahabCode;
 
     @Column(name = "FIRST_NAME")
+    @Comment("نام مشتری")
     private String firstName;
 
     @Column(name = "LAST_NAME")
+    @Comment("نام خانوادگی مشتری")
     private String lastName;
 
     @Column(name = "FATHER_NAME")
+    @Comment("نام پدر مشتری")
     private String fatherName;
 
     @Column(name = "DEATH_DATE")
+    @Comment("تاریخ فوت مشتری")
     private Date deathDate;
 
     @Column(name = "MARITAL_STATUS")
+    @Comment("وضعیت تأهل مشتری")
     private MaritalStatus maritalStatus;
 
     @Column(name = "GENDER")
     @Enumerated(EnumType.ORDINAL)
+    @Comment("جنسیت مشتری")
     private Gender gender;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -86,6 +101,7 @@ public class CustomerEntity extends TenantAwareEntity {
     @Basic
     @Column(name = "CUSTOMER_STATUS", nullable = false)
     @Enumerated(EnumType.ORDINAL)
+    @Comment("وضعیت فعال یا غیرفعال مشتری")
     private CustomerStatus customerStatus;
 
     public void setAddresses(List<CustomerAddressEntity> addresses) {

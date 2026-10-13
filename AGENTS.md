@@ -46,6 +46,7 @@ already authorized and does not require another confirmation.
 - Verify actual constraint names in the database and generated Oracle DDL, not
   only Java annotations. Oracle DDL generation is not a live Oracle integration
   test; report the distinction.
+- Add meaningful Persian Hibernate @Comment metadata to every mapped table and physical column, including inherited audit/tenant columns and owning join columns. Verify COMMENT ON COLUMN statements in generated Oracle DDL.
 - Do not add package-info.java files; the user requested their removal.
 
 ## Development schema creation
