@@ -11,7 +11,7 @@ import com.misc.shafagh.cif.api.CustomerLookup;
 import com.misc.shafagh.cif.impl.dto.request.*;
 import com.misc.shafagh.cif.impl.dto.request.CustomerFilterDTO;
 import com.misc.shafagh.cif.impl.entity.enums.*;
-import com.misc.shafagh.cif.impl.service.port.CustomerRealService;
+import com.misc.shafagh.cif.impl.service.api.CustomerRealService;
 import com.misc.shafagh.common.SchemaName;
 import com.misc.shafagh.common.contact.ContactType;
 import jakarta.persistence.EntityManager;

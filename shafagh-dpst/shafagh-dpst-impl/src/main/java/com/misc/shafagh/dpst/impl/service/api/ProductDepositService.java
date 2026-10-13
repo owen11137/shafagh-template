@@ -1,4 +1,4 @@
-package com.misc.shafagh.dpst.impl.service.port;
+package com.misc.shafagh.dpst.impl.service.api;
 
 import com.misc.shafagh.dpst.impl.dto.request.ProductDepositReqDTO;
 import com.misc.shafagh.dpst.impl.dto.response.ProductDepositResponseDto;

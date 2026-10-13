@@ -6,7 +6,7 @@ import com.misc.shafagh.loan.impl.dto.response.ProductLoanResponseDto;
 import com.misc.shafagh.loan.impl.entity.ProductLoanEntity;
 import com.misc.shafagh.loan.impl.exception.*;
 import com.misc.shafagh.loan.impl.repository.ProductLoanRepository;
-import com.misc.shafagh.loan.impl.service.port.ProductLoanService;
+import com.misc.shafagh.loan.impl.service.api.ProductLoanService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import java.math.BigDecimal;

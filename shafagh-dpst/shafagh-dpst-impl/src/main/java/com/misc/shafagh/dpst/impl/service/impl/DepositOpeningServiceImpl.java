@@ -1,4 +1,5 @@
-package com.misc.shafagh.dpst.impl.service;
+package com.misc.shafagh.dpst.impl.service.impl;
+import com.misc.shafagh.dpst.impl.service.api.DepositOpeningService;
 import com.misc.shafagh.cif.api.CustomerLookup;
 import com.misc.shafagh.common.product.ProductStatus;
 import com.misc.shafagh.dpst.impl.dto.request.OpenDepositRequest;
@@ -17,7 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 /** افتتاح حساب و ثبت مالک به‌صورت اتمیک در واحد تراکنش DPST. */
 @Service
 @RequiredArgsConstructor
-public class DepositOpeningService {
+public class DepositOpeningServiceImpl implements DepositOpeningService {
     private final CustomerLookup customers;
     private final ProductDepositRepository products;
     private final DepositRepository deposits;

@@ -1,4 +1,5 @@
 package com.misc.shafagh.base.impl.service.impl;
+import com.misc.shafagh.base.impl.service.api.BaseCatalogQueryService;
 import com.misc.shafagh.base.api.dto.*;
 import com.misc.shafagh.base.impl.repository.*;
 import com.misc.shafagh.base.impl.dto.mapper.city.CityMapper;
@@ -16,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(transactionManager="baseTransactionManager", readOnly=true)
-public class BaseCatalogQueryService {
+public class BaseCatalogQueryServiceImpl implements BaseCatalogQueryService {
     private final CityRepository cities;
     private final FundRepository funds;
     private final BranchRepository branches;

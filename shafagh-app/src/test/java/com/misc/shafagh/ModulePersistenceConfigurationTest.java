@@ -6,7 +6,7 @@ import com.misc.shafagh.base.api.*;
 import com.misc.shafagh.base.api.dto.*;
 import com.misc.shafagh.cif.impl.dto.request.*;
 import com.misc.shafagh.cif.impl.entity.enums.*;
-import com.misc.shafagh.cif.impl.service.port.CustomerRealService;
+import com.misc.shafagh.cif.impl.service.api.CustomerRealService;
 import com.misc.shafagh.common.product.ProductStatus;
 import com.misc.shafagh.dpst.impl.entity.*;
 import jakarta.persistence.EntityManager;

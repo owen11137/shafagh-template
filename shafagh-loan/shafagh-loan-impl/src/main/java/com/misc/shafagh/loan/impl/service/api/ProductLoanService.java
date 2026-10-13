@@ -1,4 +1,4 @@
-package com.misc.shafagh.loan.impl.service.port;
+package com.misc.shafagh.loan.impl.service.api;
 
 import com.misc.shafagh.loan.impl.dto.request.ProductLoanReqDTO;
 import com.misc.shafagh.loan.impl.dto.response.ProductLoanResponseDto;

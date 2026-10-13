@@ -33,7 +33,9 @@ class ModuleBoundaryTest {
 
     @Test
     void domainApisRemainIndependentOfPersistenceAndImplementation() {
-        noClasses().that().resideInAPackage("..api..")
+        // Public module contracts are distinct from internal impl.service.api contracts.
+        String[] publicApis = DOMAINS.stream().map(domain -> ROOT + "." + domain + ".api..").toArray(String[]::new);
+        noClasses().that().resideInAnyPackage(publicApis)
                 .should().dependOnClassesThat().resideInAnyPackage(
                         "..impl..", ROOT + ".common.persistence..",
                         "jakarta.persistence..", "org.hibernate..", "org.springframework..")

@@ -8,7 +8,7 @@ import com.misc.shafagh.base.impl.entity.CityEntity;
 import com.misc.shafagh.cif.impl.entity.CustomerEntity;
 import com.misc.shafagh.cif.impl.entity.enums.*;
 import com.misc.shafagh.cif.impl.exception.ValidationException;
-import com.misc.shafagh.cif.impl.service.port.CustomerRealService;
+import com.misc.shafagh.cif.impl.service.api.CustomerRealService;
 import com.misc.shafagh.common.SchemaName;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

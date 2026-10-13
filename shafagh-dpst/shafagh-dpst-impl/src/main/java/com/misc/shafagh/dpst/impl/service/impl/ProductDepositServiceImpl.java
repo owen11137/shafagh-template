@@ -6,7 +6,7 @@ import com.misc.shafagh.dpst.impl.dto.response.ProductDepositResponseDto;
 import com.misc.shafagh.dpst.impl.entity.ProductDepositEntity;
 import com.misc.shafagh.dpst.impl.exception.*;
 import com.misc.shafagh.dpst.impl.repository.ProductDepositRepository;
-import com.misc.shafagh.dpst.impl.service.port.ProductDepositService;
+import com.misc.shafagh.dpst.impl.service.api.ProductDepositService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import java.util.stream.Collectors;

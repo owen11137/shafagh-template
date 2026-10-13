@@ -59,3 +59,13 @@ was recreated unless that runtime action was observed. Change to update/validate
 when the user moves to persistent data or production; do not introduce a custom
 wipe mechanism or require another confirmation for the already authorized dev
 configuration.
+
+## Service packages
+
+Within each domain implementation module, keep internal service interfaces in
+`service.api` and their implementations/helpers in `service.impl`. Do not use
+`service.port` or place implementation classes directly in `service`. Concrete
+service implementations use the `Impl` suffix. Public contracts in the separate
+`shafagh-*-api` Maven modules retain their public API packages and cross-module
+boundary rules. Internal `impl.service.api` interfaces may refer to the same
+module's DTOs and pagination types; they are not public module API contracts.

@@ -6,7 +6,7 @@ import com.misc.shafagh.cif.impl.entity.enums.CustomerType;
 import com.misc.shafagh.cif.impl.entity.validator.CustomerValidator;
 import com.misc.shafagh.base.api.CityService;
 import com.misc.shafagh.cif.impl.repository.CustomerRepository;
-import com.misc.shafagh.cif.impl.service.port.CustomerRealService;
+import com.misc.shafagh.cif.impl.service.api.CustomerRealService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

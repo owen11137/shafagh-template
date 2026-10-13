@@ -1,4 +1,4 @@
-package com.misc.shafagh.cif.impl.service.port;
+package com.misc.shafagh.cif.impl.service.api;
 
 
 import com.misc.shafagh.cif.impl.dto.request.CustomerFilterDTO;
@@ -7,7 +7,7 @@ import com.misc.shafagh.cif.impl.dto.response.CustomerDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface CustomerLegalService {
+public interface CustomerRealService {
 
     Page<CustomerDto> findAll(Pageable pageable);
 
@@ -20,6 +20,4 @@ public interface CustomerLegalService {
     CustomerDto getById(long id);
 
     void delete(long id);
-
-    public CustomerDto getByIdentifier(String identifier);
 }

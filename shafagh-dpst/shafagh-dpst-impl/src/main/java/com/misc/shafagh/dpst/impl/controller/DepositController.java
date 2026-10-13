@@ -1,7 +1,7 @@
 package com.misc.shafagh.dpst.impl.controller;
 import com.misc.shafagh.dpst.impl.dto.request.OpenDepositRequest;
 import com.misc.shafagh.dpst.impl.dto.response.OpenDepositResponse;
-import com.misc.shafagh.dpst.impl.service.DepositOpeningService;
+import com.misc.shafagh.dpst.impl.service.api.DepositOpeningService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
