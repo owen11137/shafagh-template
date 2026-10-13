@@ -18,6 +18,7 @@ public class BranchServiceImpl implements BranchService {
     private final BranchRepository repository;
     private final BranchMapper mapper;
     private final FundRepository funds;
+    @org.springframework.beans.factory.annotation.Value("${shafagh.fund-id:1}") private long fundId;
     @Transactional(transactionManager = "baseTransactionManager", readOnly=true)
     public List<BranchDto> findAll() { return repository.findAll().stream().map(mapper::toDto).toList(); }
     @Transactional(transactionManager = "baseTransactionManager", readOnly=true)
@@ -34,10 +35,12 @@ public class BranchServiceImpl implements BranchService {
     }
     private BranchEntity require(Long id) {
         if(id==null) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"ID is required");
-        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Branch not found"));
+        return repository.findByIdAndFundId(id, fundId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Branch not found"));
     }
     private void validate(BranchDto dto) {
         if(dto==null || dto.getName()==null || dto.getName().isBlank() || dto.getCode()==null || dto.getCode().isBlank()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Code and name are required");
-        if(dto.getFundId()==null || !funds.existsById(dto.getFundId())) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Fund not found");
+        if(dto.getFundId()==null) dto.setFundId(fundId);
+        if(dto.getFundId()!=fundId) throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Branch must belong to current fund");
+        if(!funds.existsById(dto.getFundId())) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Fund not found");
     }
 }

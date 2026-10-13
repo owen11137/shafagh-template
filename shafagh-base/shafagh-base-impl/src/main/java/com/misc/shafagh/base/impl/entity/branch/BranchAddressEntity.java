@@ -1,6 +1,7 @@
 package com.misc.shafagh.base.impl.entity.branch;
 
 import com.misc.shafagh.common.SchemaName;
+import com.misc.shafagh.common.persistence.TenantAwareEntity;
 
 import com.misc.shafagh.base.impl.entity.CityEntity;
 import jakarta.persistence.*;
@@ -13,7 +14,7 @@ import lombok.Setter;
 @SequenceGenerator(name = "SEQ_BRANCH_ADDRESS_ID", schema = SchemaName.BASE, sequenceName = "SEQ_BRANCH_ADDRESS_ID", allocationSize = 1)
 @Getter
 @Setter
-public class BranchAddressEntity {
+public class BranchAddressEntity extends TenantAwareEntity {
 
     @Id
     @Column(name = "ID", columnDefinition = "number(19,0)", comment = "شناسه یکتای رکورد نشانی شعبه")
@@ -46,4 +47,13 @@ public class BranchAddressEntity {
 
     @Column(name = "UNIT", comment = "شماره واحد نشانی")
     private String unit;
+    @PrePersist
+    @PreUpdate
+    private void validateBranchTenant() {
+        if (branchEntity == null) throw new IllegalArgumentException("Branch is required");
+        Long branchFundId = branchEntity.getFundId();
+        if (branchFundId == null) throw new IllegalArgumentException("Branch fund is required");
+        if (getFundId() == null) setFundId(branchFundId);
+        else if (!getFundId().equals(branchFundId)) throw new IllegalArgumentException("Branch belongs to another fund");
+    }
 }

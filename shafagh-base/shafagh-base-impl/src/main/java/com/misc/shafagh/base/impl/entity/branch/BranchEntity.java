@@ -1,6 +1,7 @@
 package com.misc.shafagh.base.impl.entity.branch;
 
 import com.misc.shafagh.common.SchemaName;
+import com.misc.shafagh.common.persistence.TenantAwareEntity;
 
 import com.misc.shafagh.base.impl.entity.fund.FundEntity;
 import jakarta.persistence.*;
@@ -17,7 +18,7 @@ import java.util.Collection;
 @Getter
 @Setter
 @SequenceGenerator(name = "SEQ_BRANCH_ID", schema = SchemaName.BASE, sequenceName = "SEQ_BRANCH_ID", allocationSize = 1)
-public class BranchEntity {
+public class BranchEntity extends TenantAwareEntity {
 
     @Id
     @Column(name = "ID", columnDefinition = "number(19,0)", comment = "شناسه یکتای رکورد شعبه‌ها")
@@ -32,7 +33,7 @@ public class BranchEntity {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FUND_ID", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "BRANCH_FK_FUND"), comment = "شناسه صندوق مرتبط با رکورد")
+    @JoinColumn(name = "FUND_ID", insertable = false, updatable = false, referencedColumnName = "ID", foreignKey = @ForeignKey(name = "BRANCH_FK_FUND"), comment = "شناسه صندوق مرتبط با رکورد")
     private FundEntity fund;
 
     @Basic
@@ -41,4 +42,11 @@ public class BranchEntity {
 
     @OneToMany(mappedBy = "branch")
     private Collection<BranchContactEntity> branchContactList;
+    @PrePersist
+    @PreUpdate
+    private void validateFundTenant() {
+        if (fund == null) throw new IllegalArgumentException("Fund is required");
+        if (getFundId() == null) setFundId(fund.getId());
+        else if (!getFundId().equals(fund.getId())) throw new IllegalArgumentException("Fund does not match branch tenant");
+    }
 }

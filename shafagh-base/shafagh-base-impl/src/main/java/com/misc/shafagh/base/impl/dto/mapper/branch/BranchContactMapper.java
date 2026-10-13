@@ -11,11 +11,23 @@ import org.mapstruct.*;
 public interface BranchContactMapper {
     @BeanMapping(unmappedTargetPolicy = ReportingPolicy.ERROR)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "fundId", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "createdOn", ignore = true)
+    @Mapping(target = "modifiedBy", ignore = true)
+    @Mapping(target = "modifiedOn", ignore = true)
+    @Mapping(target = "version", ignore = true)
     @Mapping(target = "branch", source = "branchId", qualifiedByName = "entityReference")
     BranchContactEntity toEntity(BranchContactReqDTO request);
 
     @BeanMapping(unmappedTargetPolicy = ReportingPolicy.ERROR)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "fundId", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "createdOn", ignore = true)
+    @Mapping(target = "modifiedBy", ignore = true)
+    @Mapping(target = "modifiedOn", ignore = true)
+    @Mapping(target = "version", ignore = true)
     @Mapping(target = "branch", source = "branchId", qualifiedByName = "entityReference")
     void updateFromRequest(BranchContactReqDTO request, @MappingTarget BranchContactEntity entity);
 

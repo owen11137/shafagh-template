@@ -96,6 +96,11 @@ class ModulePersistenceConfigurationTest {
         var customer=customers.save(request);
         assertEquals(city.getId(),customers.getById(customer.getId()).getCity().getId());
         FundDto fund=new FundDto();fund.setOwnerId(customer.getId());fund.setCode("F-"+UUID.randomUUID());fund.setName("صندوق");fund=funds.save(fund);
+        try (var setup=factories.get("baseEntityManagerFactory").createEntityManager()) {
+            var tx=setup.getTransaction();tx.begin();
+            setup.createNativeQuery("update SHFQ_BASE.FUND set ID=43 where ID=:id").setParameter("id",fund.getId()).executeUpdate();tx.commit();
+        }
+        fund=funds.getById(43L);
         BranchDto branch=new BranchDto();branch.setFundId(fund.getId());branch.setCode("B");branch.setName("شعبه");branch=branches.save(branch);
         assertEquals(fund.getId(),branches.getById(branch.getId()).getFundId());
         assertEquals(customer.getId(),funds.getById(fund.getId()).getOwnerId());

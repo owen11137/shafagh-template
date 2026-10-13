@@ -9,22 +9,46 @@ import org.mapstruct.*;
 public interface BranchMapper {
     @Mapping(target="fundId", source="fund.id")
     BranchDto toDto(BranchEntity entity);
+    @Mapping(target = "fundId", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "createdOn", ignore = true)
+    @Mapping(target = "modifiedBy", ignore = true)
+    @Mapping(target = "modifiedOn", ignore = true)
+    @Mapping(target = "version", ignore = true)
     @Mapping(target="fund", ignore=true)
     @Mapping(target="branchContactList", ignore=true)
     BranchEntity toEntity(BranchDto dto);
     @Mapping(target="id", ignore=true)
+    @Mapping(target = "fundId", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "createdOn", ignore = true)
+    @Mapping(target = "modifiedBy", ignore = true)
+    @Mapping(target = "modifiedOn", ignore = true)
+    @Mapping(target = "version", ignore = true)
     @Mapping(target="fund", ignore=true)
     @Mapping(target="branchContactList", ignore=true)
     void update(BranchDto dto, @MappingTarget BranchEntity entity);
 
     @BeanMapping(unmappedTargetPolicy = ReportingPolicy.ERROR)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "fundId", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "createdOn", ignore = true)
+    @Mapping(target = "modifiedBy", ignore = true)
+    @Mapping(target = "modifiedOn", ignore = true)
+    @Mapping(target = "version", ignore = true)
     @Mapping(target = "branchContactList", ignore = true)
     @Mapping(target = "fund", source = "fundId", qualifiedByName = "entityReference")
     BranchEntity toEntity(BranchReqDTO request);
 
     @BeanMapping(unmappedTargetPolicy = ReportingPolicy.ERROR)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "fundId", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "createdOn", ignore = true)
+    @Mapping(target = "modifiedBy", ignore = true)
+    @Mapping(target = "modifiedOn", ignore = true)
+    @Mapping(target = "version", ignore = true)
     @Mapping(target = "branchContactList", ignore = true)
     @Mapping(target = "fund", source = "fundId", qualifiedByName = "entityReference")
     void updateFromRequest(BranchReqDTO request, @MappingTarget BranchEntity entity);

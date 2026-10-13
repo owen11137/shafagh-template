@@ -57,7 +57,9 @@ class BaseModuleIntegrationTest {
         Long ownerId=customers.save(customer).getId();
         assertTrue(customerLookup.exists(ownerId));
         FundDto fund=new FundDto();fund.setCode("F-"+UUID.randomUUID());fund.setName("صندوق");fund.setOwnerId(ownerId);
-        fund=funds.save(fund);
+        em.createNativeQuery("insert into " + SchemaName.BASE + ".FUND(ID,CODE,NAME,OWNER_ID) values(37,:code,:name,:owner)")
+            .setParameter("code",fund.getCode()).setParameter("name",fund.getName()).setParameter("owner",ownerId).executeUpdate();
+        fund=funds.getById(37L);
         BranchDto branch=new BranchDto();branch.setCode("B1");branch.setName("شعبه");branch.setFundId(fund.getId());
         branch=branches.save(branch);
         em.flush();em.clear();

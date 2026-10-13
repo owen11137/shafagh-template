@@ -78,7 +78,7 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
             String details = switch (resource) {
                 case "city" -> "نام شهر الزامی است. parentId=0 معرف استان است؛ برای شهر، parentId شناسه والد موجود است.";
                 case "fund" -> "کد و نام صندوق الزامی‌اند. ownerId باید شناسه مشتری موجود در CIF و صندوق فعال برنامه باشد.";
-                case "branch" -> "کد و نام شعبه الزامی‌اند. fundId باید شناسه صندوق موجود باشد. کد شعبه در هر صندوق یکتا است.";
+                case "branch" -> "کد و نام شعبه الزامی‌اند. fundId اختیاری است و فقط صندوق جاری مجاز است؛ صندوق باید موجود باشد. کد شعبه در هر صندوق یکتا است.";
                 default -> "";
             };
             switch (method) {
@@ -103,6 +103,7 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
                 operation.getRequestBody().setDescription("اطلاعات " + label + "؛ فیلدها در Schema بدنه توضیح داده شده‌اند.");
                 operation.getResponses().addApiResponse("400", new ApiResponse().description("نام یا کد لازم ارسال نشده، یا شناسه در ثبت جدید ارسال شده است."))
                         .addApiResponse("404", new ApiResponse().description("رکورد یا مرجع شهر، مشتری مالک یا صندوق پیدا نشد."));
+                if (resource.equals("branch")) operation.getResponses().addApiResponse("403", new ApiResponse().description("صندوق شعبه با صندوق جاری مطابقت ندارد."));
             } else if (path.endsWith("/{id}")) {
                 operation.getResponses().addApiResponse("404", new ApiResponse().description("رکورد با شناسه درخواست‌شده وجود ندارد."));
             }
@@ -181,7 +182,7 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
                 Map.entry("parentId", "شناسه والد جغرافیایی؛ مقدار صفر برای استان."),
                 Map.entry("province", "نام استان والد؛ در پاسخ محاسبه می‌شود."),
                 Map.entry("ownerId", "شناسه مشتری موجود در CIF به عنوان مالک صندوق."),
-                Map.entry("fundId", name.equals("BranchDto") ? "شناسه صندوق موجود که شعبه به آن وابسته است." : "شناسه صندوق فعال؛ در ثبت و ویرایش مشتری توسط سرویس تعیین می‌شود."),
+                Map.entry("fundId", name.equals("BranchDto") ? "شناسه صندوق جاری شعبه؛ هنگام ثبت خالی باشد از تنظیمات گرفته می‌شود؛ صندوق دیگر مجاز نیست." : "شناسه صندوق فعال؛ در ثبت و ویرایش مشتری توسط سرویس تعیین می‌شود."),
                 Map.entry("toDate", "تاریخ پایان اعتبار رکورد یا امضا."),
                 Map.entry("identifier", "شناسه شناسایی مشتری؛ در ثبت الزامی و یکتا است."),
                 Map.entry("customerType", "نوع شخص؛ نوع مجاز باید با سرویس حقیقی یا حقوقی مطابقت داشته باشد."),

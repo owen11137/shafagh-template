@@ -29,6 +29,6 @@ import org.hibernate.annotations.TenantId;
 public abstract class TenantAwareEntity extends BaseEntity {
 
     @TenantId
-    @Column(name = "FUND_ID", comment = "شناسه صندوق (مستاجر) مالک رکورد")
+    @Column(name = "FUND_ID", nullable = false, updatable = false, comment = "شناسه صندوق (مستاجر) مالک رکورد")
     private Long fundId;
 }

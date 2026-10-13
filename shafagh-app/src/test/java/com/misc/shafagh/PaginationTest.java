@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.client.RestClient;
 import tools.jackson.databind.JsonNode;
 /** Verifies actual page boundaries/sorting and the query form generated for Swagger UI. */
-@SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT, properties="shafagh.fund-id=8000001")
 class PaginationTest {
     @Autowired ServletWebServerApplicationContext context;
     @Autowired DataSource source;
@@ -21,9 +21,9 @@ class PaginationTest {
         for(long id=8000001;id<=8000005;id++) {
             jdbc.update("insert into SHFQ_BASE.CITY(ID,NAME,PARENT_ID) values(?,?,8000000)",id,"City "+id);
             jdbc.update("insert into SHFQ_BASE.FUND(ID,CODE,NAME,OWNER_ID) values(?,?,?,?)",id,"F-"+id,"Fund "+id,id);
-            jdbc.update("insert into SHFQ_BASE.BRANCH(ID,CODE,NAME,FUND_ID) values(?,?,?,?)",id,"B-"+id,"Branch "+id,id);
-            jdbc.update("insert into SHFQ_DPST.PRODUCT_DEPOSIT(ID,CODE,STATUS,DEPOSIT_TYPE,FUND_ID,OPT_LOCK) values(?,?,0,0,1,0)",id,"DP-"+id);
-            jdbc.update("insert into SHFQ_LOAN.PRODUCT_LOAN(ID,CODE,PRODUCT_TYPE,EARLY_SETTLEMENT_ALLOWED,FUND_ID,OPT_LOCK,INSTALLMENT_INTERVAL,MIN_INSTALLMENT_COUNT,MAX_INSTALLMENT_COUNT) values(?,?,0,true,1,0,1,1,12)",id,"LN-"+id);
+            jdbc.update("insert into SHFQ_BASE.BRANCH(ID,CODE,NAME,FUND_ID) values(?,?,?,?)",id,"B-"+id,"Branch "+id,8000001L);
+            jdbc.update("insert into SHFQ_DPST.PRODUCT_DEPOSIT(ID,CODE,STATUS,DEPOSIT_TYPE,FUND_ID,OPT_LOCK) values(?,?,0,0,8000001,0)",id,"DP-"+id);
+            jdbc.update("insert into SHFQ_LOAN.PRODUCT_LOAN(ID,CODE,PRODUCT_TYPE,EARLY_SETTLEMENT_ALLOWED,FUND_ID,OPT_LOCK,INSTALLMENT_INTERVAL,MIN_INSTALLMENT_COUNT,MAX_INSTALLMENT_COUNT) values(?,?,0,true,8000001,0,1,1,12)",id,"LN-"+id);
         }
         for(String path:List.of("/base/city","/base/fund","/base/branch","/dpst/products","/loan/products")) {
             JsonNode first=client().get().uri(path+"?page=0&size=2&sort=id,desc").retrieve().body(JsonNode.class);
