@@ -32,3 +32,18 @@ shafagh-template
 `POST /customer/exists?identifier=0012345678` برای کد ملی یا شماره ثبت شرکت، پاسخ رشته‌ای JSON (`"EXIST"`/`"NOT_EXIST"`) با HTTP 200 می‌دهد. این مسیر در Swagger عمومی و گروه CIF موجود است. ورودی الزامی، فقط شامل ارقام 0 تا 9 و حداکثر ۲۰ رقم است؛ ورودی نامعتبر 400 دارد. identifier به‌صورت متن و با حفظ صفر ابتدایی مقایسه می‌شود و محدود به نوع یا وضعیت خاصی از مشتری نیست.
 
 کنترلر از قرارداد عمومی `CustomerLookup.existsByIdentifier` در cif-api استفاده می‌کند. پیاده‌سازی سرویس، fundId را از `CurrentTenantIdentifierResolver<Long>` می‌گیرد. Repository با کوئری صریح `c.identifier = :identifier AND c.fundId = :fundId` بررسی می‌کند. fundId پارامتر درخواست نیست؛ همان identifier در صندوق دیگر، EXIST برنمی‌گرداند.
+
+## وابستگی BaseEntity شرکت
+
+`TenantAwareEntity` از `com.misc.infra.framework4.entity.BaseEntity` در وابستگی `com.misc.infra:framework-4:4.1.15` ارث می‌برد؛ BaseEntity جایگزین در پروژه وجود ندارد. Hibernate Envers با نسخه مدیریت‌شدهٔ Spring Boot برای annotation موجود در JAR اضافه شده است. وابستگی‌های جانبی framework با exclusion کنار گذاشته شده‌اند؛ نیازهای JPA، auditing و Jackson را خود پروژه تأمین می‌کند.
+
+در محیط شرکت Maven باید این artifact را از Repository داخلی دریافت کند. برای محیط فاقد دسترسی، JAR واقعی را پیش از build در Maven محلی نصب کنید. این JAR POM اصلی خود را در `META-INF/maven` دارد و install-file آن را تشخیص می‌دهد:
+
+```shell
+mvn org.apache.maven.plugins:maven-install-plugin:3.1.4:install-file -Dfile="/path/to/framework-4-4.1.15.jar"
+mvn clean install
+```
+
+JAR در Git ذخیره نشده است؛ در محیط تازه باید وابستگی مجدداً فراهم شود. تنظیمات Repository خصوصی و credentialها متعلق به settings.xml هستند.
+
+در TenantAwareEntity با @AttributeOverrides کامنت ستون‌های ارث‌بری‌شده حفظ شده‌اند. CREATED_BY و MODIFIED_BY تا پیاده‌سازی هویت کاربر nullable باقی می‌مانند؛ فیلدهای تاریخ نیز با نگاشت قبلی پروژه سازگارند. OPT_LOCK از نوع long در JAR است و در نگاشت پروژه الزامی با پیش‌فرض دیتابیس ۰ است. تغییرات نگاشت، کد یا bytecode فایل JAR را تغییر نمی‌دهند. تنظیمات logging متعلق به برنامه در logback-spring.xml قرار دارند تا فایل logging همراه JAR، وابستگی‌های غیرضروری تحمیل نکند.

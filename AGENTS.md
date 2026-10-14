@@ -90,3 +90,12 @@ that controller method, and each controller's category/description in @Tag on th
 class. Do not override these through central OpenAPI customizers or global tag
 lists. Central schema/DTO and pagination documentation may remain. Do not add
 @ApiResponse or @ApiResponses annotations; the user explicitly removed them.
+
+## Framework BaseEntity
+
+Use the real `com.misc.infra:framework-4:4.1.15` dependency and
+`com.misc.infra.framework4.entity.BaseEntity`; do not recreate a local substitute.
+For disconnected cloud builds install the uploaded real JAR with its embedded POM
+into Maven's local repository. Do not commit the private binary. Common excludes
+unneeded framework transitives and declares managed Envers for its annotations.
+Preserve documented @AttributeOverrides for audit-column compatibility/comments.
