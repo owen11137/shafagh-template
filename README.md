@@ -25,7 +25,7 @@ shafagh-template
 
 ## یکتایی شناسه مشتری در هر صندوق
 
-جدول CUSTOMER در SchemaName.CIF دارای قید `UK_CUSTOMER_FUND_ID_IDENTIFIER` روی `(FUND_ID, IDENTIFIER)` است. نام‌گذاری قید در خود Entity تعریف شده و ایندکس پشتیبان به‌صورت خودکار توسط Oracle ساخته می‌شود. شناسه یکسان در صندوق‌های متفاوت مجاز و در همان صندوق ممنوع است؛ نوع یا وضعیت مشتری این قاعده را تغییر نمی‌دهد. ثبت و ویرایش، تکرار را در صندوق جاری بررسی می‌کنند؛ constraint دیتابیس درخواست‌های هم‌زمان را هم کنترل می‌کند. تکرار شناسه پاسخ HTTP 409 دارد. طبق تنظیم فعلی توسعه (`ddl-auto=create`) قید با بازسازی جداول هنگام اجرای برنامه ساخته می‌شود.
+جدول CUSTOMER در SchemaName.CIF دارای قید `UK_CUSTOMER_FUND_ID_IDENTIFIER` روی `(FUND_ID, IDENTIFIER)` است. نام‌گذاری قید در خود Entity تعریف شده و ایندکس پشتیبان به‌صورت خودکار توسط Oracle ساخته می‌شود. شناسه یکسان در صندوق‌های متفاوت مجاز و در همان صندوق ممنوع است؛ نوع یا وضعیت مشتری این قاعده را تغییر نمی‌دهد. ثبت و ویرایش، تکرار را در صندوق جاری بررسی می‌کنند؛ constraint دیتابیس درخواست‌های هم‌زمان را هم کنترل می‌کند. تکرار شناسه پاسخ HTTP 409 دارد. در حالت عملیاتی مشترک (`ddl-auto=validate`) جدول‌ها باید از قبل توسط مالکان اسکیما ساخته شده باشند.
 
 ## بررسی وجود مشتری در صندوق جاری
 
@@ -47,3 +47,22 @@ mvn clean install
 JAR در Git ذخیره نشده است؛ در محیط تازه باید وابستگی مجدداً فراهم شود. تنظیمات Repository خصوصی و credentialها متعلق به settings.xml هستند.
 
 در TenantAwareEntity با @AttributeOverrides کامنت ستون‌های ارث‌بری‌شده حفظ شده‌اند. CREATED_BY و MODIFIED_BY تا پیاده‌سازی هویت کاربر nullable باقی می‌مانند؛ فیلدهای تاریخ نیز با نگاشت قبلی پروژه سازگارند. OPT_LOCK از نوع long در JAR است و در نگاشت پروژه الزامی با پیش‌فرض دیتابیس ۰ است. تغییرات نگاشت، کد یا bytecode فایل JAR را تغییر نمی‌دهند. تنظیمات logging متعلق به برنامه در logback-spring.xml قرار دارند تا فایل logging همراه JAR، وابستگی‌های غیرضروری تحمیل نکند.
+
+## تراکنش مشترک بین ماژول‌ها و اسکیماها
+
+اتصال پیش‌فرض برنامه به همان Oracle/PDB با `shafagh_app_user` است؛ `DB_USERNAME` و `DB_PASSWORD` قابل تنظیم‌اند و مقدار پیش‌فرض هر دو shafagh_app_user است. جدول‌ها و sequenceها در SchemaName.BASE/CIF/DP/LN باقی می‌مانند. حساب عملیاتی باید CREATE SESSION، دسترسی DML به جدول‌ها و SELECT به sequenceهای مورد استفاده داشته باشد. کاربر و grantها توسط شما آماده شده‌اند؛ اسکریپت ایجاد آنها به پروژه اضافه نشده است.
+
+`shafagh.persistence.module-datasources=false` حالت مشترک است: نام‌های base/cif/dpst/loan برای datasource، EntityManagerFactory و transactionManager همگی alias همان Bean مشترک‌اند؛ `appTransactionManager` نیز همان مدیر است. بنابراین متدهای @Transactional ماژول‌ها با propagation پیش‌فرض REQUIRED به تراکنش بیرونی می‌پیوندند.
+
+فرایندهای مشخص کسب‌وکاری می‌توانند در یک سرویس Spring با `@Transactional(transactionManager="appTransactionManager", rollbackFor=Exception.class)` تعریف شوند و سرویس‌های ماژول‌ها را مستقیم صدا بزنند. این سرویس باید از Bean دیگری فراخوانی شود تا proxy تراکنش اعمال شود. راه مشترک دیگر، تزریق AtomicProcessExecutor از ماژول orchestration است:
+
+```java
+var result = atomicProcessExecutor.execute(() -> {
+    var customer = customerService.create(command);
+    return accountService.open(customer.id(), accountCommand);
+});
+```
+
+این مثال الگوی فراخوانی است؛ create/open باید قراردادهای واقعی API ماژول مربوط باشند. execute فقط در حالت مشترک موجود است؛ checked exception و RuntimeException کل تراکنش را rollback می‌کنند. استثنا را نبلعید و مراحل فرایند را REQUIRES_NEW نکنید. rollback شامل مقدار مصرف‌شده sequence نمی‌شود و فاصله در شناسه‌ها طبیعی است. فراخوانی REST به برنامه مستقل و اثرات خارج دیتابیس داخل تراکنش JDBC قرار نمی‌گیرند.
+
+DDL حالت عملیاتی `validate` است؛ کاربر DML جدول نمی‌سازد یا حذف نمی‌کند. برای آماده‌سازی اسکیمای توسعه با Hibernate و کاربران مالک، اجرای جداگانه با `shafagh.persistence.module-datasources=true` و `DB_DDL_MODE=create` ممکن است. این حالت مستقل برای اجرای فرایندهای اتمیک استفاده نشود. DROP/CREATE grantهای اشیا را حذف می‌کند و پس از آن باید دسترسی کاربر عملیاتی دوباره برقرار شود. هیچ reset سفارشی یا اعطای CREATE ANY TABLE به کاربر عملیاتی اضافه نشده است.

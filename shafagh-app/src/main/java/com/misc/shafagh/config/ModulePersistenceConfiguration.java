@@ -18,9 +18,9 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
-/** Each module connects as its own Oracle schema owner and scans only its entities. */
+/** Explicit owner/legacy mode for schema administration; independent module transactions are not cross-module atomic. */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(name = "shafagh.persistence.module-datasources", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "shafagh.persistence.module-datasources", havingValue = "true")
 public class ModulePersistenceConfiguration {
     private final Environment environment;
     private final ObjectProvider<HibernatePropertiesCustomizer> customizers;
@@ -86,7 +86,7 @@ public class ModulePersistenceConfiguration {
     }
 
     @Configuration(proxyBeanMethods = false)
-    @ConditionalOnProperty(name = "shafagh.persistence.module-datasources", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(name = "shafagh.persistence.module-datasources", havingValue = "true")
     @EnableJpaRepositories(basePackages = "com.misc.shafagh.base.impl.repository",
             entityManagerFactoryRef = "baseEntityManagerFactory", transactionManagerRef = "baseTransactionManager")
     static class BaseRepositories {}
@@ -110,7 +110,7 @@ public class ModulePersistenceConfiguration {
     }
 
     @Configuration(proxyBeanMethods = false)
-    @ConditionalOnProperty(name = "shafagh.persistence.module-datasources", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(name = "shafagh.persistence.module-datasources", havingValue = "true")
     @EnableJpaRepositories(basePackages = "com.misc.shafagh.cif.impl.repository",
             entityManagerFactoryRef = "cifEntityManagerFactory", transactionManagerRef = "cifTransactionManager")
     static class CifRepositories {}
@@ -131,7 +131,7 @@ public class ModulePersistenceConfiguration {
     }
 
     @Configuration(proxyBeanMethods = false)
-    @ConditionalOnProperty(name = "shafagh.persistence.module-datasources", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(name = "shafagh.persistence.module-datasources", havingValue = "true")
     @EnableJpaRepositories(basePackages = "com.misc.shafagh.dpst.impl.repository",
             entityManagerFactoryRef = "dpstEntityManagerFactory", transactionManagerRef = "dpstTransactionManager")
     static class DpstRepositories {}
@@ -152,7 +152,7 @@ public class ModulePersistenceConfiguration {
     }
 
     @Configuration(proxyBeanMethods = false)
-    @ConditionalOnProperty(name = "shafagh.persistence.module-datasources", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(name = "shafagh.persistence.module-datasources", havingValue = "true")
     @EnableJpaRepositories(basePackages = "com.misc.shafagh.loan.impl.repository",
             entityManagerFactoryRef = "loanEntityManagerFactory", transactionManagerRef = "loanTransactionManager")
     static class LoanRepositories {}

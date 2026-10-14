@@ -53,17 +53,20 @@ already authorized and does not require another confirmation.
 - Add meaningful Persian Jakarta Persistence comment attributes on @Table, @Column and @JoinColumn to every mapped table and physical column, including inherited audit/tenant columns and owning join columns. Verify COMMENT ON COLUMN statements in generated Oracle DDL.
 - Do not add package-info.java files; the user requested their removal.
 
-## Development schema creation
+## Runtime transactions and schema administration
 
-The user confirmed the four schemas have no required data and explicitly wants
-standard Hibernate recreation, without a reset profile, custom reset code or
-manual SQL. Main configuration uses `spring.jpa.hibernate.ddl-auto=create` for
-this development phase. Hibernate drops/recreates mapped objects when the user
-runs the application with their database connection. Do not claim the real Oracle
-was recreated unless that runtime action was observed. Change to update/validate
-when the user moves to persistent data or production; do not introduce a custom
-wipe mechanism or require another confirmation for the already authorized dev
-configuration.
+Runtime defaults to one datasource connecting as shafagh_app_user, one persistence
+unit, and one transaction manager shared by all module aliases. Main ddl-auto is
+validate because this user has DML privileges. Schema ownership and SchemaName
+annotations stay in the domain modules. Do not create users or grant scripts;
+the user provisioned the runtime account and its grants. Owner/legacy mode is
+explicitly enabled with shafagh.persistence.module-datasources=true only for
+schema administration or compatibility tests; its independent managers cannot
+provide cross-module atomicity. Recreating Oracle tables removes object grants,
+which must be re-established before returning to shared runtime mode. Workflows
+use in-process calls with REQUIRED propagation and propagate failures; do not use
+REQUIRES_NEW or independent managers in an atomic workflow. Local transactions
+do not encompass separate REST services, external messages, or file operations.
 
 ## Service packages
 
