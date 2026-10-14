@@ -109,7 +109,7 @@ class ProductLoanCrudTest {
         var client = client();
         String code = "FOREIGN-" + UUID.randomUUID().toString().substring(0, 8);
         var jdbc = new JdbcTemplate(source);
-        jdbc.update("insert into SHFQ_LOAN.PRODUCT_LOAN (ID,CODE,PRODUCT_TYPE,EARLY_SETTLEMENT_ALLOWED,FUND_ID,OPT_LOCK) values (?,?,?,?,?,?)",
+        jdbc.update("insert into SHFQ_LOAN.PRODUCT_LOAN (CREATED_BY,CREATED_ON,MODIFIED_BY,MODIFIED_ON,ID,CODE,PRODUCT_TYPE,EARLY_SETTLEMENT_ALLOWED,FUND_ID,OPT_LOCK) values ('test',CURRENT_TIMESTAMP,'test',CURRENT_TIMESTAMP,?,?,?,?,?,?)",
                 900000L, code, 0, true, 99, 0);
         assertStatus(404, () -> client.get().uri("/loan/products/900000").retrieve().toBodilessEntity());
         assertStatus(404, () -> client.put().uri("/loan/products/900000").body(request()).retrieve().toBodilessEntity());

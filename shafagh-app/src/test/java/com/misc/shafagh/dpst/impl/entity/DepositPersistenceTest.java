@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest
+@SpringBootTest(properties = "shafagh.audit.actor=test-operator")
 @Transactional
 class DepositPersistenceTest {
 
@@ -50,6 +50,8 @@ class DepositPersistenceTest {
         assertEquals("محصول سپرده آزمایشی", storedProduct.getTitle());
         assertEquals(fundId, storedProduct.getFundId());
         assertNotNull(storedProduct.getCreatedOn());
+        assertEquals("test-operator", storedProduct.getCreatedBy());
+        assertEquals("test-operator", storedProduct.getModifiedBy());
 
         DepositPersonEntity storedPerson = entityManager.find(DepositPersonEntity.class, person.getId());
         assertEquals(fundId, storedPerson.getFundId());
@@ -67,5 +69,7 @@ class DepositPersistenceTest {
         assertEquals(1L, updated.getVersion());
         assertEquals("ویرایش سپرده", updated.getDescription());
         assertNotNull(updated.getModifiedOn());
+        assertEquals("test-operator", updated.getCreatedBy());
+        assertEquals("test-operator", updated.getModifiedBy());
     }
 }

@@ -127,7 +127,7 @@ class BaseModuleIntegrationTest {
         assertEquals(CustomerExistenceStatus.NOT_EXIST, customerLookup.existsByIdentifier(""));
         assertEquals(CustomerExistenceStatus.NOT_EXIST, customerLookup.existsByIdentifier("   "));
         String otherFund="OTHER-"+UUID.randomUUID();
-        em.createNativeQuery("insert into " + SchemaName.CIF + ".CUSTOMER (ID,FUND_ID,IDENTIFIER,CUSTOMER_TYPE,CUSTOMER_STATUS,REGISTRATION_DATE,CITY_ID) values(88888888,38,:identifier,0,1,CURRENT_TIMESTAMP,1)")
+        em.createNativeQuery("insert into " + SchemaName.CIF + ".CUSTOMER (CREATED_BY,CREATED_ON,MODIFIED_BY,MODIFIED_ON,OPT_LOCK,ID,FUND_ID,IDENTIFIER,CUSTOMER_TYPE,CUSTOMER_STATUS,REGISTRATION_DATE,CITY_ID) values('test',CURRENT_TIMESTAMP,'test',CURRENT_TIMESTAMP,0,88888888,38,:identifier,0,1,CURRENT_TIMESTAMP,1)")
             .setParameter("identifier",otherFund).executeUpdate();
         assertEquals(CustomerExistenceStatus.NOT_EXIST, customerLookup.existsByIdentifier(otherFund));
     }

@@ -35,12 +35,12 @@ class DepositOpeningTest {
     String seed(int status, Long fund, String national) {
         var c=new JdbcTemplate(cif);
         Long id=c.queryForObject("select SHFQ_CIF.SEQ_CUSTOMER_ID.nextval from dual",Long.class);
-        c.update("insert into SHFQ_CIF.CUSTOMER(ID,FUND_ID,IDENTIFIER,CUSTOMER_TYPE,CUSTOMER_STATUS,REGISTRATION_DATE,CITY_ID) values(?,?,?,0,?,CURRENT_TIMESTAMP,1)",id,fund,national,1-status);
+        c.update("insert into SHFQ_CIF.CUSTOMER(CREATED_BY,CREATED_ON,MODIFIED_BY,MODIFIED_ON,OPT_LOCK,ID,FUND_ID,IDENTIFIER,CUSTOMER_TYPE,CUSTOMER_STATUS,REGISTRATION_DATE,CITY_ID) values('test',CURRENT_TIMESTAMP,'test',CURRENT_TIMESTAMP,0,?,?,?,0,?,CURRENT_TIMESTAMP,1)",id,fund,national,1-status);
         return product(0,43L);
     }
     String product(int status,Long fund) {
         String code=UUID.randomUUID().toString();var d=new JdbcTemplate(dpst);
-        d.update("insert into SHFQ_DPST.PRODUCT_DEPOSIT(ID,FUND_ID,CODE,STATUS,DEPOSIT_TYPE) values(SHFQ_DPST.SEQ_PRODUCT_DEPOSIT_ID.nextval,?,?,?,0)",fund,code,status);
+        d.update("insert into SHFQ_DPST.PRODUCT_DEPOSIT(CREATED_BY,CREATED_ON,MODIFIED_BY,MODIFIED_ON,OPT_LOCK,ID,FUND_ID,CODE,STATUS,DEPOSIT_TYPE) values('test',CURRENT_TIMESTAMP,'test',CURRENT_TIMESTAMP,0,SHFQ_DPST.SEQ_PRODUCT_DEPOSIT_ID.nextval,?,?,?,0)",fund,code,status);
         return code;
     }
     OpenDepositResponse open(String national,String code) {

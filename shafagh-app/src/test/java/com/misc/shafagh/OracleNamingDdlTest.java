@@ -64,7 +64,8 @@ class OracleNamingDdlTest {
             assertTrue(ddl.contains("FK_BRANCH_FUND"));
             assertTrue(ddl.contains("FK_LOAN_PERSON_LOAN"));
             assertFalse(ddl.contains("SYS_C"));
-            // Verify every physical column, including inherited audit/tenant and join columns.
+            // Framework audit mappings come from the private JAR without local comment overrides.
+            // Verify comments on the remaining application-owned physical columns.
             int commentedColumns = 0;
             for (var namespace : metadata.getDatabase().getNamespaces()) {
                 for (var table : namespace.getTables()) {
@@ -72,6 +73,8 @@ class OracleNamingDdlTest {
                     assertNotNull(table.getComment(), table.getName());
                     assertFalse(table.getComment().isBlank(), table.getName());
                     for (var column : table.getColumns()) {
+                        if (java.util.Set.of("CREATED_BY", "CREATED_ON", "MODIFIED_BY", "MODIFIED_ON", "OPT_LOCK")
+                                .contains(column.getName().toUpperCase(Locale.ROOT))) continue;
                         assertNotNull(column.getComment(), table.getName() + "." + column.getName());
                         assertFalse(column.getComment().isBlank(), table.getName() + "." + column.getName());
                         String statement = "COMMENT ON COLUMN " + table.getSchema() + "." + table.getName() + "." + column.getName() + " IS '";

@@ -72,7 +72,7 @@ class ProductDepositCrudTest {
         var first=request();var product=create(first);status(409,()->create(first));
         var second=create(request());status(409,()->client().put().uri("/dpst/products/{id}",second.getId()).body(first).retrieve().toBodilessEntity());
         var jdbc=new JdbcTemplate(source);String foreign="FOREIGN-"+UUID.randomUUID();
-        jdbc.update("insert into SHFQ_DPST.PRODUCT_DEPOSIT(ID,CODE,STATUS,DEPOSIT_TYPE,FUND_ID,OPT_LOCK) values(900000,?,0,0,99,0)",foreign);
+        jdbc.update("insert into SHFQ_DPST.PRODUCT_DEPOSIT(CREATED_BY,CREATED_ON,MODIFIED_BY,MODIFIED_ON,ID,CODE,STATUS,DEPOSIT_TYPE,FUND_ID,OPT_LOCK) values('test',CURRENT_TIMESTAMP,'test',CURRENT_TIMESTAMP,900000,?,0,0,99,0)",foreign);
         status(404,()->client().get().uri("/dpst/products/900000").retrieve().toBodilessEntity());
         status(404,()->client().put().uri("/dpst/products/900000").body(request()).retrieve().toBodilessEntity());
         status(404,()->client().delete().uri("/dpst/products/900000").retrieve().toBodilessEntity());
@@ -85,7 +85,7 @@ class ProductDepositCrudTest {
     }
     @Test void protectsProductCodeAndDeletionWhenAccountsExist() {
         var request=request();var product=create(request);var jdbc=new JdbcTemplate(source);
-        jdbc.update("insert into SHFQ_DPST.DEPOSIT(ID,FUND_ID,DEPOSIT_NUMBER,PRODUCT_CODE,CUSTOMER_ID) values(SHFQ_DPST.SEQ_DEPOSIT_ID.nextval,43,'existing-account',?,1)",product.getCode());
+        jdbc.update("insert into SHFQ_DPST.DEPOSIT(CREATED_BY,CREATED_ON,MODIFIED_BY,MODIFIED_ON,OPT_LOCK,ID,FUND_ID,DEPOSIT_NUMBER,PRODUCT_CODE,CUSTOMER_ID) values('test',CURRENT_TIMESTAMP,'test',CURRENT_TIMESTAMP,0,SHFQ_DPST.SEQ_DEPOSIT_ID.nextval,43,'existing-account',?,1)",product.getCode());
         status(409,()->client().delete().uri("/dpst/products/{id}",product.getId()).retrieve().toBodilessEntity());
         request.put("code","NEW-"+UUID.randomUUID());
         status(409,()->client().put().uri("/dpst/products/{id}",product.getId()).body(request).retrieve().toBodilessEntity());

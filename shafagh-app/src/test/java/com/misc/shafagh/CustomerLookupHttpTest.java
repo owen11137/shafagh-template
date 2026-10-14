@@ -30,7 +30,7 @@ class CustomerLookupHttpTest {
     }
     RestClient client() { return RestClient.create("http://localhost:"+context.getWebServer().getPort()); }
     void seed(String identifier,long fund,int type,int status) {
-        new JdbcTemplate(source).update("insert into SHFQ_CIF.CUSTOMER(ID,FUND_ID,IDENTIFIER,CUSTOMER_TYPE,CUSTOMER_STATUS,REGISTRATION_DATE,CITY_ID) values(SHFQ_CIF.SEQ_CUSTOMER_ID.nextval,?,?,?,?,CURRENT_TIMESTAMP,1)",fund,identifier,type,status);
+        new JdbcTemplate(source).update("insert into SHFQ_CIF.CUSTOMER(CREATED_BY,CREATED_ON,MODIFIED_BY,MODIFIED_ON,OPT_LOCK,ID,FUND_ID,IDENTIFIER,CUSTOMER_TYPE,CUSTOMER_STATUS,REGISTRATION_DATE,CITY_ID) values('test',CURRENT_TIMESTAMP,'test',CURRENT_TIMESTAMP,0,SHFQ_CIF.SEQ_CUSTOMER_ID.nextval,?,?,?,?,CURRENT_TIMESTAMP,1)",fund,identifier,type,status);
     }
     CustomerExistenceStatus lookup(String identifier) { return client().post().uri("/customer/exists?identifier={identifier}",identifier).retrieve().body(CustomerExistenceStatus.class); }
     @Test void checksIndividualsAndCompaniesOnlyInCurrentFundThroughHttp() {

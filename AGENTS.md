@@ -50,7 +50,8 @@ already authorized and does not require another confirmation.
 - Verify actual constraint names in the database and generated Oracle DDL, not
   only Java annotations. Oracle DDL generation is not a live Oracle integration
   test; report the distinction.
-- Add meaningful Persian Jakarta Persistence comment attributes on @Table, @Column and @JoinColumn to every mapped table and physical column, including inherited audit/tenant columns and owning join columns. Verify COMMENT ON COLUMN statements in generated Oracle DDL.
+- Add meaningful Persian Jakarta Persistence comment attributes on @Table, @Column and @JoinColumn to every mapped table and physical column, including tenant columns and owning join columns. Inherited framework audit columns
+use the JAR mappings directly without @AttributeOverrides. Verify COMMENT ON COLUMN statements in generated Oracle DDL.
 - Do not add package-info.java files; the user requested their removal.
 
 ## Runtime transactions and schema administration
@@ -101,4 +102,5 @@ Use the real `com.misc.infra:framework-4:4.1.15` dependency and
 For disconnected cloud builds install the uploaded real JAR with its embedded POM
 into Maven's local repository. Do not commit the private binary. Common excludes
 unneeded framework transitives and declares managed Envers for its annotations.
-Preserve documented @AttributeOverrides for audit-column compatibility/comments.
+Use the framework BaseEntity audit-column mappings directly; the user requested
+removal of @AttributeOverrides. Do not reintroduce overrides for these fields.

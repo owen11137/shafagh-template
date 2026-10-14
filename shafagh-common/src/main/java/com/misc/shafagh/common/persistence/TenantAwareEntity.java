@@ -1,8 +1,6 @@
 package com.misc.shafagh.common.persistence;
 
 import com.misc.infra.framework4.entity.BaseEntity;
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
@@ -27,13 +25,6 @@ import org.hibernate.annotations.TenantId;
  * @author core-banking-party-model
  */
 @MappedSuperclass
-@AttributeOverrides({
-    @AttributeOverride(name="createdBy", column=@Column(name="CREATED_BY", nullable=true, updatable=false, length=30, comment="شناسه کاربر ایجادکننده رکورد")),
-    @AttributeOverride(name="createdOn", column=@Column(name="CREATED_ON", nullable=true, updatable=false, comment="زمان ایجاد رکورد")),
-    @AttributeOverride(name="modifiedBy", column=@Column(name="MODIFIED_BY", nullable=true, length=30, comment="شناسه آخرین کاربر ویرایش‌کننده رکورد")),
-    @AttributeOverride(name="modifiedOn", column=@Column(name="MODIFIED_ON", nullable=true, comment="زمان آخرین ویرایش رکورد")),
-    @AttributeOverride(name="version", column=@Column(name="OPT_LOCK", nullable=false, columnDefinition="number(19,0) default 0", comment="نسخه رکورد برای کنترل هم‌زمانی و قفل خوش‌بینانه"))
-})
 @Getter
 @Setter
 public abstract class TenantAwareEntity extends BaseEntity {

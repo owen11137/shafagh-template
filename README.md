@@ -46,7 +46,7 @@ mvn clean install
 
 JAR در Git ذخیره نشده است؛ در محیط تازه باید وابستگی مجدداً فراهم شود. تنظیمات Repository خصوصی و credentialها متعلق به settings.xml هستند.
 
-در TenantAwareEntity با @AttributeOverrides کامنت ستون‌های ارث‌بری‌شده حفظ شده‌اند. CREATED_BY و MODIFIED_BY تا پیاده‌سازی هویت کاربر nullable باقی می‌مانند؛ فیلدهای تاریخ نیز با نگاشت قبلی پروژه سازگارند. OPT_LOCK از نوع long در JAR است و در نگاشت پروژه الزامی با پیش‌فرض دیتابیس ۰ است. تغییرات نگاشت، کد یا bytecode فایل JAR را تغییر نمی‌دهند. تنظیمات logging متعلق به برنامه در logback-spring.xml قرار دارند تا فایل logging همراه JAR، وابستگی‌های غیرضروری تحمیل نکند.
+فیلدهای ارث‌بری‌شده در TenantAwareEntity مستقیماً از نگاشت BaseEntity داخل JAR استفاده می‌کنند؛ AttributeOverrides حذف شده‌اند. تنظیمات logging متعلق به برنامه در logback-spring.xml قرار دارند تا فایل logging همراه JAR، وابستگی‌های غیرضروری تحمیل نکند.
 
 ## تراکنش مشترک بین ماژول‌ها و اسکیماها
 
@@ -66,3 +66,6 @@ var result = atomicProcessExecutor.execute(() -> {
 این مثال الگوی فراخوانی است؛ create/open باید قراردادهای واقعی API ماژول مربوط باشند. execute فقط در حالت مشترک موجود است؛ checked exception و RuntimeException کل تراکنش را rollback می‌کنند. استثنا را نبلعید و مراحل فرایند را REQUIRES_NEW نکنید. rollback شامل مقدار مصرف‌شده sequence نمی‌شود و فاصله در شناسه‌ها طبیعی است. فراخوانی REST به برنامه مستقل و اثرات خارج دیتابیس داخل تراکنش JDBC قرار نمی‌گیرند.
 
 DDL حالت عملیاتی `validate` است؛ کاربر DML جدول نمی‌سازد یا حذف نمی‌کند. برای آماده‌سازی اسکیمای توسعه با Hibernate و کاربران مالک، اجرای جداگانه با `shafagh.persistence.module-datasources=true` و `DB_DDL_MODE=create` ممکن است. این حالت مستقل برای اجرای فرایندهای اتمیک استفاده نشود. DROP/CREATE grantهای اشیا را حذف می‌کند و پس از آن باید دسترسی کاربر عملیاتی دوباره برقرار شود. هیچ reset سفارشی یا اعطای CREATE ANY TABLE به کاربر عملیاتی اضافه نشده است.
+
+
+نگاشت اصلی BaseEntity ستون‌های auditing را اجباری می‌کند. SpringSecurityAuditorAware نام کاربر احرازشده را از SecurityContext می‌خواند؛ در نبود هویت معتبر از مقدار فنی `shafagh.audit.actor` (پیش‌فرض `system`) برای CREATED_BY/MODIFIED_BY استفاده می‌کند؛ مقدار fallback نام کاربر دیتابیس یا هویت کاربر احرازشده نیست. متغیر AUDIT_DEFAULT_ACTOR مقدار پیش‌فرض را تنظیم می‌کند. فقط spring-security-core با نسخه مدیریت‌شده Spring Boot اضافه شده و تنظیمات احراز هویت HTTP/JWT در این تغییر پیاده نشده‌اند. درج SQL مستقیم باید تمام فیلدهای auditing و OPT_LOCK را صریحاً تأمین کند.

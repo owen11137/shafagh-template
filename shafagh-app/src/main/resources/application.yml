@@ -18,6 +18,8 @@ spring:
       ddl-auto: ${DB_DDL_MODE:validate} # کاربر عملیاتی DML؛ ساخت جدول با مالکان اسکیما جداست
 
 shafagh:
+  audit:
+    actor: ${AUDIT_DEFAULT_ACTOR:system}
   # صندوق ثابت برنامه؛ FUND_ID برای تعیین صندوق جاری استفاده می‌شود.
   fund-id: ${FUND_ID:1}
   persistence:

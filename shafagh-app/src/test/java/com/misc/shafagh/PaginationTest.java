@@ -21,9 +21,9 @@ class PaginationTest {
         for(long id=8000001;id<=8000005;id++) {
             jdbc.update("insert into SHFQ_BASE.CITY(ID,NAME,PARENT_ID) values(?,?,8000000)",id,"City "+id);
             jdbc.update("insert into SHFQ_BASE.FUND(ID,CODE,NAME,OWNER_ID) values(?,?,?,?)",id,"F-"+id,"Fund "+id,id);
-            jdbc.update("insert into SHFQ_BASE.BRANCH(ID,CODE,NAME,FUND_ID) values(?,?,?,?)",id,"B-"+id,"Branch "+id,8000001L);
-            jdbc.update("insert into SHFQ_DPST.PRODUCT_DEPOSIT(ID,CODE,STATUS,DEPOSIT_TYPE,FUND_ID,OPT_LOCK) values(?,?,0,0,8000001,0)",id,"DP-"+id);
-            jdbc.update("insert into SHFQ_LOAN.PRODUCT_LOAN(ID,CODE,PRODUCT_TYPE,EARLY_SETTLEMENT_ALLOWED,FUND_ID,OPT_LOCK,INSTALLMENT_INTERVAL,MIN_INSTALLMENT_COUNT,MAX_INSTALLMENT_COUNT) values(?,?,0,true,8000001,0,1,1,12)",id,"LN-"+id);
+            jdbc.update("insert into SHFQ_BASE.BRANCH(CREATED_BY,CREATED_ON,MODIFIED_BY,MODIFIED_ON,OPT_LOCK,ID,CODE,NAME,FUND_ID) values('test',CURRENT_TIMESTAMP,'test',CURRENT_TIMESTAMP,0,?,?,?,?)",id,"B-"+id,"Branch "+id,8000001L);
+            jdbc.update("insert into SHFQ_DPST.PRODUCT_DEPOSIT(CREATED_BY,CREATED_ON,MODIFIED_BY,MODIFIED_ON,ID,CODE,STATUS,DEPOSIT_TYPE,FUND_ID,OPT_LOCK) values('test',CURRENT_TIMESTAMP,'test',CURRENT_TIMESTAMP,?,?,0,0,8000001,0)",id,"DP-"+id);
+            jdbc.update("insert into SHFQ_LOAN.PRODUCT_LOAN(CREATED_BY,CREATED_ON,MODIFIED_BY,MODIFIED_ON,ID,CODE,PRODUCT_TYPE,EARLY_SETTLEMENT_ALLOWED,FUND_ID,OPT_LOCK,INSTALLMENT_INTERVAL,MIN_INSTALLMENT_COUNT,MAX_INSTALLMENT_COUNT) values('test',CURRENT_TIMESTAMP,'test',CURRENT_TIMESTAMP,?,?,0,true,8000001,0,1,1,12)",id,"LN-"+id);
         }
         for(String path:List.of("/base/city","/base/fund","/base/branch","/dpst/products","/loan/products")) {
             JsonNode first=client().get().uri(path+"?page=0&size=2&sort=id,desc").retrieve().body(JsonNode.class);
