@@ -19,10 +19,6 @@
         <dependency>
             <groupId>com.misc.infra</groupId>
             <artifactId>framework-4</artifactId>
-            <version>4.1.15</version>
-            <exclusions>
-                <exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.hibernate.orm</groupId>

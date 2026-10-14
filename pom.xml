@@ -22,6 +22,7 @@
         <java.version>21</java.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <swagger.version>2.2.55</swagger.version>
+        <framework.version>4.1.15</framework.version>
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <archunit.version>1.5.1</archunit.version>
@@ -40,6 +41,15 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.misc.infra</groupId>
+                <artifactId>framework-4</artifactId>
+                <version>${framework.version}</version>
+                <!-- Modules explicitly declare the framework when needed; avoid unrelated starter activation. -->
+                <exclusions>
+                    <exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion>
+                </exclusions>
+            </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations-jakarta</artifactId>
