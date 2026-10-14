@@ -82,3 +82,11 @@ identifier lookup accepts a String containing only ASCII digits, at most 20
 characters, preserving leading zeros, and returns EXIST or NOT_EXIST. Resolve
 fundId from Hibernate's current tenant resolver and include it explicitly in
 identifier existence queries; never accept the lookup fund from the client.
+
+## Swagger operation documentation
+
+Place every REST method's summary and functional description in @Operation above
+that controller method, and each controller's category/description in @Tag on the
+class. Do not override these through central OpenAPI customizers or global tag
+lists. Central schema/DTO and pagination documentation may remain. Do not add
+@ApiResponse or @ApiResponses annotations; the user explicitly removed them.

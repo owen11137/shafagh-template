@@ -3,20 +3,18 @@ package com.misc.shafagh.config;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.responses.ApiResponse;
 import java.util.List;
 import java.util.Map;
 import org.springdoc.core.customizers.GlobalOpenApiCustomizer;
 import org.springframework.stereotype.Component;
 
-/** توضیحات فارسی عملیات و DTOها برای سند اصلی و تمام گروه‌های ماژول‌ها. */
+/** توضیحات DTOها و پارامترهای صفحه‌بندی؛ توضیحات عملیات و دسته‌بندی در annotation کنترلرها هستند. */
 @Component
 public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
     @Override
     public void customise(OpenAPI api) {
         if (api.getPaths() != null) {
             api.getPaths().forEach((path, item) -> item.readOperationsMap().forEach((method, operation) -> {
-                describeOperation(path, method.name(), operation);
                 if (isPaged(path, method.name())) documentPagination(operation);
                 if (operation.getParameters() != null) {
                     operation.getParameters().forEach(parameter -> {
@@ -57,103 +55,6 @@ public class OpenApiDocumentation implements GlobalOpenApiCustomizer {
             .style(io.swagger.v3.oas.models.parameters.Parameter.StyleEnum.FORM).explode(true)
             .schema(new io.swagger.v3.oas.models.media.ArraySchema().items(new io.swagger.v3.oas.models.media.StringSchema())._default(List.of("id,asc"))));
         operation.setParameters(parameters);
-    }
-
-    private void describeOperation(String path, String method, Operation operation) {
-        if (path.startsWith("/base/")) {
-            String resource = path.split("/")[2];
-            String label = switch (resource) {
-                case "city" -> "شهر";
-                case "fund" -> "صندوق";
-                case "branch" -> "شعبه";
-                default -> resource;
-            };
-            String tag = switch (resource) {
-                case "city" -> "BASE | شهرها";
-                case "fund" -> "BASE | صندوق‌ها";
-                case "branch" -> "BASE | شعبه‌ها";
-                default -> "BASE";
-            };
-            operation.setTags(List.of(tag));
-            String details = switch (resource) {
-                case "city" -> "نام شهر الزامی است. parentId=0 معرف استان است؛ برای شهر، parentId شناسه والد موجود است.";
-                case "fund" -> "کد و نام صندوق الزامی‌اند. ownerId باید شناسه مشتری موجود در CIF و صندوق فعال برنامه باشد.";
-                case "branch" -> "کد و نام شعبه الزامی‌اند. fundId اختیاری است و فقط صندوق جاری مجاز است؛ صندوق باید موجود باشد. کد شعبه در هر صندوق یکتا است.";
-                default -> "";
-            };
-            switch (method) {
-                case "GET" -> {
-                    boolean single = path.endsWith("/{id}");
-                    operation.setSummary(single ? "دریافت " + label + " با شناسه" : "فهرست " + label + "ها");
-                    operation.setDescription(single ? "مشخصات رکورد با شناسه مسیر را برمی‌گرداند؛ شناسه ناموجود پاسخ 404 دارد."
-                            : resource.equals("city") ? "فهرست صفحه‌بندی‌شده شهرها همراه نام استان؛ استان‌های parentId=0 در فهرست و شمارش صفحات نمی‌آیند. page از صفر، size پیش‌فرض ۲۰ و sort پیش‌فرض id,asc است."
-                            : "فهرست صفحه‌بندی‌شده؛ پاسخ شامل content و مشخصات صفحه است. page از صفر، size پیش‌فرض ۲۰ و sort پیش‌فرض id,asc است.");
-                }
-                case "POST" -> {
-                    operation.setSummary("ثبت " + label + " جدید");
-                    operation.setDescription("در بدنه درخواست id نفرستید؛ شناسه هنگام ثبت تولید می‌شود. " + details);
-                }
-                case "PUT" -> {
-                    operation.setSummary("ویرایش " + label);
-                    operation.setDescription("رکورد با شناسه مسیر ویرایش می‌شود؛ شناسه رکورد تغییر نمی‌کند. " + details);
-                }
-                default -> { }
-            }
-            if (!method.equals("GET")) {
-                operation.getRequestBody().setDescription("اطلاعات " + label + "؛ فیلدها در Schema بدنه توضیح داده شده‌اند.");
-                operation.getResponses().addApiResponse("400", new ApiResponse().description("نام یا کد لازم ارسال نشده، یا شناسه در ثبت جدید ارسال شده است."))
-                        .addApiResponse("404", new ApiResponse().description("رکورد یا مرجع شهر، مشتری مالک یا صندوق پیدا نشد."));
-                if (resource.equals("branch")) operation.getResponses().addApiResponse("403", new ApiResponse().description("صندوق شعبه با صندوق جاری مطابقت ندارد."));
-            } else if (path.endsWith("/{id}")) {
-                operation.getResponses().addApiResponse("404", new ApiResponse().description("رکورد با شناسه درخواست‌شده وجود ندارد."));
-            }
-        } else if (path.startsWith("/customer/")) {
-            boolean real = path.startsWith("/customer/real/");
-            boolean legal = path.startsWith("/customer/legal/");
-            String label = real ? "حقیقی" : "حقوقی";
-            operation.setTags(List.of(real ? "CIF | اشخاص حقیقی" : legal ? "CIF | اشخاص حقوقی" : "CIF | جست‌وجوی شناسه"));
-            if (path.equals("/customer/exists")) {
-                operation.setSummary("بررسی وجود مشتری در صندوق جاری");
-                operation.setDescription("identifier را به صورت کد ملی یا شماره ثبت شرکت در query درخواست POST ارسال کنید؛ فقط ارقام 0 تا 9 و حداکثر ۲۰ رقم مجاز است. شرط FUND_ID از resolver فعلی tenant گرفته می‌شود و از درخواست دریافت نمی‌شود. خروجی EXIST یا NOT_EXIST است؛ مشتری ناموجود یا متعلق به صندوق دیگر NOT_EXIST دارد. همه انواع و وضعیت‌های مشتری بررسی می‌شوند.");
-            } else if (path.endsWith("/save")) {
-                operation.setSummary("ثبت شخص " + label);
-                operation.setDescription("id نفرستید. شناسه شناسایی یکتا، نوع شخص، تاریخ ثبت، شهر موجود، حداقل یک آدرس و یک راه ارتباطی لازم است. "
-                        + "صندوق فعال و وضعیت ACTIVE توسط سرویس تعیین می‌شوند. "
-                        + (real ? "نوع REAL یا FOREIGN_REAL؛ نام، نام خانوادگی، نام پدر، جنسیت و وضعیت تأهل الزامی‌اند."
-                        : "نوع LEGAL یا FOREIGN_LEGAL؛ هنگام ثبت، نوع آدرس WORK_PLACE تعیین می‌شود."));
-            } else if (path.endsWith("/update")) {
-                operation.setSummary("ویرایش شخص " + label);
-                operation.setDescription("id مشتری در بدنه الزامی است. اطلاعات کامل موردنیاز ثبت را ارسال کنید؛ customerCode حفظ می‌شود. "
-                        + "شناسه آدرس و تماس موجود باید متعلق به همین مشتری باشد؛ اعضای حذف‌شده از فهرست آدرس و تماس حذف می‌شوند.");
-            } else if (path.contains("/getById/")) {
-                operation.setSummary("دریافت شخص " + label + " با شناسه");
-                operation.setDescription("مشخصات مشتری از نوع مجاز همین سرویس، همراه شهر، آدرس‌ها، تماس‌ها و امضاها را برمی‌گرداند.");
-            } else if (path.endsWith("/filter")) {
-                operation.setSummary("جست‌وجوی اشخاص " + label);
-                operation.setDescription("فیلترهای بدنه اختیاری‌اند؛ فقط انواع شخص مجاز همین سرویس جست‌وجو می‌شوند. "
-                        + "page، size و sort را در query ارسال کنید؛ خروجی شامل رکوردها و اطلاعات صفحه‌بندی است.");
-            } else {
-                operation.setSummary("دریافت مشتری با شناسه شناسایی");
-                operation.setDescription("identifier را در مسیر ارسال کنید. پیاده‌سازی فعلی بر اساس شناسه جست‌وجو می‌کند و نوع شخص را محدود نمی‌کند؛ اگر مشتری وجود نداشته باشد، بدنه پاسخ خالی است.");
-            }
-            if (operation.getRequestBody() != null) {
-                operation.getRequestBody().setDescription(path.endsWith("/filter") ? "فیلترهای جست‌وجو؛ برای جست‌وجوی بدون فیلتر، {} ارسال کنید." : "اطلاعات مشتری و فهرست‌های آدرس، تماس و امضا.");
-            }
-        }
-        if (path.startsWith("/customer/") && (path.endsWith("/save") || path.endsWith("/update"))) {
-            operation.getResponses().addApiResponse("409", new ApiResponse().description("شناسه مشتری در همین صندوق تکراری است؛ شناسه یکسان در صندوق دیگر مجاز است."));
-        }
-        if (path.equals("/dpst/deposits")) {
-            operation.setTags(List.of("DPST | افتتاح حساب"));
-            operation.setSummary("افتتاح حساب سپرده");
-            operation.setDescription("شماره ملی ده رقمی مشتری حقیقی فعال و productCode محصول فعال در صندوق جاری را ارسال کنید. حساب با مانده صفر و وضعیت OPN به همراه مالک ثبت می‌شود. شماره حساب داخلی ۲۰ رقمی از شناسه یکتای سپرده تولید می‌شود؛ شبا نیست.");
-            operation.getResponses().addApiResponse("400", new ApiResponse().description("شماره ملی یا کد محصول نامعتبر است."))
-                .addApiResponse("404", new ApiResponse().description("مشتری یا محصول در صندوق پیدا نشد."))
-                .addApiResponse("409", new ApiResponse().description("محصول غیرفعال یا خارج از بازه اعتبار است."));
-        }
-        if (operation.getResponses() != null && operation.getResponses().get("200") != null) {
-            operation.getResponses().get("200").setDescription("عملیات موفق؛ ساختار نتیجه در Schema پاسخ نمایش داده شده است.");
-        }
     }
 
     private void describeSchema(String name, Schema schema) {

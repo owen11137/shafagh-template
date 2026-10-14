@@ -20,7 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 
 /** کنترلر REST ماژول CIF برای مدیریت مشتریان حقیقی و حقوقی؛ مستندات کامل در Swagger مشترک برنامه. */
-@Tag(name="CIF | جست‌وجوی شناسه", description="بررسی و جست‌وجوی مشتری در صندوق جاری")
+@Tag(name="CIF | مشتریان", description="ثبت، ویرایش، جست‌وجو و بررسی وجود مشتری حقیقی و حقوقی در صندوق جاری")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/customer")
@@ -38,46 +38,55 @@ public class CustomerController {
         return customerLookup.existsByIdentifier(identifier);
     }
 
+    @Operation(summary="ثبت شخص حقیقی", description="id نفرستید. شناسه شناسایی در هر صندوق یکتا، نوع شخص، تاریخ ثبت، شهر موجود، حداقل یک آدرس و یک راه ارتباطی لازم است. صندوق جاری و وضعیت ACTIVE توسط سرویس تعیین می‌شوند. نوع REAL یا FOREIGN_REAL؛ نام، نام خانوادگی، نام پدر، جنسیت و وضعیت تأهل الزامی‌اند.")
     @PostMapping("/real/save")
     public CustomerDto saveReal(@RequestBody CustomerReqDTO request) {
         return customerRealService.save(request);
     }
 
+    @Operation(summary="ویرایش شخص حقیقی", description="id مشتری در بدنه الزامی است. اطلاعات کامل ثبت را ارسال کنید؛ customerCode حفظ می‌شود. آدرس و تماس موجود باید متعلق به همین مشتری باشند؛ اعضای حذف‌شده از فهرست حذف می‌شوند. شناسه تکراری در صندوق جاری پاسخ 409 دارد.")
     @PostMapping("/real/update")
     public CustomerDto updateReal(@RequestBody CustomerReqDTO request) {
         return customerRealService.update(request);
     }
 
+    @Operation(summary="دریافت شخص حقیقی با شناسه", description="مشخصات مشتری از نوع مجاز همین سرویس در صندوق جاری، همراه شهر، آدرس‌ها، تماس‌ها و امضاها.")
     @PostMapping("/real/getById/{id}")
     public CustomerDto getByIdReal(@PathVariable("id") Long id) {
         return customerRealService.getById(id);
     }
 
+    @Operation(summary="جست‌وجوی اشخاص حقیقی", description="فیلترهای بدنه اختیاری‌اند؛ فقط انواع مجاز همین سرویس در صندوق جاری بررسی می‌شوند. page از صفر، size پیش‌فرض ۲۰ و sort پیش‌فرض id,asc است. خروجی شامل content و اطلاعات صفحات است.")
     @PostMapping("/real/filter")
     public Page<CustomerDto> searchReal(@RequestBody CustomerFilterDTO filter, @PageableDefault(size=20, sort="id") Pageable pageable) {
         return customerRealService.search(filter, pageable);
     }
 
+    @Operation(summary="ثبت شخص حقوقی", description="id نفرستید. شناسه شناسایی در هر صندوق یکتا، نوع شخص، تاریخ ثبت، شهر موجود، حداقل یک آدرس و یک راه ارتباطی لازم است. صندوق جاری و وضعیت ACTIVE توسط سرویس تعیین می‌شوند. نوع LEGAL یا FOREIGN_LEGAL؛ هنگام ثبت نوع آدرس WORK_PLACE تعیین می‌شود.")
     @PostMapping("/legal/save")
     public CustomerDto saveLegal(@RequestBody CustomerReqDTO request) {
         return customerLegalService.save(request);
     }
 
+    @Operation(summary="ویرایش شخص حقوقی", description="id مشتری در بدنه الزامی است. اطلاعات کامل ثبت را ارسال کنید؛ customerCode حفظ می‌شود. آدرس و تماس موجود باید متعلق به همین مشتری باشند؛ اعضای حذف‌شده از فهرست حذف می‌شوند. شناسه تکراری در صندوق جاری پاسخ 409 دارد.")
     @PostMapping("/legal/update")
     public CustomerDto updateLegal(@RequestBody CustomerReqDTO request) {
         return customerLegalService.update(request);
     }
 
+    @Operation(summary="دریافت شخص حقوقی با شناسه", description="مشخصات مشتری از نوع مجاز همین سرویس در صندوق جاری، همراه شهر، آدرس‌ها، تماس‌ها و امضاها.")
     @PostMapping("/legal/getById/{id}")
     public CustomerDto getByIdLegal(@PathVariable("id") Long id) {
         return customerLegalService.getById(id);
     }
 
+    @Operation(summary="جست‌وجوی اشخاص حقوقی", description="فیلترهای بدنه اختیاری‌اند؛ فقط انواع مجاز همین سرویس در صندوق جاری بررسی می‌شوند. page از صفر، size پیش‌فرض ۲۰ و sort پیش‌فرض id,asc است. خروجی شامل content و اطلاعات صفحات است.")
     @PostMapping("/legal/filter")
     public Page<CustomerDto> searchLegal(@RequestBody CustomerFilterDTO filter, @PageableDefault(size=20, sort="id") Pageable pageable) {
         return customerLegalService.search(filter, pageable);
     }
 
+    @Operation(summary="دریافت مشتری با شناسه شناسایی", description="identifier را در مسیر ارسال کنید؛ جست‌وجو در صندوق جاری انجام می‌شود و به نوع شخص محدود نیست. اگر مشتری وجود نداشته باشد، بدنه پاسخ خالی است.")
     @PostMapping("/{identifier}")
     public CustomerDto getByIdentifier(@PathVariable("identifier") String identifier) {
         return customerLegalService.getByIdentifier(identifier);
