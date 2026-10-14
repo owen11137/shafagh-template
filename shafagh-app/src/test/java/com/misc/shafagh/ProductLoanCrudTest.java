@@ -40,7 +40,7 @@ class ProductLoanCrudTest {
     }
 
     @Test
-    void createsReadsListsUpdatesAndDeletesThroughHttpWithLoanTransactionManager() {
+    void createsReadsListsAndUpdatesThroughHttpWithLoanTransactionManager() {
         var client = client();
         var request = request();
         var created = client.post().uri("/loan/products").body(request).retrieve().toEntity(ProductLoanResponseDto.class);
@@ -60,14 +60,15 @@ class ProductLoanCrudTest {
         assertTrue(found);
         request.put("title", "محصول ویرایش شده"); request.put("maxAmount", new BigDecimal("20000.00"));
         request.put("earlySettlementAllowed", false);
-        var updated = client.put().uri("/loan/products/{id}", id).body(request).retrieve().body(ProductLoanResponseDto.class);
+        var updated = client.post().uri("/loan/products/{id}", id).body(request).retrieve().body(ProductLoanResponseDto.class);
         assertEquals(id, updated.getId()); assertEquals(43L, updated.getFundId());
         assertEquals(product.getCreatedOn(), updated.getCreatedOn());
         assertEquals("محصول ویرایش شده", updated.getTitle());
         assertFalse(updated.getEarlySettlementAllowed());
         assertEquals(1L, updated.getVersion()); assertNotNull(updated.getModifiedOn());
-        assertEquals(204, client.delete().uri("/loan/products/{id}", id).retrieve().toBodilessEntity().getStatusCode().value());
-        assertStatus(404, () -> client.get().uri("/loan/products/{id}", id).retrieve().toBodilessEntity());
+        assertStatus(405, () -> client.delete().uri("/loan/products/{id}", id).retrieve().toBodilessEntity());
+        assertStatus(405, () -> client.put().uri("/loan/products/{id}", id).body(request).retrieve().toBodilessEntity());
+        assertEquals(id, client.get().uri("/loan/products/{id}", id).retrieve().body(ProductLoanResponseDto.class).getId());
     }
 
     @Test
@@ -98,10 +99,9 @@ class ProductLoanCrudTest {
         var saved = client.post().uri("/loan/products").body(first).retrieve().body(ProductLoanResponseDto.class);
         assertStatus(409, () -> client.post().uri("/loan/products").body(first).retrieve().toBodilessEntity());
         var second = client.post().uri("/loan/products").body(request()).retrieve().body(ProductLoanResponseDto.class);
-        assertStatus(409, () -> client.put().uri("/loan/products/{id}", second.getId()).body(first).retrieve().toBodilessEntity());
+        assertStatus(409, () -> client.post().uri("/loan/products/{id}", second.getId()).body(first).retrieve().toBodilessEntity());
         assertEquals(saved.getCode(), client.get().uri("/loan/products/{id}", saved.getId()).retrieve().body(ProductLoanResponseDto.class).getCode());
-        assertStatus(404, () -> client.put().uri("/loan/products/9999999").body(request()).retrieve().toBodilessEntity());
-        assertStatus(404, () -> client.delete().uri("/loan/products/9999999").retrieve().toBodilessEntity());
+        assertStatus(404, () -> client.post().uri("/loan/products/9999999").body(request()).retrieve().toBodilessEntity());
     }
 
     @Test
@@ -112,8 +112,7 @@ class ProductLoanCrudTest {
         jdbc.update("insert into SHFQ_LOAN.PRODUCT_LOAN (CREATED_BY,CREATED_ON,MODIFIED_BY,MODIFIED_ON,ID,CODE,PRODUCT_TYPE,EARLY_SETTLEMENT_ALLOWED,FUND_ID,OPT_LOCK) values ('test',CURRENT_TIMESTAMP,'test',CURRENT_TIMESTAMP,?,?,?,?,?,?)",
                 900000L, code, 0, true, 99, 0);
         assertStatus(404, () -> client.get().uri("/loan/products/900000").retrieve().toBodilessEntity());
-        assertStatus(404, () -> client.put().uri("/loan/products/900000").body(request()).retrieve().toBodilessEntity());
-        assertStatus(404, () -> client.delete().uri("/loan/products/900000").retrieve().toBodilessEntity());
+        assertStatus(404, () -> client.post().uri("/loan/products/900000").body(request()).retrieve().toBodilessEntity());
         var page = client.get().uri("/loan/products?size=100").retrieve().body(tools.jackson.databind.JsonNode.class);
         for (var row : page.path("content")) assertEquals(43L, row.path("fundId").asLong());
         var duplicate = request(); duplicate.put("code", code);
@@ -134,6 +133,6 @@ class ProductLoanCrudTest {
     private void assertStatus(int status, Runnable action) {
         var exception = assertThrows(HttpClientErrorException.class, action::run);
         assertEquals(status, exception.getStatusCode().value());
-        assertTrue(exception.getResponseBodyAsString().contains("detail"));
+        if (status != 405) assertTrue(exception.getResponseBodyAsString().contains("detail"));
     }
 }

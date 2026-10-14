@@ -13,8 +13,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-/** کنترلر DPST برای ثبت، دریافت، فهرست، ویرایش و حذف محصول سپرده صندوق فعال. */
-@Tag(name="DPST | محصولات سپرده", description="ثبت، دریافت، فهرست صفحه‌بندی‌شده، ویرایش و حذف محصول سپرده در صندوق فعال")
+/** کنترلر DPST برای ثبت، دریافت، فهرست و ویرایش محصول سپرده صندوق فعال. */
+@Tag(name="DPST | محصولات سپرده", description="ثبت، دریافت، فهرست صفحه‌بندی‌شده و ویرایش محصول سپرده در صندوق فعال")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/dpst/products")
@@ -35,11 +35,7 @@ public class ProductDepositController {
     public Page<ProductDepositResponseDto> findAll(@PageableDefault(size = 20, sort = "id") Pageable pageable) { return service.findAll(pageable); }
 
     @Operation(summary="ویرایش محصول سپرده", description="ویرایش کامل محصول با شناسه مسیر در صندوق فعال؛ شناسه، مالکیت و زمان ثبت حفظ می‌شوند. کد محصول دارای حساب قابل تغییر نیست.")
-    @PutMapping("/{id}")
+    @PostMapping("/{id}")
     public ProductDepositResponseDto update(@PathVariable("id") Long id, @Valid @RequestBody ProductDepositReqDTO request) { return service.update(id, request); }
 
-    @Operation(summary="حذف محصول سپرده", description="حذف محصول صندوق فعال؛ پاسخ موفق بدون بدنه است. محصول دارای حساب قابل حذف نیست؛ آن را غیرفعال کنید.")
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("id") Long id) { service.delete(id); }
 }

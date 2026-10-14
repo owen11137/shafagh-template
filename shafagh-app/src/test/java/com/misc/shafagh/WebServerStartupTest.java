@@ -97,11 +97,11 @@ class WebServerStartupTest {
         branch = client.post().uri("/base/branch").body(branch).retrieve()
                 .body(com.misc.shafagh.base.api.dto.BranchDto.class);
         city.setName("شهر ویرایش شده"); fund.setName("صندوق ویرایش شده"); branch.setName("شعبه ویرایش شده");
-        assertEquals(city.getName(), client.put().uri("/base/city/{id}", city.getId()).body(city).retrieve()
+        assertEquals(city.getName(), client.post().uri("/base/city/{id}", city.getId()).body(city).retrieve()
                 .body(com.misc.shafagh.base.api.dto.CityDto.class).getName());
-        assertEquals(fund.getName(), client.put().uri("/base/fund/{id}", fund.getId()).body(fund).retrieve()
+        assertEquals(fund.getName(), client.post().uri("/base/fund/{id}", fund.getId()).body(fund).retrieve()
                 .body(com.misc.shafagh.base.api.dto.FundDto.class).getName());
-        assertEquals(branch.getName(), client.put().uri("/base/branch/{id}", branch.getId()).body(branch).retrieve()
+        assertEquals(branch.getName(), client.post().uri("/base/branch/{id}", branch.getId()).body(branch).retrieve()
                 .body(com.misc.shafagh.base.api.dto.BranchDto.class).getName());
         assertEquals(city.getName(), client.post().uri("/customer/real/getById/{id}", owner.getId()).retrieve()
                 .body(com.misc.shafagh.cif.impl.dto.response.CustomerDto.class).getCity().getName());
@@ -139,6 +139,8 @@ class WebServerStartupTest {
             var document = mapper.readTree(response.body());
             int operationCount = 0;
             for (var path : document.path("paths")) {
+                org.junit.jupiter.api.Assertions.assertFalse(path.has("put"));
+                org.junit.jupiter.api.Assertions.assertFalse(path.has("delete"));
                 for (String method : new String[]{"get", "post", "put", "delete", "patch"}) {
                     if (!path.has(method)) continue;
                     var operation = path.path(method);
@@ -148,7 +150,7 @@ class WebServerStartupTest {
                     operationCount++;
                 }
             }
-            assertEquals(33, operationCount);
+            assertEquals(31, operationCount);
             for (String model : new String[]{"CityDto", "FundDto", "BranchDto", "CustomerReqDTO", "CustomerDto", "CustomerFilterDTO"}) {
                 org.junit.jupiter.api.Assertions.assertFalse(document.path("components").path("schemas").path(model)
                         .path("description").asText().isBlank(), model);
@@ -175,12 +177,12 @@ class WebServerStartupTest {
                     assertTrue(grouped.path("paths").has("/dpst/products"));
                     assertTrue(grouped.path("paths").has("/dpst/products/{id}"));
                     assertTrue(grouped.path("paths").path("/dpst/products").path("post").path("responses").has("201"));
-                    assertTrue(grouped.path("paths").path("/dpst/products/{id}").path("delete").path("responses").has("204"));
+                    assertTrue(grouped.path("paths").path("/dpst/products/{id}").path("post").path("responses").has("200"));
                 }
                 if (group.equals("04-loan")) {
                     assertTrue(grouped.path("paths").has("/loan/products"));
                     assertTrue(grouped.path("paths").path("/loan/products").path("post").path("responses").has("201"));
-                    assertTrue(grouped.path("paths").path("/loan/products/{id}").path("delete").path("responses").has("204"));
+                    assertTrue(grouped.path("paths").path("/loan/products/{id}").path("post").path("responses").has("200"));
                     assertEquals("ثبت محصول تسهیلات", grouped.path("paths").path("/loan/products").path("post").path("summary").asText());
                     org.junit.jupiter.api.Assertions.assertFalse(grouped.path("paths").has("/base/city"));
                 }

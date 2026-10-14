@@ -24,5 +24,5 @@ public class FundController {
     @Operation(summary="ثبت صندوق جدید", description="id نفرستید؛ شناسه هنگام ثبت تولید می‌شود. کد و نام صندوق الزامی‌اند. ownerId شناسه مشتری موجود در CIF و صندوق جاری برنامه است.")
     @PostMapping public FundDto save(@RequestBody FundDto dto) { return service.save(dto); }
     @Operation(summary="ویرایش صندوق", description="ویرایش رکورد با شناسه مسیر؛ شناسه تغییر نمی‌کند. کد و نام صندوق الزامی‌اند. ownerId شناسه مشتری موجود در CIF و صندوق جاری برنامه است.")
-    @PutMapping("/{id}") public FundDto update(@PathVariable("id") Long id,@RequestBody FundDto dto) { return service.update(id,dto); }
+    @PostMapping("/{id}") public FundDto update(@PathVariable("id") Long id,@RequestBody FundDto dto) { return service.update(id,dto); }
 }

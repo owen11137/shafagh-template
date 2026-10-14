@@ -24,5 +24,5 @@ public class CityController {
     @Operation(summary="ثبت شهر جدید", description="id نفرستید؛ شناسه هنگام ثبت تولید می‌شود. نام شهر الزامی است. parentId=0 معرف استان است؛ برای شهر، parentId شناسه والد موجود است.")
     @PostMapping public CityDto save(@RequestBody CityDto dto) { return service.save(dto); }
     @Operation(summary="ویرایش شهر", description="ویرایش رکورد با شناسه مسیر؛ شناسه تغییر نمی‌کند. نام شهر الزامی است. parentId=0 معرف استان است؛ برای شهر، parentId شناسه والد موجود است.")
-    @PutMapping("/{id}") public CityDto update(@PathVariable("id") Long id,@RequestBody CityDto dto) { return service.update(id,dto); }
+    @PostMapping("/{id}") public CityDto update(@PathVariable("id") Long id,@RequestBody CityDto dto) { return service.update(id,dto); }
 }

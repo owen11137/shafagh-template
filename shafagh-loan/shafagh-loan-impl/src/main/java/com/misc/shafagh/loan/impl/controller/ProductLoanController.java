@@ -13,8 +13,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-/** کنترلر LOAN برای ثبت، دریافت، فهرست، ویرایش و حذف محصول تسهیلات صندوق فعال. */
-@Tag(name="LOAN | محصولات تسهیلات", description="ثبت، دریافت، فهرست صفحه‌بندی‌شده، ویرایش و حذف محصول تسهیلات در صندوق فعال")
+/** کنترلر LOAN برای ثبت، دریافت، فهرست و ویرایش محصول تسهیلات صندوق فعال. */
+@Tag(name="LOAN | محصولات تسهیلات", description="ثبت، دریافت، فهرست صفحه‌بندی‌شده و ویرایش محصول تسهیلات در صندوق فعال")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/loan/products")
@@ -35,11 +35,7 @@ public class ProductLoanController {
     public Page<ProductLoanResponseDto> findAll(@PageableDefault(size = 20, sort = "id") Pageable pageable) { return service.findAll(pageable); }
 
     @Operation(summary="ویرایش محصول تسهیلات", description="ویرایش کامل محصول با شناسه مسیر در صندوق فعال؛ شناسه، مالکیت و زمان ثبت حفظ می‌شوند. بازه‌های مالی، اقساط و تاریخ‌ها باید معتبر باشند.")
-    @PutMapping("/{id}")
+    @PostMapping("/{id}")
     public ProductLoanResponseDto update(@PathVariable("id") Long id, @Valid @RequestBody ProductLoanReqDTO request) { return service.update(id, request); }
 
-    @Operation(summary="حذف محصول تسهیلات", description="حذف محصول صندوق فعال؛ پاسخ موفق بدون بدنه است.")
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("id") Long id) { service.delete(id); }
 }

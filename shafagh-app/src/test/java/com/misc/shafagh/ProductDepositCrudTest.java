@@ -39,22 +39,23 @@ class ProductDepositCrudTest {
         }
     }
 
-    @Test void completeCrudPreservesTenantAuditAndPersistsAllFields() {
+    @Test void createReadAndUpdatePreserveTenantAuditAndPersistAllFields() {
         var request=request();var created=client().post().uri("/dpst/products").body(request).retrieve().toEntity(ProductDepositResponseDto.class);
         assertEquals(201,created.getStatusCode().value());var product=created.getBody();assertNotNull(product);
         assertEquals(43L,product.getFundId());assertNotNull(product.getCreatedOn());assertEquals(0L,product.getVersion());
         var read=client().get().uri("/dpst/products/{id}",product.getId()).retrieve().body(ProductDepositResponseDto.class);
         assertEquals(request.get("description"),read.getDescription());assertEquals(request.get("code"),read.getCode());
         request.put("title","محصول ویرایش شده");request.put("status","INACTIVE");request.put("depositType","DEPOSIT2");
-        var updated=client().put().uri("/dpst/products/{id}",product.getId()).body(request).retrieve().body(ProductDepositResponseDto.class);
+        var updated=client().post().uri("/dpst/products/{id}",product.getId()).body(request).retrieve().body(ProductDepositResponseDto.class);
         assertEquals("محصول ویرایش شده",updated.getTitle());assertEquals("INACTIVE",updated.getStatus().name());
         assertEquals("DEPOSIT2",updated.getDepositType().name());assertEquals(product.getCreatedOn(),updated.getCreatedOn());
         assertEquals(1L,updated.getVersion());assertNotNull(updated.getModifiedOn());
         var page=client().get().uri("/dpst/products?size=100&sort=id,desc").retrieve().body(tools.jackson.databind.JsonNode.class);
         boolean found=false;for(var row:page.path("content")) if(row.path("id").asLong()==product.getId()) found=true;
         assertTrue(found);
-        assertEquals(204,client().delete().uri("/dpst/products/{id}",product.getId()).retrieve().toBodilessEntity().getStatusCode().value());
-        status(404,()->client().get().uri("/dpst/products/{id}",product.getId()).retrieve().toBodilessEntity());
+        status(405,()->client().delete().uri("/dpst/products/{id}",product.getId()).retrieve().toBodilessEntity());
+        status(405,()->client().put().uri("/dpst/products/{id}",product.getId()).body(request).retrieve().toBodilessEntity());
+        assertEquals(product.getId(),client().get().uri("/dpst/products/{id}",product.getId()).retrieve().body(ProductDepositResponseDto.class).getId());
     }
     @Test void validatesRequiredFieldsLengthsDatesAndEnumValues() {
         for(String field:List.of("code","status","depositType")) {
@@ -70,27 +71,24 @@ class ProductDepositCrudTest {
     }
     @Test void handlesDuplicatesMissingRecordsAndForeignFund() {
         var first=request();var product=create(first);status(409,()->create(first));
-        var second=create(request());status(409,()->client().put().uri("/dpst/products/{id}",second.getId()).body(first).retrieve().toBodilessEntity());
+        var second=create(request());status(409,()->client().post().uri("/dpst/products/{id}",second.getId()).body(first).retrieve().toBodilessEntity());
         var jdbc=new JdbcTemplate(source);String foreign="FOREIGN-"+UUID.randomUUID();
         jdbc.update("insert into SHFQ_DPST.PRODUCT_DEPOSIT(CREATED_BY,CREATED_ON,MODIFIED_BY,MODIFIED_ON,ID,CODE,STATUS,DEPOSIT_TYPE,FUND_ID,OPT_LOCK) values('test',CURRENT_TIMESTAMP,'test',CURRENT_TIMESTAMP,900000,?,0,0,99,0)",foreign);
         status(404,()->client().get().uri("/dpst/products/900000").retrieve().toBodilessEntity());
-        status(404,()->client().put().uri("/dpst/products/900000").body(request()).retrieve().toBodilessEntity());
-        status(404,()->client().delete().uri("/dpst/products/900000").retrieve().toBodilessEntity());
+        status(404,()->client().post().uri("/dpst/products/900000").body(request()).retrieve().toBodilessEntity());
         var duplicate=request();duplicate.put("code",foreign);status(409,()->create(duplicate));
         var page=client().get().uri("/dpst/products?size=100").retrieve().body(tools.jackson.databind.JsonNode.class);
         for(var row:page.path("content")) assertEquals(43L,row.path("fundId").asLong());
-        status(404,()->client().put().uri("/dpst/products/999999").body(request()).retrieve().toBodilessEntity());
-        status(404,()->client().delete().uri("/dpst/products/999999").retrieve().toBodilessEntity());
+        status(404,()->client().post().uri("/dpst/products/999999").body(request()).retrieve().toBodilessEntity());
         assertEquals(product.getCode(),client().get().uri("/dpst/products/{id}",product.getId()).retrieve().body(ProductDepositResponseDto.class).getCode());
     }
-    @Test void protectsProductCodeAndDeletionWhenAccountsExist() {
+    @Test void protectsProductCodeWhenAccountsExist() {
         var request=request();var product=create(request);var jdbc=new JdbcTemplate(source);
         jdbc.update("insert into SHFQ_DPST.DEPOSIT(CREATED_BY,CREATED_ON,MODIFIED_BY,MODIFIED_ON,OPT_LOCK,ID,FUND_ID,DEPOSIT_NUMBER,PRODUCT_CODE,CUSTOMER_ID) values('test',CURRENT_TIMESTAMP,'test',CURRENT_TIMESTAMP,0,SHFQ_DPST.SEQ_DEPOSIT_ID.nextval,43,'existing-account',?,1)",product.getCode());
-        status(409,()->client().delete().uri("/dpst/products/{id}",product.getId()).retrieve().toBodilessEntity());
         request.put("code","NEW-"+UUID.randomUUID());
-        status(409,()->client().put().uri("/dpst/products/{id}",product.getId()).body(request).retrieve().toBodilessEntity());
+        status(409,()->client().post().uri("/dpst/products/{id}",product.getId()).body(request).retrieve().toBodilessEntity());
         request.put("code",product.getCode());request.put("status","INACTIVE");
-        var updated=client().put().uri("/dpst/products/{id}",product.getId()).body(request).retrieve().body(ProductDepositResponseDto.class);
+        var updated=client().post().uri("/dpst/products/{id}",product.getId()).body(request).retrieve().body(ProductDepositResponseDto.class);
         assertEquals("INACTIVE",updated.getStatus().name());
     }
     RestClient client() { return RestClient.create("http://localhost:"+context.getWebServer().getPort()); }

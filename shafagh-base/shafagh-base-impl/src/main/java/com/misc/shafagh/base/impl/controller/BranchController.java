@@ -24,5 +24,5 @@ public class BranchController {
     @Operation(summary="ثبت شعبه جدید", description="id نفرستید؛ شناسه هنگام ثبت تولید می‌شود. کد و نام شعبه الزامی‌اند. fundId اختیاری است؛ فقط صندوق جاری مجاز است و باید موجود باشد. کد شعبه در هر صندوق یکتا است.")
     @PostMapping public BranchDto save(@RequestBody BranchDto dto) { return service.save(dto); }
     @Operation(summary="ویرایش شعبه", description="ویرایش رکورد با شناسه مسیر؛ شناسه تغییر نمی‌کند. کد و نام شعبه الزامی‌اند. fundId اختیاری است؛ فقط صندوق جاری مجاز است و باید موجود باشد. کد شعبه در هر صندوق یکتا است.")
-    @PutMapping("/{id}") public BranchDto update(@PathVariable("id") Long id,@RequestBody BranchDto dto) { return service.update(id,dto); }
+    @PostMapping("/{id}") public BranchDto update(@PathVariable("id") Long id,@RequestBody BranchDto dto) { return service.update(id,dto); }
 }

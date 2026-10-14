@@ -81,7 +81,8 @@ module's DTOs and pagination types; they are not public module API contracts.
 
 ## HTTP conventions
 
-Use POST for new business lookup endpoints as requested by the user. Customer
+Use POST for create, update and new business lookup endpoints. Do not expose HTTP
+PUT or DELETE endpoints; update uses POST on the existing /{id} route. Customer
 identifier lookup accepts a String containing only ASCII digits, at most 20
 characters, preserving leading zeros, and returns EXIST or NOT_EXIST. Resolve
 fundId from Hibernate's current tenant resolver and include it explicitly in
