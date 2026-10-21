@@ -1,5 +1,5 @@
 # پروفایل تست روی Oracle واقعی: mvn clean verify -Dtest.profile=oracle
-# قبل از آن: DB_URL, DB_USERNAME, DB_PASSWORD را تنظیم و اسکریپت‌های scripts/02 و 03 و (فقط روی دیتابیس تست) 04 را اجرا کنید.
+# قبل از آن: جدول‌ها را آماده و DB_URL, DB_USERNAME, DB_PASSWORD را برای حساب دارای دسترسی لازم تنظیم کنید.
 spring:
   datasource:
     url: ${DB_URL}

@@ -11,7 +11,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <!-- فقط ظرف تجمیع api و impl این ماژول؛ parent فرزندها همچنان shafagh-parent است -->
+    <!-- ظرف تجمیع بخش‌های این ماژول؛ parent فرزندها همچنان shafagh-parent است -->
     <artifactId>shafagh-base</artifactId>
     <packaging>pom</packaging>
     <name>اطلاعات پایه و مشترک (SHFQ_BASE)</name>
@@ -20,4 +20,10 @@
         <module>shafagh-base-api</module>
         <module>shafagh-base-impl</module>
     </modules>
+    <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+    </dependencies>
 </project>

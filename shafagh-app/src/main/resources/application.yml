@@ -1,18 +1,65 @@
+server:
+  port: 8084
+
 spring:
   application:
     name: shafagh
   datasource:
-    url: ${DB_URL:jdbc:oracle:thin:@//localhost:1521/XEPDB1}
-    username: ${DB_USERNAME:shafagh}
-    password: ${DB_PASSWORD:change-me}
+    url: ${DB_URL:jdbc:oracle:thin:@//172.31.65.19:1521/centraldb}
+    username: ${DB_USERNAME:shafagh_app_user}
+    password: ${DB_PASSWORD:shafagh_app_user}
+    driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+      pool-name: shafagh-app
+      maximum-pool-size: 10
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: none   # جدول‌ها با اسکریپت scripts/02-create-tables.sql ساخته می‌شوند
+      ddl-auto: ${DB_DDL_MODE:validate} # کاربر عملیاتی DML؛ ساخت جدول با مالکان اسکیما جداست
+
+shafagh:
+  audit:
+    actor: ${AUDIT_DEFAULT_ACTOR:system}
+  # صندوق ثابت برنامه؛ FUND_ID برای تعیین صندوق جاری استفاده می‌شود.
+  fund-id: ${FUND_ID:1}
+  persistence:
+    module-datasources: false # همه ماژول‌ها یک اتصال عملیاتی و یک تراکنش دارند
+    base:
+      url: ${BASE_DB_URL:${spring.datasource.url}}
+      username: ${BASE_DB_USERNAME:shfq_base}
+      password: ${BASE_DB_PASSWORD:shfq_base}
+      driver-class-name: oracle.jdbc.OracleDriver
+      maximum-pool-size: 5
+    cif:
+      url: ${CIF_DB_URL:${spring.datasource.url}}
+      username: ${CIF_DB_USERNAME:shfq_cif}
+      password: ${CIF_DB_PASSWORD:shfq_cif}
+      driver-class-name: oracle.jdbc.OracleDriver
+      maximum-pool-size: 5
+    dpst:
+      url: ${DPST_DB_URL:${spring.datasource.url}}
+      username: ${DPST_DB_USERNAME:shfq_dpst}
+      password: ${DPST_DB_PASSWORD:shfq_dpst}
+      driver-class-name: oracle.jdbc.OracleDriver
+      maximum-pool-size: 5
+    loan:
+      url: ${LOAN_DB_URL:${spring.datasource.url}}
+      username: ${LOAN_DB_USERNAME:shfq_loan}
+      password: ${LOAN_DB_PASSWORD:shfq_loan}
+      driver-class-name: oracle.jdbc.OracleDriver
+      maximum-pool-size: 5
+
+springdoc:
+  override-with-generic-response: false
+  packages-to-scan: com.misc.shafagh
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
 
 app:
   code-sequences:
-    customer: SHFQ_BASE.CUSTOMER_CODE_SEQ
+    customer: SHFQ_BASE.SEQ_CUSTOMER_CUSTOMER_CODE
   code-counters:
     branch: SHFQ_BASE.BRANCH_CODE_COUNTER
     account: SHFQ_BASE.ACCOUNT_NUMBER_COUNTER

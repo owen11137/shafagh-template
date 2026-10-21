@@ -1,0 +1,48 @@
+-- آبجکت‌های جدید شماره‌گذاری در اسکیمای موجود SHFQ_BASE.
+-- این فایل فقط پس از بررسی DBA و فقط در صورت نبود همین آبجکت‌ها یک‌بار اجرا شود.
+-- هیچ کاربر، grant یا جدول دامنه ایجاد نمی‌شود؛ آبجکت موجود حذف/بازسازی/تغییرنام نمی‌یابد.
+-- برای داده‌های دارای شماره‌ی قبلی، مقدار شروع نیازمند مهاجرت بررسی‌شده است؛ از 1 بازنشانی نکنید.
+
+CREATE SEQUENCE SHFQ_BASE.SEQ_CUSTOMER_CUSTOMER_CODE
+    START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 99999999
+    NOCYCLE CACHE 50 NOORDER;
+
+CREATE TABLE SHFQ_BASE.BRANCH_CODE_COUNTER (
+    FUND_CODE   VARCHAR2(6 CHAR)
+        CONSTRAINT CHK_BRANCH_CODE_COUNTER_FUND_CODE_NOT_NULL NOT NULL,
+    NEXT_NUMBER NUMBER(6,0)
+        CONSTRAINT CHK_BRANCH_CODE_COUNTER_NEXT_NUMBER_NOT_NULL NOT NULL,
+    CONSTRAINT PK_BRANCH_CODE_COUNTER PRIMARY KEY (FUND_CODE),
+    CONSTRAINT CHK_BRANCH_CODE_COUNTER_FUND_CODE CHECK (
+        LENGTH(FUND_CODE) = 6
+        AND TRANSLATE(FUND_CODE, 'x0123456789', 'x') IS NULL
+    ),
+    -- پس از تخصیص آخرین شماره‌ی مجاز 99999، مقدار بعدی 100000 است.
+    CONSTRAINT CHK_BRANCH_CODE_COUNTER_NEXT_NUMBER
+        CHECK (NEXT_NUMBER BETWEEN 1 AND 100000)
+);
+
+CREATE TABLE SHFQ_BASE.ACCOUNT_NUMBER_COUNTER (
+    BRANCH_CODE VARCHAR2(11 CHAR)
+        CONSTRAINT CHK_ACCOUNT_NUMBER_COUNTER_BRANCH_CODE_NOT_NULL NOT NULL,
+    NEXT_NUMBER NUMBER(7,0)
+        CONSTRAINT CHK_ACCOUNT_NUMBER_COUNTER_NEXT_NUMBER_NOT_NULL NOT NULL,
+    CONSTRAINT PK_ACCOUNT_NUMBER_COUNTER PRIMARY KEY (BRANCH_CODE),
+    CONSTRAINT CHK_ACCOUNT_NUMBER_COUNTER_BRANCH_CODE CHECK (
+        LENGTH(BRANCH_CODE) = 11
+        AND TRANSLATE(BRANCH_CODE, 'x0123456789', 'x') IS NULL
+    ),
+    -- پس از تخصیص آخرین شماره‌ی مجاز 999999، مقدار بعدی 1000000 است.
+    CONSTRAINT CHK_ACCOUNT_NUMBER_COUNTER_NEXT_NUMBER
+        CHECK (NEXT_NUMBER BETWEEN 1 AND 1000000)
+);
+
+COMMENT ON TABLE SHFQ_BASE.BRANCH_CODE_COUNTER IS 'شمارنده شماره شعبه به تفکیک کد صندوق';
+COMMENT ON COLUMN SHFQ_BASE.BRANCH_CODE_COUNTER.FUND_CODE IS 'کد شش رقمی صندوق صاحب شمارنده';
+COMMENT ON COLUMN SHFQ_BASE.BRANCH_CODE_COUNTER.NEXT_NUMBER IS 'شماره بعدی قابل تخصیص شعبه؛ مقدار اولیه یک';
+COMMENT ON TABLE SHFQ_BASE.ACCOUNT_NUMBER_COUNTER IS 'شمارنده شماره حساب به تفکیک کد شعبه';
+COMMENT ON COLUMN SHFQ_BASE.ACCOUNT_NUMBER_COUNTER.BRANCH_CODE IS 'کد یازده رقمی شعبه صاحب شمارنده';
+COMMENT ON COLUMN SHFQ_BASE.ACCOUNT_NUMBER_COUNTER.NEXT_NUMBER IS 'شماره بعدی قابل تخصیص حساب؛ مقدار اولیه یک';
+
+-- رکورد شمارنده فقط همراه ثبت صندوق/شعبه با NEXT_NUMBER = 1 درج می‌شود.
+-- این فایل رکورد اولیه، FK دامنه، hook ثبت، شاخص اختیاری یا عملیات بازنشانی ایجاد نمی‌کند.

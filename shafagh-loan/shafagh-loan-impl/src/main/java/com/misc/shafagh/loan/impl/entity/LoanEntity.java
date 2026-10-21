@@ -1,54 +1,62 @@
 package com.misc.shafagh.loan.impl.entity;
 
-import com.misc.shafagh.loan.impl.LoanSchema;
-import com.misc.shafagh.loan.api.dto.LoanStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
+import com.misc.shafagh.common.persistence.TenantAwareEntity;
+import com.misc.shafagh.common.SchemaName;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.EqualsAndHashCode;
+
 import java.math.BigDecimal;
 
-@Entity
-@Table(schema = LoanSchema.NAME, name = "SHFQ_LOAN_LOAN")
-public class LoanEntity {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
+@Entity(name = "Loan")
+@Table(name = "LOAN", schema = SchemaName.LN, comment = "جدول وام‌ها (تسهیلات)")
+@SequenceGenerator(schema = SchemaName.LN, name = "SEQ_LOAN_ID", sequenceName = "SEQ_LOAN_ID", allocationSize = 1)
+@Getter
+@Setter
+public class LoanEntity extends TenantAwareEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "shfq_loan_loan_gen")
-    @SequenceGenerator(name = "shfq_loan_loan_gen", schema = LoanSchema.NAME, sequenceName = "SHFQ_LOAN_LOAN_SEQ", allocationSize = 1)
-    @Column(name = "ID")
+    @Column(name = "ID", columnDefinition = "number(19,0)", comment = "شناسه یکتای وام")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_LOAN_ID")
+    @EqualsAndHashCode.Include
     private Long id;
 
-    @Column(name = "PERSON_ID", nullable = false)
-    private Long personId;
+    @Column(name = "LOAN_NUMBER", nullable = false, comment = "شماره وام")
+    private String loanNumber;
 
-    @Column(name = "DEPOSIT_ID", nullable = false)
-    private Long depositId;
+    @Column(name = "PRODUCT_CODE", nullable = false, comment = "کد محصول وام")
+    private String productCode;
 
-    @Column(name = "AMOUNT", nullable = false, precision = 19, scale = 2)
+    @Column(name = "AMOUNT", nullable = false, precision = 18, scale = 2, comment = "مبلغ وام")
     private BigDecimal amount;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "STATUS", nullable = false, length = 20)
-    private LoanStatus status;
+    @Column(name = "INSTALLMENT_COUNT", nullable = false, comment = "تعداد اقساط")
+    private Integer installmentCount;
 
-    protected LoanEntity() {
-    }
+    @Column(name = "FEE_RATE", precision = 5, scale = 2, comment = "نرخ کارمزد")
+    private BigDecimal feeRate;
 
-    public LoanEntity(Long personId, Long depositId, BigDecimal amount) {
-        this.personId = personId;
-        this.depositId = depositId;
-        this.amount = amount;
-        this.status = LoanStatus.REGISTERED;
-    }
+    @Column(name = "FINE_RATE", precision = 5, scale = 2, comment = "نرخ جریمه")
+    private BigDecimal fineRate;
 
-    public Long getId() { return id; }
-    public Long getPersonId() { return personId; }
-    public Long getDepositId() { return depositId; }
-    public BigDecimal getAmount() { return amount; }
-    public LoanStatus getStatus() { return status; }
+    @Column(name = "DESCRIPTION", comment = "شرح")
+    private String description;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "LOAN_STATUS", comment = "وضعیت")
+    private LoanStatus loanStatus;
+
+    @Column(name = "GRANT_NUMBER", comment = "شماره اعطا")
+    private String grantNumber;
+
+    @Column(name = "SOURCE_NUMBER", comment = "شماره سپرده وجوه")
+    private String sourceNumber;
+
+    @Column(name = "BALANCE", precision = 18, scale = 2, comment = "مانده تسهیلات")
+    private BigDecimal balance;
+
+    @Column(name = "SETTLEMENT_BALANCE", precision = 18, scale = 2, comment = "مانده تسویه")
+    private BigDecimal settlementBalance;
 }

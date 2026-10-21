@@ -1,0 +1,45 @@
+package com.misc.shafagh.base.impl.entity.fund;
+
+import com.misc.shafagh.common.SchemaName;
+
+import com.misc.shafagh.base.impl.entity.branch.BranchEntity;
+import com.misc.shafagh.common.contact.ContactType;
+import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
+@Entity
+@Table(schema = SchemaName.BASE, name = "FUND_CONTACT", comment = "جدول راه‌های ارتباطی صندوق")
+@Getter
+@Setter
+@SequenceGenerator(name = "SEQ_FUND_CONTACT_ID", schema = SchemaName.BASE, sequenceName = "SEQ_FUND_CONTACT_ID", allocationSize = 1)
+public class FundContactEntity {
+
+    @Id
+    @Column(name = "ID", columnDefinition = "number(19,0)", comment = "شناسه یکتای رکورد راه‌های ارتباطی صندوق")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_FUND_CONTACT_ID")
+    @EqualsAndHashCode.Include
+    private Long id;
+
+    @Column(name = "CONTACT_TYPE", comment = "نوع راه ارتباطی")
+    @Enumerated(EnumType.ORDINAL)
+    private ContactType contactType;
+
+    @Column(name = "CONTACT_NUMBER", comment = "شماره تماس")
+    private String contactNumber;
+
+    @ManyToOne
+    @JoinColumn(name = "FUND_ID", referencedColumnName = "ID", nullable = false, foreignKey = @ForeignKey(name = "FK_FUND_CONTACT_FUND"), comment = "شناسه صندوق مرتبط با رکورد")
+    private FundEntity fundEntity;
+
+    @Column(name = "REGION_CODE", comment = "پیش‌شماره منطقه تماس")
+    private int regionCode;
+
+    @Column(name = "INTERNAL", comment = "شماره داخلی تلفن")
+    private String internal;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "BRANCH_ID", referencedColumnName = "ID", foreignKey = @ForeignKey(name = "FK_FUND_CONTACT_BRANCH"), nullable = false, comment = "شناسه شعبه مرتبط با رکورد")
+    private BranchEntity branch;
+}
