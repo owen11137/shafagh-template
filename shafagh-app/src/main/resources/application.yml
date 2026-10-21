@@ -9,3 +9,12 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: none   # جدول‌ها با اسکریپت scripts/02-create-tables.sql ساخته می‌شوند
+
+app:
+  code-sequences:
+    customer: SHFQ_BASE.CUSTOMER_CODE_SEQ
+  code-counters:
+    branch: SHFQ_BASE.BRANCH_CODE_COUNTER
+    account: SHFQ_BASE.ACCOUNT_NUMBER_COUNTER
+  code-allocation:
+    timeout-seconds: 5

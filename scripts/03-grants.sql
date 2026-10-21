@@ -7,6 +7,11 @@
 -- * DELETE عمداً داده نشده است. هر جدولی که واقعاً حذف فیزیکی دارد، فقط برای همان جدول
 --   `GRANT DELETE ...` جداگانه بدهید (و در PR مشخص کنید). برای داده‌ی مالی soft delete (تغییر STATUS) ترجیح دارد.
 
+GRANT SELECT, INSERT, UPDATE ON SHFQ_BASE.BRANCH_CODE_COUNTER    TO APP_USER;
+GRANT SELECT, INSERT, UPDATE ON SHFQ_BASE.ACCOUNT_NUMBER_COUNTER TO APP_USER;
+GRANT SELECT                 ON SHFQ_BASE.CUSTOMER_CODE_SEQ     TO APP_USER;
+-- شمارنده‌ها حتی پس از بسته‌شدن حساب یا غیرفعال‌شدن شعبه نگهداری می‌شوند؛ DELETE داده نمی‌شود.
+
 GRANT SELECT, INSERT, UPDATE ON SHFQ_BASE.SHFQ_BASE_CURRENCY TO APP_USER;
 
 GRANT SELECT, INSERT, UPDATE ON SHFQ_CIF.SHFQ_CIF_PERSON     TO APP_USER;
